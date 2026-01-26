@@ -18,6 +18,21 @@ const createTaskSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
+const gitSchema = z.object({
+  repo: z.string().optional(),
+  branch: z.string().optional(),
+  baseBranch: z.string().optional(),
+  worktreePath: z.string().optional(),
+}).optional();
+
+const attemptSchema = z.object({
+  id: z.string(),
+  agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini']),
+  status: z.enum(['pending', 'running', 'complete', 'failed']),
+  started: z.string().optional(),
+  ended: z.string().optional(),
+}).optional();
+
 const updateTaskSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
@@ -26,6 +41,8 @@ const updateTaskSchema = z.object({
   priority: z.enum(['low', 'medium', 'high']).optional(),
   project: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  git: gitSchema,
+  attempt: attemptSchema,
 });
 
 // GET /api/tasks - List all tasks
