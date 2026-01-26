@@ -1,6 +1,7 @@
 import { Router, type Router as RouterType } from 'express';
 import { ClawdbotAgentService, clawdbotAgentService } from '../services/clawdbot-agent-service.js';
-import type { AgentType } from '@veritas-kanban/shared';
+import { getTelemetryService } from '../services/telemetry-service.js';
+import type { AgentType, TokenTelemetryEvent } from '@veritas-kanban/shared';
 
 const router: RouterType = Router();
 
@@ -88,6 +89,63 @@ router.get('/:taskId/attempts/:attemptId/log', async (req, res) => {
   } catch (error: any) {
     console.error('Error getting log:', error);
     res.status(404).json({ error: error.message || 'Log not found' });
+  }
+});
+
+// POST /api/agents/:taskId/tokens - Report token usage for a run
+router.post('/:taskId/tokens', async (req, res) => {
+  try {
+    const { attemptId, inputTokens, outputTokens, totalTokens, model, agent } = req.body as {
+      attemptId?: string;
+      inputTokens: number;
+      outputTokens: number;
+      totalTokens?: number;
+      model?: string;
+      agent?: AgentType;
+    };
+
+    // Validate required fields
+    if (typeof inputTokens !== 'number' || typeof outputTokens !== 'number') {
+      return res.status(400).json({ error: 'inputTokens and outputTokens are required numbers' });
+    }
+
+    const taskId = req.params.taskId;
+    
+    // Get task to find project and current attempt
+    const { TaskService } = await import('../services/task-service.js');
+    const taskService = new TaskService();
+    const task = await taskService.getTask(taskId);
+    
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Use provided attemptId or current attempt
+    const resolvedAttemptId = attemptId || task.attempt?.id || 'unknown';
+    const resolvedAgent = agent || task.attempt?.agent || 'claude-code';
+
+    // Emit telemetry event
+    const telemetry = getTelemetryService();
+    const event = await telemetry.emit<TokenTelemetryEvent>({
+      type: 'run.tokens',
+      taskId,
+      attemptId: resolvedAttemptId,
+      agent: resolvedAgent,
+      project: task.project,
+      inputTokens,
+      outputTokens,
+      totalTokens: totalTokens ?? (inputTokens + outputTokens),
+      model,
+    });
+
+    res.status(201).json({
+      recorded: true,
+      eventId: event.id,
+      totalTokens: event.totalTokens,
+    });
+  } catch (error: any) {
+    console.error('Error recording tokens:', error);
+    res.status(500).json({ error: error.message || 'Failed to record token usage' });
   }
 });
 
