@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Archive, RefreshCw, Search, Calendar, FolderOpen } from 'lucide-react';
+import { Archive, RefreshCw, Search, Calendar, FolderOpen, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useArchivedTasks } from '@/hooks/useTasks';
+import { useArchivedTasks, useRestoreTask } from '@/hooks/useTasks';
 import { cn } from '@/lib/utils';
 import type { Task, TaskType } from '@veritas-kanban/shared';
 
@@ -50,11 +50,21 @@ function formatDate(dateString: string): string {
   });
 }
 
-function ArchivedTaskItem({ task, onClick }: { task: Task; onClick?: () => void }) {
+function ArchivedTaskItem({ 
+  task, 
+  onClick,
+  onRestore,
+  isRestoring,
+}: { 
+  task: Task; 
+  onClick?: () => void;
+  onRestore?: () => void;
+  isRestoring?: boolean;
+}) {
   return (
     <div 
       className={cn(
-        "flex items-start gap-3 py-3 px-2 rounded-md transition-colors",
+        "flex items-start gap-3 py-3 px-2 rounded-md transition-colors group",
         onClick ? "hover:bg-muted/50 cursor-pointer" : ""
       )}
       onClick={onClick}
@@ -93,6 +103,21 @@ function ArchivedTaskItem({ task, onClick }: { task: Task; onClick?: () => void 
           </div>
         )}
       </div>
+      {onRestore && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRestore();
+          }}
+          disabled={isRestoring}
+          title="Restore to board"
+        >
+          <RotateCcw className={cn("h-4 w-4", isRestoring && "animate-spin")} />
+        </Button>
+      )}
     </div>
   );
 }
@@ -101,8 +126,21 @@ export function ArchiveSidebar({ open, onOpenChange, onTaskClick }: ArchiveSideb
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [projectFilter, setProjectFilter] = useState<string>('all');
+  const [restoringId, setRestoringId] = useState<string | null>(null);
   
   const { data: archivedTasks, isLoading, refetch, isRefetching } = useArchivedTasks();
+  const restoreTask = useRestoreTask();
+
+  const handleRestore = async (task: Task) => {
+    setRestoringId(task.id);
+    try {
+      await restoreTask.mutateAsync(task.id);
+    } catch (error) {
+      console.error('Failed to restore task:', error);
+    } finally {
+      setRestoringId(null);
+    }
+  };
 
   // Get unique projects for filter dropdown
   const projects = useMemo(() => {
@@ -224,6 +262,8 @@ export function ArchiveSidebar({ open, onOpenChange, onTaskClick }: ArchiveSideb
                     key={task.id} 
                     task={task}
                     onClick={onTaskClick ? () => onTaskClick(task) : undefined}
+                    onRestore={() => handleRestore(task)}
+                    isRestoring={restoringId === task.id}
                   />
                 ))}
               </div>

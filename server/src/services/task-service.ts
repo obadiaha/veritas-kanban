@@ -228,4 +228,28 @@ export class TaskService {
     const tasks = await this.listArchivedTasks();
     return tasks.find(t => t.id === id) || null;
   }
+
+  async restoreTask(id: string): Promise<Task | null> {
+    const task = await this.getArchivedTask(id);
+    if (!task) return null;
+
+    const filename = this.taskToFilename(task);
+    const sourcePath = path.join(this.archiveDir, filename);
+    const destPath = path.join(this.tasksDir, filename);
+    
+    // Move back to active and set status to done
+    await fs.rename(sourcePath, destPath);
+    
+    // Update status to done
+    const restoredTask: Task = {
+      ...task,
+      status: 'done',
+      updated: new Date().toISOString(),
+    };
+    
+    const content = this.taskToMarkdown(restoredTask);
+    await fs.writeFile(destPath, content, 'utf-8');
+    
+    return restoredTask;
+  }
 }

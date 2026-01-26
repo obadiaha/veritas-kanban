@@ -12,7 +12,7 @@
 | ID | Title | Status | Dependencies | Notes |
 |----|-------|--------|--------------|-------|
 | US-701 | Archive sidebar | ✅ Done | None | Slide-out viewer with search/filter for archived tasks |
-| US-702 | Restore from archive | ⏳ Todo | US-701 | Unarchive tasks back to board |
+| US-702 | Restore from archive | ✅ Done | US-701 | Unarchive tasks back to board |
 | US-703 | Subtasks | ⏳ Todo | None | Nested tasks with parent completion logic |
 | US-704 | Task dependencies | ⏳ Todo | US-703 | Block tasks until dependencies complete |
 | US-705 | Multiple task attempts | ⏳ Todo | None | Retry with different agent, preserve history |

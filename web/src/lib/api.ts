@@ -98,6 +98,13 @@ export const api = {
       });
       return handleResponse<void>(response);
     },
+
+    restore: async (id: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${id}/restore`, {
+        method: 'POST',
+      });
+      return handleResponse<Task>(response);
+    },
   },
 
   config: {

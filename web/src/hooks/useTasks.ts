@@ -66,6 +66,19 @@ export function useArchiveTask() {
     mutationFn: (id: string) => api.tasks.archive(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'archived'] });
+    },
+  });
+}
+
+export function useRestoreTask() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: string) => api.tasks.restore(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'archived'] });
     },
   });
 }

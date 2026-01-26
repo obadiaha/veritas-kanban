@@ -201,6 +201,27 @@ router.post('/:id/archive', async (req, res) => {
   }
 });
 
+// POST /api/tasks/:id/restore - Restore task from archive
+router.post('/:id/restore', async (req, res) => {
+  try {
+    const task = await taskService.restoreTask(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Archived task not found' });
+    }
+    
+    // Log activity
+    await activityService.logActivity('status_changed', task.id, task.title, {
+      from: 'archived',
+      status: 'done',
+    });
+    
+    res.json(task);
+  } catch (error) {
+    console.error('Error restoring task:', error);
+    res.status(500).json({ error: 'Failed to restore task' });
+  }
+});
+
 // === Worktree Routes ===
 
 // POST /api/tasks/:id/worktree - Create worktree

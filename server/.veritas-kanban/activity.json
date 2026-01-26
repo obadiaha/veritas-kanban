@@ -1,5 +1,46 @@
 [
   {
+    "id": "activity_1769427982787_zlmx7wl1j",
+    "type": "status_changed",
+    "taskId": "task_20260126_UBz41o",
+    "taskTitle": "US-702: Restore from archive",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-26T11:46:22.788Z"
+  },
+  {
+    "id": "activity_1769427885455_irs3lpfay",
+    "type": "status_changed",
+    "taskId": "task_20260126_UBz41o",
+    "taskTitle": "US-702: Restore from archive",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-26T11:44:45.455Z"
+  },
+  {
+    "id": "activity_1769427882031_qsa7fjdlb",
+    "type": "task_created",
+    "taskId": "task_20260126_UBz41o",
+    "taskTitle": "US-702: Restore from archive",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-26T11:44:42.031Z"
+  },
+  {
+    "id": "activity_1769427809793_r57vixvwa",
+    "type": "task_updated",
+    "taskId": "task_20260126_wzj1d0",
+    "taskTitle": "US-701: Archive sidebar",
+    "timestamp": "2026-01-26T11:43:29.793Z"
+  },
+  {
     "id": "activity_1769427062484_c9s4q6kiq",
     "type": "task_created",
     "taskId": "task_20260126_PcoH5E",
