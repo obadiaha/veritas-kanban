@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
 import { getTelemetryService, type TelemetryService } from './telemetry-service.js';
+import { getTraceService, type TraceService } from './trace-service.js';
 import type { Task, AgentType, TaskAttempt, AttemptStatus, RunTelemetryEvent } from '@veritas-kanban/shared';
 
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
@@ -43,12 +44,14 @@ export class AgentService {
   private configService: ConfigService;
   private taskService: TaskService;
   private telemetry: TelemetryService;
+  private traceService: TraceService;
   private logsDir: string;
 
   constructor() {
     this.configService = new ConfigService();
     this.taskService = new TaskService();
     this.telemetry = getTelemetryService();
+    this.traceService = getTraceService();
     this.logsDir = LOGS_DIR;
     this.ensureLogsDir();
   }
@@ -98,6 +101,10 @@ export class AgentService {
     const attemptId = `attempt_${nanoid(8)}`;
     const startedAt = new Date().toISOString();
     const logPath = path.join(this.logsDir, `${taskId}_${attemptId}.md`);
+
+    // Start trace (if enabled)
+    this.traceService.startTrace(attemptId, taskId, agent, task.project);
+    this.traceService.startStep(attemptId, 'init', { worktreePath: task.git.worktreePath });
 
     // Build prompt from task
     const prompt = this.buildPrompt(task);
@@ -154,6 +161,10 @@ export class AgentService {
       agent,
       project: task.project,
     });
+
+    // End init step, start execute step (tracing)
+    this.traceService.endStep(attemptId, 'init');
+    this.traceService.startStep(attemptId, 'execute', { pid: childProcess.pid });
 
     // Handle stdout
     childProcess.stdout?.on('data', async (data: Buffer) => {
@@ -216,6 +227,12 @@ export class AgentService {
         success,
       });
 
+      // End execute step, start complete step, then complete trace
+      this.traceService.endStep(attemptId, 'execute');
+      this.traceService.startStep(attemptId, 'complete', { exitCode: code });
+      this.traceService.endStep(attemptId, 'complete');
+      await this.traceService.completeTrace(attemptId, success ? 'completed' : 'failed');
+
       // Emit completion
       emitter.emit('complete', { code, signal, status });
 
@@ -238,6 +255,11 @@ export class AgentService {
         error: error.message,
         success: false,
       });
+
+      // Record error step and complete trace with error status
+      this.traceService.startStep(attemptId, 'error', { error: error.message });
+      this.traceService.endStep(attemptId, 'error');
+      await this.traceService.completeTrace(attemptId, 'error');
 
       emitter.emit('error', error);
       await this.appendToLog(logPath, 'system', `\n---\nAgent error: ${error.message}`);
