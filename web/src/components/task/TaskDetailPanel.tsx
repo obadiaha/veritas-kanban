@@ -30,6 +30,7 @@ import {
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
 import { Trash2, Code, Search, FileText, Zap, Calendar, Clock } from 'lucide-react';
 import type { Task, TaskType, TaskStatus, TaskPriority } from '@veritas-kanban/shared';
+import { GitSection } from './GitSection';
 
 interface TaskDetailPanelProps {
   task: Task | null;
@@ -89,6 +90,7 @@ function useDebouncedSave(task: Task | null, updateTask: ReturnType<typeof useUp
           priority: localTask.priority,
           project: localTask.project,
           tags: localTask.tags,
+          git: localTask.git,
         },
       });
       setIsDirty(false);
@@ -262,6 +264,14 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
               placeholder="Add tags (comma-separated)..."
             />
           </div>
+
+          {/* Git Integration (code tasks only) */}
+          {localTask.type === 'code' && (
+            <GitSection
+              task={localTask}
+              onGitChange={(git) => updateField('git', git as Task['git'])}
+            />
+          )}
 
           {/* Metadata */}
           <div className="border-t pt-4 space-y-2 text-sm text-muted-foreground">
