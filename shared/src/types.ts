@@ -11,6 +11,8 @@ export interface TaskGit {
   branch: string;
   baseBranch: string;
   worktreePath?: string;
+  prUrl?: string;
+  prNumber?: number;
 }
 
 export interface TaskAttempt {

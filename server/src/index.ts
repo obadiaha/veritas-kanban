@@ -11,6 +11,7 @@ import { summaryRoutes } from './routes/summary.js';
 import { notificationRoutes } from './routes/notifications.js';
 import templateRoutes from './routes/templates.js';
 import activityRoutes from './routes/activity.js';
+import githubRoutes from './routes/github.js';
 import type { AgentOutput } from './services/agent-service.js';
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/summary', summaryRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/templates', templateRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/github', githubRoutes);
 
 // Create HTTP server
 const server = createServer(app);

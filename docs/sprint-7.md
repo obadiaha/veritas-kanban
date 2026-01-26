@@ -17,7 +17,7 @@
 | US-704 | Task dependencies | ✅ Done | US-703 | Block tasks until dependencies complete |
 | US-705 | Multiple task attempts | ✅ Done | None | Retry with different agent, preserve history |
 | US-706 | Auto-archive suggestions | ⏳ Todo | US-701, US-703 | Suggest archiving when project complete |
-| US-707 | GitHub PR creation | ⏳ Todo | None | Create PR from task detail UI |
+| US-707 | GitHub PR creation | ✅ Done | None | Create PR from task detail UI |
 | US-708 | Preview mode | ⏳ Todo | None | Embedded browser for dev server preview |
 | US-709 | Merge conflict resolution | ⏳ Todo | None | Visual conflict resolver UI |
 | US-710 | Time tracking | ⏳ Todo | None | Start/stop timer, manual entry, reports |
@@ -101,5 +101,18 @@
 ## Progress Log
 
 ### 2026-01-26
+
+**US-707: GitHub PR creation** ✅
+- Created GitHubService for PR operations via `gh` CLI
+- Added prUrl and prNumber fields to TaskGit type
+- API endpoints: GET /api/github/status, POST /api/github/pr
+- Create PR dialog in GitSection with:
+  - Pre-filled title from task title
+  - Description textarea
+  - Draft PR option
+  - Error handling
+- View PR button when PR exists (links to GitHub)
+- Auto-opens PR in browser after creation
+- Stores PR link in task for future reference
 
 (Starting Sprint 7)

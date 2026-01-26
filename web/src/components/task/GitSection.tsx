@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -20,6 +22,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useConfig, useRepoBranches } from '@/hooks/useConfig';
 import { 
   useWorktreeStatus, 
@@ -28,6 +39,7 @@ import {
   useRebaseWorktree, 
   useMergeWorktree 
 } from '@/hooks/useWorktree';
+import { useCreatePR, useGitHubStatus } from '@/hooks/useGitHub';
 import { 
   GitBranch, 
   FolderGit2, 
@@ -41,6 +53,7 @@ import {
   FileCode,
   ArrowUp,
   ArrowDown,
+  GitPullRequest,
 } from 'lucide-react';
 import type { Task, TaskGit } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
@@ -60,17 +73,48 @@ function slugify(text: string): string {
 
 function WorktreeStatus({ task }: { task: Task }) {
   const hasWorktree = !!task.git?.worktreePath;
+  const hasPR = !!task.git?.prUrl;
   const { data: status, isLoading, error } = useWorktreeStatus(task.id, hasWorktree);
+  const { data: ghStatus } = useGitHubStatus();
   
   const createWorktree = useCreateWorktree();
   const deleteWorktree = useDeleteWorktree();
   const rebaseWorktree = useRebaseWorktree();
   const mergeWorktree = useMergeWorktree();
+  const createPR = useCreatePR();
+
+  // PR dialog state
+  const [prDialogOpen, setPrDialogOpen] = useState(false);
+  const [prTitle, setPrTitle] = useState(task.title);
+  const [prBody, setPrBody] = useState(task.description || '');
+  const [prDraft, setPrDraft] = useState(false);
 
   const handleOpenInVSCode = () => {
     if (task.git?.worktreePath) {
       // Use vscode:// protocol to open
       window.open(`vscode://file/${task.git.worktreePath}`, '_blank');
+    }
+  };
+
+  const handleOpenPR = () => {
+    if (task.git?.prUrl) {
+      window.open(task.git.prUrl, '_blank');
+    }
+  };
+
+  const handleCreatePR = async () => {
+    try {
+      const result = await createPR.mutateAsync({
+        taskId: task.id,
+        title: prTitle,
+        body: prBody,
+        draft: prDraft,
+      });
+      setPrDialogOpen(false);
+      // Open the new PR in browser
+      window.open(result.url, '_blank');
+    } catch (error) {
+      // Error is handled by mutation
     }
   };
 
@@ -173,6 +217,89 @@ function WorktreeStatus({ task }: { task: Task }) {
           <ExternalLink className="h-3 w-3 mr-1" />
           Open in VS Code
         </Button>
+
+        {/* PR Button - show View PR if exists, Create PR if not */}
+        {hasPR ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleOpenPR}
+          >
+            <GitPullRequest className="h-3 w-3 mr-1" />
+            View PR #{task.git?.prNumber}
+          </Button>
+        ) : status && status.aheadBehind.ahead > 0 && ghStatus?.authenticated && (
+          <Dialog open={prDialogOpen} onOpenChange={setPrDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <GitPullRequest className="h-3 w-3 mr-1" />
+                Create PR
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Create Pull Request</DialogTitle>
+                <DialogDescription>
+                  Create a PR from {task.git?.branch} to {task.git?.baseBranch}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="pr-title">Title</Label>
+                  <Input
+                    id="pr-title"
+                    value={prTitle}
+                    onChange={(e) => setPrTitle(e.target.value)}
+                    placeholder="PR title"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="pr-body">Description</Label>
+                  <Textarea
+                    id="pr-body"
+                    value={prBody}
+                    onChange={(e) => setPrBody(e.target.value)}
+                    placeholder="Describe your changes..."
+                    rows={5}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="pr-draft"
+                    checked={prDraft}
+                    onCheckedChange={(checked) => setPrDraft(checked === true)}
+                  />
+                  <Label htmlFor="pr-draft" className="text-sm font-normal">
+                    Create as draft PR
+                  </Label>
+                </div>
+                {createPR.error && (
+                  <p className="text-sm text-red-500">
+                    {(createPR.error as Error).message}
+                  </p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setPrDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreatePR} disabled={createPR.isPending || !prTitle}>
+                  {createPR.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <GitPullRequest className="h-4 w-4 mr-2" />
+                      Create PR
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
 
         {status && status.aheadBehind.behind > 0 && (
           <Button

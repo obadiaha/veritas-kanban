@@ -1,5 +1,62 @@
 [
   {
+    "id": "activity_1769429018087_594327jpq",
+    "type": "task_deleted",
+    "taskId": "task_20260126_P376Wt",
+    "taskTitle": "US-706: Auto-archive suggestions",
+    "timestamp": "2026-01-26T12:03:38.087Z"
+  },
+  {
+    "id": "activity_1769429013107_csuh15eou",
+    "type": "task_deleted",
+    "taskId": "task_20260126_SqIKXl",
+    "taskTitle": "US-705: Multiple task attempts",
+    "timestamp": "2026-01-26T12:03:33.108Z"
+  },
+  {
+    "id": "activity_1769429004596_crehtpbjl",
+    "type": "status_changed",
+    "taskId": "task_20260126_SqIKXl",
+    "taskTitle": "US-705: Multiple task attempts",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-26T12:03:24.596Z"
+  },
+  {
+    "id": "activity_1769429000893_ztrgwdus8",
+    "type": "task_deleted",
+    "taskId": "task_20260126_XH-580",
+    "taskTitle": "US-704: Task dependencies",
+    "timestamp": "2026-01-26T12:03:20.893Z"
+  },
+  {
+    "id": "activity_1769428992526_4jxiq95db",
+    "type": "task_deleted",
+    "taskId": "task_20260126_PoYogZ",
+    "taskTitle": "US-703: Subtasks",
+    "timestamp": "2026-01-26T12:03:12.526Z"
+  },
+  {
+    "id": "activity_1769428978518_sfx4o5496",
+    "type": "task_deleted",
+    "taskId": "task_20260126_LC4p7w",
+    "taskTitle": "US-702: Restore from archive",
+    "timestamp": "2026-01-26T12:02:58.518Z"
+  },
+  {
+    "id": "activity_1769428956686_dufwo8w4s",
+    "type": "status_changed",
+    "taskId": "task_20260126_m4OisW",
+    "taskTitle": "US-706: Auto-archive suggestions",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-26T12:02:36.686Z"
+  },
+  {
     "id": "activity_1769428430293_r58fn28l7",
     "type": "status_changed",
     "taskId": "task_20260126_m4OisW",
