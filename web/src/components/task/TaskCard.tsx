@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import type { Task, TaskType, TaskPriority } from '@veritas-kanban/shared';
-import { Code, Search, FileText, Zap, Check } from 'lucide-react';
+import { Code, Search, FileText, Zap, Check, Ban } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 
 interface TaskCardProps {
@@ -15,6 +15,8 @@ interface TaskCardProps {
   isDragging?: boolean;
   onClick?: () => void;
   isSelected?: boolean;
+  isBlocked?: boolean;
+  blockerTitles?: string[];
 }
 
 const typeIcons: Record<TaskType, React.ReactNode> = {
@@ -37,7 +39,7 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging: isCurrentlyDragging } = useDraggable({
     id: task.id,
   });
@@ -118,6 +120,24 @@ export function TaskCard({ task, isDragging, onClick, isSelected }: TaskCardProp
             </div>
             
             <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {isBlocked && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 flex items-center gap-1">
+                      <Ban className="h-3 w-3" />
+                      Blocked
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-medium">Blocked by:</p>
+                    <ul className="text-sm">
+                      {blockerTitles?.map((title, i) => (
+                        <li key={i}>• {title}</li>
+                      ))}
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               {task.project && (
                 <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                   {task.project}

@@ -142,3 +142,18 @@ export function useTasksByStatus(tasks: Task[] | undefined) {
     done: tasks.filter(t => t.status === 'done'),
   };
 }
+
+// Check if a task is blocked by incomplete dependencies
+export function isTaskBlocked(task: Task, allTasks: Task[]): boolean {
+  if (!task.blockedBy?.length) return false;
+  
+  const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
+  return blockingTasks.some(t => t.status !== 'done');
+}
+
+// Get the blockers for a task
+export function getTaskBlockers(task: Task, allTasks: Task[]): Task[] {
+  if (!task.blockedBy?.length) return [];
+  
+  return allTasks.filter(t => task.blockedBy?.includes(t.id) && t.status !== 'done');
+}

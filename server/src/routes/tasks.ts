@@ -76,6 +76,7 @@ const updateTaskSchema = z.object({
   review: reviewStateSchema.optional(),
   subtasks: z.array(subtaskSchema).optional(),
   autoCompleteOnSubtasks: z.boolean().optional(),
+  blockedBy: z.array(z.string()).optional(),
   automation: automationSchema,
 });
 
@@ -115,6 +116,33 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// GET /api/tasks/:id/blocking-status - Get task blocking status
+router.get('/:id/blocking-status', async (req, res) => {
+  try {
+    const task = await taskService.getTask(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    if (!task.blockedBy?.length) {
+      return res.json({ isBlocked: false, blockers: [] });
+    }
+
+    const allTasks = await taskService.listTasks();
+    const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
+    const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+    
+    res.json({
+      isBlocked: incompleteBlockers.length > 0,
+      blockers: incompleteBlockers.map(t => ({ id: t.id, title: t.title, status: t.status })),
+      completedBlockers: blockingTasks.filter(t => t.status === 'done').map(t => ({ id: t.id, title: t.title })),
+    });
+  } catch (error) {
+    console.error('Error getting blocking status:', error);
+    res.status(500).json({ error: 'Failed to get blocking status' });
+  }
+});
+
 // POST /api/tasks - Create task
 router.post('/', async (req, res) => {
   try {
@@ -143,18 +171,36 @@ router.patch('/:id', async (req, res) => {
   try {
     const input = updateTaskSchema.parse(req.body) as UpdateTaskInput;
     const oldTask = await taskService.getTask(req.params.id);
+    if (!oldTask) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Check if trying to move blocked task to in-progress
+    if (input.status === 'in-progress' && oldTask.status === 'todo' && oldTask.blockedBy?.length) {
+      const allTasks = await taskService.listTasks();
+      const blockingTasks = allTasks.filter(t => oldTask.blockedBy?.includes(t.id));
+      const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+      
+      if (incompleteBlockers.length > 0) {
+        return res.status(400).json({ 
+          error: 'Task is blocked',
+          blockedBy: incompleteBlockers.map(t => ({ id: t.id, title: t.title })),
+        });
+      }
+    }
+
     const task = await taskService.updateTask(req.params.id, input);
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
     
     // Log activity for status changes
-    if (input.status && oldTask && oldTask.status !== input.status) {
+    if (input.status && oldTask.status !== input.status) {
       await activityService.logActivity('status_changed', task.id, task.title, {
         from: oldTask.status,
         status: input.status,
       });
-    } else if (oldTask) {
+    } else {
       await activityService.logActivity('task_updated', task.id, task.title);
     }
     

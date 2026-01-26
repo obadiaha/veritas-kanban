@@ -130,6 +130,15 @@ export const api = {
       });
       return handleResponse<Task>(response);
     },
+
+    getBlockingStatus: async (taskId: string): Promise<{
+      isBlocked: boolean;
+      blockers: Array<{ id: string; title: string; status: string }>;
+      completedBlockers: Array<{ id: string; title: string }>;
+    }> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/blocking-status`);
+      return handleResponse(response);
+    },
   },
 
   config: {

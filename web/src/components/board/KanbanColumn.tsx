@@ -1,12 +1,14 @@
 import { useDroppable } from '@dnd-kit/core';
 import { cn } from '@/lib/utils';
 import { TaskCard } from '@/components/task/TaskCard';
+import { isTaskBlocked, getTaskBlockers } from '@/hooks/useTasks';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
 
 interface KanbanColumnProps {
   id: TaskStatus;
   title: string;
   tasks: Task[];
+  allTasks: Task[];
   onTaskClick?: (task: Task) => void;
   selectedTaskId?: string | null;
 }
@@ -18,7 +20,7 @@ const columnColors: Record<TaskStatus, string> = {
   'done': 'border-t-green-500',
 };
 
-export function KanbanColumn({ id, title, tasks, onTaskClick, selectedTaskId }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selectedTaskId }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
@@ -48,14 +50,20 @@ export function KanbanColumn({ id, title, tasks, onTaskClick, selectedTaskId }: 
             {isOver ? 'Drop here' : 'No tasks'}
           </div>
         ) : (
-          tasks.map(task => (
-            <TaskCard 
-              key={task.id} 
-              task={task} 
-              onClick={() => onTaskClick?.(task)}
-              isSelected={task.id === selectedTaskId}
-            />
-          ))
+          tasks.map(task => {
+            const blocked = isTaskBlocked(task, allTasks);
+            const blockers = blocked ? getTaskBlockers(task, allTasks) : [];
+            return (
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onClick={() => onTaskClick?.(task)}
+                isSelected={task.id === selectedTaskId}
+                isBlocked={blocked}
+                blockerTitles={blockers.map(b => b.title)}
+              />
+            );
+          })
         )}
       </div>
     </div>

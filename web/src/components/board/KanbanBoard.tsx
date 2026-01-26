@@ -214,6 +214,7 @@ export function KanbanBoard() {
               id={column.id}
               title={column.title}
               tasks={tasksByStatus[column.id]}
+              allTasks={filteredTasks}
               onTaskClick={handleTaskClick}
               selectedTaskId={selectedTaskId}
             />

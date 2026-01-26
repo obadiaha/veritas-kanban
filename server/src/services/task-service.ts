@@ -99,6 +99,7 @@ export class TaskService {
       review: data.review,
       subtasks: data.subtasks,
       autoCompleteOnSubtasks: data.autoCompleteOnSubtasks,
+      blockedBy: data.blockedBy,
       automation: data.automation,
     };
   }

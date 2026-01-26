@@ -41,6 +41,7 @@ import { AgentPanel } from './AgentPanel';
 import { DiffViewer } from './DiffViewer';
 import { ReviewPanel } from './ReviewPanel';
 import { SubtasksSection } from './SubtasksSection';
+import { DependenciesSection } from './DependenciesSection';
 
 interface TaskDetailPanelProps {
   task: Task | null;
@@ -297,6 +298,14 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
                 <SubtasksSection
                   task={localTask}
                   onAutoCompleteChange={(value) => updateField('autoCompleteOnSubtasks', value || undefined)}
+                />
+              </div>
+
+              {/* Dependencies */}
+              <div className="border-t pt-4">
+                <DependenciesSection
+                  task={localTask}
+                  onBlockedByChange={(blockedBy) => updateField('blockedBy', blockedBy)}
                 />
               </div>
 

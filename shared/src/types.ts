@@ -59,6 +59,9 @@ export interface Task {
   subtasks?: Subtask[];
   autoCompleteOnSubtasks?: boolean; // Auto-complete parent when all subtasks done
 
+  // Dependencies
+  blockedBy?: string[]; // Array of task IDs that block this task
+
   // Automation task specific (for veritas sub-agent)
   automation?: {
     sessionKey?: string;    // Clawdbot session key
@@ -109,6 +112,7 @@ export interface UpdateTaskInput {
   review?: ReviewState;
   subtasks?: Subtask[];
   autoCompleteOnSubtasks?: boolean;
+  blockedBy?: string[];
   automation?: {
     sessionKey?: string;
     spawnedAt?: string;
