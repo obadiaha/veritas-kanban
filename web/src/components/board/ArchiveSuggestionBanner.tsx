@@ -10,35 +10,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useArchiveSuggestions, useArchiveProject } from '@/hooks/useTasks';
+import { useArchiveSuggestions, useArchiveSprint } from '@/hooks/useTasks';
 import { Archive, X, Loader2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function ArchiveSuggestionBanner() {
   const { data: suggestions, isLoading } = useArchiveSuggestions();
-  const archiveProject = useArchiveProject();
-  const [dismissedProjects, setDismissedProjects] = useState<Set<string>>(new Set());
-  const [confirmProject, setConfirmProject] = useState<string | null>(null);
+  const archiveSprint = useArchiveSprint();
+  const [dismissedSprints, setDismissedSprints] = useState<Set<string>>(new Set());
+  const [confirmSprint, setConfirmSprint] = useState<string | null>(null);
 
   if (isLoading || !suggestions?.length) {
     return null;
   }
 
   // Filter out dismissed suggestions
-  const visibleSuggestions = suggestions.filter(s => !dismissedProjects.has(s.project));
+  const visibleSuggestions = suggestions.filter(s => !dismissedSprints.has(s.sprint));
 
   if (visibleSuggestions.length === 0) {
     return null;
   }
 
-  const handleDismiss = (project: string) => {
-    setDismissedProjects(prev => new Set(prev).add(project));
+  const handleDismiss = (sprint: string) => {
+    setDismissedSprints(prev => new Set(prev).add(sprint));
   };
 
-  const handleArchive = async (project: string) => {
+  const handleArchive = async (sprint: string) => {
     try {
-      await archiveProject.mutateAsync(project);
-      setConfirmProject(null);
+      await archiveSprint.mutateAsync(sprint);
+      setConfirmSprint(null);
     } catch (error) {
       // Error handled by mutation
     }
@@ -49,7 +49,7 @@ export function ArchiveSuggestionBanner() {
       <div className="space-y-2 mb-4">
         {visibleSuggestions.map((suggestion) => (
           <div
-            key={suggestion.project}
+            key={suggestion.sprint}
             className={cn(
               "flex items-center justify-between gap-4 px-4 py-3 rounded-lg",
               "bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400"
@@ -59,7 +59,7 @@ export function ArchiveSuggestionBanner() {
               <CheckCircle className="h-5 w-5 flex-shrink-0" />
               <div>
                 <p className="font-medium">
-                  Project "{suggestion.project}" is complete!
+                  Sprint "{suggestion.sprint}" is complete!
                 </p>
                 <p className="text-sm opacity-80">
                   All {suggestion.taskCount} task{suggestion.taskCount !== 1 ? 's' : ''} are done. 
@@ -72,23 +72,23 @@ export function ArchiveSuggestionBanner() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setConfirmProject(suggestion.project)}
-                disabled={archiveProject.isPending}
+                onClick={() => setConfirmSprint(suggestion.sprint)}
+                disabled={archiveSprint.isPending}
                 className="border-green-500/30 hover:bg-green-500/10"
               >
-                {archiveProject.isPending && confirmProject === suggestion.project ? (
+                {archiveSprint.isPending && confirmSprint === suggestion.sprint ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
                     <Archive className="h-4 w-4 mr-1" />
-                    Archive All
+                    Archive Sprint
                   </>
                 )}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleDismiss(suggestion.project)}
+                onClick={() => handleDismiss(suggestion.sprint)}
                 className="hover:bg-green-500/10"
               >
                 <X className="h-4 w-4" />
@@ -99,23 +99,23 @@ export function ArchiveSuggestionBanner() {
       </div>
 
       {/* Confirmation Dialog */}
-      <AlertDialog open={!!confirmProject} onOpenChange={() => setConfirmProject(null)}>
+      <AlertDialog open={!!confirmSprint} onOpenChange={() => setConfirmSprint(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Archive project "{confirmProject}"?</AlertDialogTitle>
+            <AlertDialogTitle>Archive sprint "{confirmSprint}"?</AlertDialogTitle>
             <AlertDialogDescription>
               This will archive all {
-                suggestions.find(s => s.project === confirmProject)?.taskCount || 0
-              } tasks in this project. You can restore them from the archive later.
+                suggestions.find(s => s.sprint === confirmSprint)?.taskCount || 0
+              } tasks in this sprint. You can restore them from the archive later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => confirmProject && handleArchive(confirmProject)}
-              disabled={archiveProject.isPending}
+              onClick={() => confirmSprint && handleArchive(confirmSprint)}
+              disabled={archiveSprint.isPending}
             >
-              {archiveProject.isPending ? (
+              {archiveSprint.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Archiving...
@@ -123,7 +123,7 @@ export function ArchiveSuggestionBanner() {
               ) : (
                 <>
                   <Archive className="h-4 w-4 mr-2" />
-                  Archive Project
+                  Archive Sprint
                 </>
               )}
             </AlertDialogAction>

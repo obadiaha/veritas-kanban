@@ -75,7 +75,7 @@ export function useBulkArchive() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (project: string) => api.tasks.bulkArchive(project),
+    mutationFn: (sprint: string) => api.tasks.bulkArchive(sprint),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['tasks', 'archived'] });
@@ -209,7 +209,7 @@ export function getTaskBlockers(task: Task, allTasks: Task[]): Task[] {
   return allTasks.filter(t => task.blockedBy?.includes(t.id) && t.status !== 'done');
 }
 
-// Archive suggestions - projects where all tasks are done
+// Archive suggestions - sprints where all tasks are done
 export function useArchiveSuggestions() {
   return useQuery({
     queryKey: ['tasks', 'archive-suggestions'],
@@ -218,11 +218,11 @@ export function useArchiveSuggestions() {
   });
 }
 
-export function useArchiveProject() {
+export function useArchiveSprint() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (project: string) => api.tasks.archiveProject(project),
+    mutationFn: (sprint: string) => api.tasks.archiveSprint(sprint),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['tasks', 'archived'] });

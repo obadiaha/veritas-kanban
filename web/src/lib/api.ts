@@ -74,11 +74,11 @@ export const api = {
       return handleResponse<void>(response);
     },
 
-    bulkArchive: async (project: string): Promise<{ archived: string[]; count: number }> => {
+    bulkArchive: async (sprint: string): Promise<{ archived: string[]; count: number }> => {
       const response = await fetch(`${API_BASE}/tasks/bulk-archive`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ project }),
+        body: JSON.stringify({ sprint }),
       });
       return handleResponse(response);
     },
@@ -95,8 +95,8 @@ export const api = {
       return handleResponse<ArchiveSuggestion[]>(response);
     },
 
-    archiveProject: async (project: string): Promise<{ archived: number; taskIds: string[] }> => {
-      const response = await fetch(`${API_BASE}/tasks/archive/project/${encodeURIComponent(project)}`, {
+    archiveSprint: async (sprint: string): Promise<{ archived: number; taskIds: string[] }> => {
+      const response = await fetch(`${API_BASE}/tasks/archive/sprint/${encodeURIComponent(sprint)}`, {
         method: 'POST',
       });
       return handleResponse<{ archived: number; taskIds: string[] }>(response);
@@ -440,7 +440,7 @@ export const api = {
 
 // Types for archive suggestions
 export interface ArchiveSuggestion {
-  project: string;
+  sprint: string;
   taskCount: number;
   tasks: Task[];
 }

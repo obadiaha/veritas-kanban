@@ -322,30 +322,30 @@ export class TaskService {
   /**
    * Get projects that are ready to archive (all tasks are done)
    */
-  async getArchiveSuggestions(): Promise<{ project: string; taskCount: number; tasks: Task[] }[]> {
+  async getArchiveSuggestions(): Promise<{ sprint: string; taskCount: number; tasks: Task[] }[]> {
     const tasks = await this.listTasks();
     
-    // Group tasks by project
-    const projectTasks = new Map<string, Task[]>();
+    // Group tasks by sprint
+    const sprintTasks = new Map<string, Task[]>();
     
     for (const task of tasks) {
-      if (task.project) {
-        const existing = projectTasks.get(task.project) || [];
+      if (task.sprint) {
+        const existing = sprintTasks.get(task.sprint) || [];
         existing.push(task);
-        projectTasks.set(task.project, existing);
+        sprintTasks.set(task.sprint, existing);
       }
     }
     
-    // Find projects where ALL tasks are done
-    const suggestions: { project: string; taskCount: number; tasks: Task[] }[] = [];
+    // Find sprints where ALL tasks are done
+    const suggestions: { sprint: string; taskCount: number; tasks: Task[] }[] = [];
     
-    for (const [project, projectTaskList] of projectTasks) {
-      const allDone = projectTaskList.every(t => t.status === 'done');
-      if (allDone && projectTaskList.length > 0) {
+    for (const [sprint, sprintTaskList] of sprintTasks) {
+      const allDone = sprintTaskList.every(t => t.status === 'done');
+      if (allDone && sprintTaskList.length > 0) {
         suggestions.push({
-          project,
-          taskCount: projectTaskList.length,
-          tasks: projectTaskList,
+          sprint,
+          taskCount: sprintTaskList.length,
+          tasks: sprintTaskList,
         });
       }
     }
@@ -354,25 +354,25 @@ export class TaskService {
   }
 
   /**
-   * Archive all tasks in a project
+   * Archive all tasks in a sprint
    */
-  async archiveProject(project: string): Promise<{ archived: number; taskIds: string[] }> {
+  async archiveSprint(sprint: string): Promise<{ archived: number; taskIds: string[] }> {
     const tasks = await this.listTasks();
-    const projectTasks = tasks.filter(t => t.project === project);
+    const sprintTasks = tasks.filter(t => t.sprint === sprint);
     
-    if (projectTasks.length === 0) {
-      throw new Error(`No tasks found for project "${project}"`);
+    if (sprintTasks.length === 0) {
+      throw new Error(`No tasks found for sprint "${sprint}"`);
     }
     
     // Check all tasks are done
-    const notDone = projectTasks.filter(t => t.status !== 'done');
+    const notDone = sprintTasks.filter(t => t.status !== 'done');
     if (notDone.length > 0) {
-      throw new Error(`Cannot archive project: ${notDone.length} task(s) are not done`);
+      throw new Error(`Cannot archive sprint: ${notDone.length} task(s) are not done`);
     }
     
     // Archive all tasks
     const archivedIds: string[] = [];
-    for (const task of projectTasks) {
+    for (const task of sprintTasks) {
       await this.archiveTask(task.id);
       archivedIds.push(task.id);
     }

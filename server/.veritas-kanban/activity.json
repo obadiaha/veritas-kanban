@@ -1,5 +1,152 @@
 [
   {
+    "id": "activity_1769579842074_0pq1ecb58",
+    "type": "status_changed",
+    "taskId": "task_20260128_2dCzyR",
+    "taskTitle": "US-920: Auto-archive by sprint instead of project",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T05:57:22.074Z"
+  },
+  {
+    "id": "activity_1769579838880_m5um6zvv9",
+    "type": "task_created",
+    "taskId": "task_20260128_2dCzyR",
+    "taskTitle": "US-920: Auto-archive by sprint instead of project",
+    "details": {
+      "type": "feature",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:57:18.880Z"
+  },
+  {
+    "id": "activity_1769579650608_0rd67srwj",
+    "type": "task_created",
+    "taskId": "task_20260128_4qCzGr",
+    "taskTitle": "BUG: Can't re-arrange tasks in the columns",
+    "details": {
+      "type": "bug-GdN5rT",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:54:10.608Z"
+  },
+  {
+    "id": "activity_1769579583075_8i7yw25kn",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:53:03.075Z"
+  },
+  {
+    "id": "activity_1769579579998_5xwb2369j",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:59.998Z"
+  },
+  {
+    "id": "activity_1769579577498_gkf06u9k1",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:57.498Z"
+  },
+  {
+    "id": "activity_1769579576008_msa9ouczu",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:56.008Z"
+  },
+  {
+    "id": "activity_1769579572082_5149tf5dc",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:52.082Z"
+  },
+  {
+    "id": "activity_1769579566746_rxyq07b65",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:46.746Z"
+  },
+  {
+    "id": "activity_1769579560806_qyja1welx",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:40.806Z"
+  },
+  {
+    "id": "activity_1769579558554_p25gpa7et",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:38.554Z"
+  },
+  {
+    "id": "activity_1769579557279_z67ytgv99",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:37.279Z"
+  },
+  {
+    "id": "activity_1769579553780_aeg17e638",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:33.780Z"
+  },
+  {
+    "id": "activity_1769579550376_28vnksc0j",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:52:30.377Z"
+  },
+  {
+    "id": "activity_1769579313975_2dxxplqgl",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:48:33.975Z"
+  },
+  {
+    "id": "activity_1769579313033_uxc4h405l",
+    "type": "task_updated",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "timestamp": "2026-01-28T05:48:33.033Z"
+  },
+  {
+    "id": "activity_1769579287876_nacq1sj51",
+    "type": "task_updated",
+    "taskId": "task_20260128_BECmyk",
+    "taskTitle": "US-919: Display task type on Kanban card view",
+    "timestamp": "2026-01-28T05:48:07.876Z"
+  },
+  {
+    "id": "activity_1769579280974_3xiq9wui3",
+    "type": "task_updated",
+    "taskId": "task_20260128_ot4jGs",
+    "taskTitle": "US-918: Subtask progress count on Kanban task cards",
+    "timestamp": "2026-01-28T05:48:00.974Z"
+  },
+  {
+    "id": "activity_1769579274886_pxqv4msj5",
+    "type": "task_updated",
+    "taskId": "task_20260128_WoP27q",
+    "taskTitle": "US-917: Sprint assignment field on tasks",
+    "timestamp": "2026-01-28T05:47:54.886Z"
+  },
+  {
     "id": "activity_1769579225675_ofqxy3zg6",
     "type": "task_created",
     "taskId": "task_20260128_346aMO",
@@ -731,191 +878,5 @@
       "project": "veritas-kanban"
     },
     "timestamp": "2026-01-28T03:32:46.857Z"
-  },
-  {
-    "id": "activity_1769571139313_9ymdoc8js",
-    "type": "task_created",
-    "taskId": "task_20260128_WOCpqE",
-    "taskTitle": "US-913: Custom task type management",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:32:19.313Z"
-  },
-  {
-    "id": "activity_1769570875642_t0cd74fll",
-    "type": "task_updated",
-    "taskId": "task_20260128_7_9GhV",
-    "taskTitle": "US-912: Task attachments for agent context",
-    "timestamp": "2026-01-28T03:27:55.642Z"
-  },
-  {
-    "id": "activity_1769570732976_ve80a0vkz",
-    "type": "task_updated",
-    "taskId": "task_20260128_Foonyv",
-    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
-    "timestamp": "2026-01-28T03:25:32.976Z"
-  },
-  {
-    "id": "activity_1769570732138_bcfio71n9",
-    "type": "task_updated",
-    "taskId": "task_20260128_Foonyv",
-    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
-    "timestamp": "2026-01-28T03:25:32.138Z"
-  },
-  {
-    "id": "activity_1769570731383_k774pal8h",
-    "type": "task_updated",
-    "taskId": "task_20260128_Foonyv",
-    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
-    "timestamp": "2026-01-28T03:25:31.383Z"
-  },
-  {
-    "id": "activity_1769570708315_lc62jyp2d",
-    "type": "task_created",
-    "taskId": "task_20260128_Foonyv",
-    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:25:08.315Z"
-  },
-  {
-    "id": "activity_1769570215339_pps4dxads",
-    "type": "task_updated",
-    "taskId": "task_20260128_7_9GhV",
-    "taskTitle": "US-912: Task attachments for agent context",
-    "timestamp": "2026-01-28T03:16:55.339Z"
-  },
-  {
-    "id": "activity_1769569613168_mqmdn2q0l",
-    "type": "comment_added",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "details": {
-      "author": "Veritas",
-      "preview": "Implemented full comments system: shared Comment t..."
-    },
-    "timestamp": "2026-01-28T03:06:53.168Z"
-  },
-  {
-    "id": "activity_1769569532951_8idfviw61",
-    "type": "task_created",
-    "taskId": "task_20260128_7_9GhV",
-    "taskTitle": "BACKLOG: Task attachments (for reference / context)",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:05:32.951Z"
-  },
-  {
-    "id": "activity_1769569524424_vhdar7yq8",
-    "type": "status_changed",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T03:05:24.424Z"
-  },
-  {
-    "id": "activity_1769569520998_ud581icqj",
-    "type": "comment_added",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "details": {
-      "author": "Veritas",
-      "preview": "Implemented full comments system: shared types (Co..."
-    },
-    "timestamp": "2026-01-28T03:05:20.998Z"
-  },
-  {
-    "id": "activity_1769569223758_n8utzjbkn",
-    "type": "status_changed",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T03:00:23.758Z"
-  },
-  {
-    "id": "activity_1769569188048_vy7ro01aa",
-    "type": "task_updated",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "timestamp": "2026-01-28T02:59:48.048Z"
-  },
-  {
-    "id": "activity_1769569101336_vltkkfkbt",
-    "type": "task_created",
-    "taskId": "task_20260128_nfa0sK",
-    "taskTitle": "US-911: Task comments system for agent activity logs",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:58:21.336Z"
-  },
-  {
-    "id": "activity_1769568629657_tm5gtljgy",
-    "type": "status_changed",
-    "taskId": "task_20260128_2AhuSW",
-    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:50:29.657Z"
-  },
-  {
-    "id": "activity_1769568438135_urtvgud9g",
-    "type": "status_changed",
-    "taskId": "task_20260128_2AhuSW",
-    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T02:47:18.135Z"
-  },
-  {
-    "id": "activity_1769568434433_yi6801i5k",
-    "type": "task_created",
-    "taskId": "task_20260128_2AhuSW",
-    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:47:14.433Z"
-  },
-  {
-    "id": "activity_1769568080724_pbup1xy0d",
-    "type": "status_changed",
-    "taskId": "task_20260128_qcy3FJ",
-    "taskTitle": "US-907: Apply template to existing task",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:41:20.724Z"
-  },
-  {
-    "id": "activity_1769568075614_5u6dejgb9",
-    "type": "task_updated",
-    "taskId": "task_20260128_qcy3FJ",
-    "taskTitle": "US-907: Apply template to existing task",
-    "timestamp": "2026-01-28T02:41:15.614Z"
   }
 ]

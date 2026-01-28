@@ -102,7 +102,7 @@ router.get('/archived', async (_req, res) => {
   }
 });
 
-// GET /api/tasks/archive/suggestions - Get projects ready to archive
+// GET /api/tasks/archive/suggestions - Get sprints ready to archive
 router.get('/archive/suggestions', async (_req, res) => {
   try {
     const suggestions = await taskService.getArchiveSuggestions();
@@ -113,20 +113,20 @@ router.get('/archive/suggestions', async (_req, res) => {
   }
 });
 
-// POST /api/tasks/archive/project/:project - Archive all tasks in a project
-router.post('/archive/project/:project', async (req, res) => {
+// POST /api/tasks/archive/sprint/:sprint - Archive all tasks in a sprint
+router.post('/archive/sprint/:sprint', async (req, res) => {
   try {
-    const result = await taskService.archiveProject(req.params.project);
+    const result = await taskService.archiveSprint(req.params.sprint);
     
     // Log activity
-    await activityService.logActivity('project_archived', req.params.project, req.params.project, {
+    await activityService.logActivity('sprint_archived', req.params.sprint, req.params.sprint, {
       taskCount: result.archived,
     });
     
     res.json(result);
   } catch (error: any) {
-    console.error('Error archiving project:', error);
-    res.status(400).json({ error: error.message || 'Failed to archive project' });
+    console.error('Error archiving sprint:', error);
+    res.status(400).json({ error: error.message || 'Failed to archive sprint' });
   }
 });
 
@@ -295,23 +295,23 @@ router.post('/:id/archive', async (req, res) => {
   }
 });
 
-// POST /api/tasks/bulk-archive - Archive multiple tasks by project
+// POST /api/tasks/bulk-archive - Archive multiple tasks by sprint
 router.post('/bulk-archive', async (req, res) => {
   try {
-    const { project } = req.body as { project: string };
-    if (!project) {
-      return res.status(400).json({ error: 'Project is required' });
+    const { sprint } = req.body as { sprint: string };
+    if (!sprint) {
+      return res.status(400).json({ error: 'Sprint is required' });
     }
 
     const tasks = await taskService.listTasks();
-    const projectTasks = tasks.filter(t => t.project === project && t.status === 'done');
+    const sprintTasks = tasks.filter(t => t.sprint === sprint && t.status === 'done');
     
-    if (projectTasks.length === 0) {
-      return res.status(400).json({ error: 'No completed tasks found for this project' });
+    if (sprintTasks.length === 0) {
+      return res.status(400).json({ error: 'No completed tasks found for this sprint' });
     }
 
     const archived: string[] = [];
-    for (const task of projectTasks) {
+    for (const task of sprintTasks) {
       const success = await taskService.archiveTask(task.id);
       if (success) {
         archived.push(task.id);

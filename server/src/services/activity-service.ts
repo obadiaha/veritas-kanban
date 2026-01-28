@@ -14,6 +14,7 @@ export type ActivityType =
   | 'worktree_created'
   | 'worktree_merged'
   | 'project_archived'
+  | 'sprint_archived'
   | 'template_applied'
   | 'comment_added'
   | 'comment_deleted';
