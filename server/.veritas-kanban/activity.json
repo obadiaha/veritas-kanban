@@ -1,5 +1,56 @@
 [
   {
+    "id": "activity_1769584844268_0af9y7c7k",
+    "type": "task_deleted",
+    "taskId": "task_20260128_MnEoHV",
+    "taskTitle": "TEST: Real-time sync verification",
+    "timestamp": "2026-01-28T07:20:44.269Z"
+  },
+  {
+    "id": "activity_1769584814944_rj5pnt66t",
+    "type": "task_created",
+    "taskId": "task_20260128_MnEoHV",
+    "taskTitle": "TEST: Real-time sync verification",
+    "details": {
+      "type": "code",
+      "priority": "low"
+    },
+    "timestamp": "2026-01-28T07:20:14.944Z"
+  },
+  {
+    "id": "activity_1769584562124_j4txg8me8",
+    "type": "status_changed",
+    "taskId": "task_20260128_Zk4oV0",
+    "taskTitle": "BUG: Kanban requires refresh to see progress",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T07:16:02.124Z"
+  },
+  {
+    "id": "activity_1769584550594_xx8avtepj",
+    "type": "comment_added",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added read-only view for archived tasks (click to ..."
+    },
+    "timestamp": "2026-01-28T07:15:50.594Z"
+  },
+  {
+    "id": "activity_1769584545862_qjr4r5px4",
+    "type": "status_changed",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T07:15:45.862Z"
+  },
+  {
     "id": "activity_1769584325263_iv5d040ns",
     "type": "task_archived",
     "taskId": "task_20260128_cllk71",
@@ -1007,61 +1058,5 @@
       "project": "veritas-kanban"
     },
     "timestamp": "2026-01-28T06:52:50.296Z"
-  },
-  {
-    "id": "activity_1769583170269_4se7u3s82",
-    "type": "task_created",
-    "taskId": "task_20260128_Sujk2d",
-    "taskTitle": "US-401: Diff viewer component",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:52:50.269Z"
-  },
-  {
-    "id": "activity_1769583158455_7r6vxey60",
-    "type": "comment_added",
-    "taskId": "task_20260128_qImfEu",
-    "taskTitle": "US-307: Agent completion handling",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:38.455Z"
-  },
-  {
-    "id": "activity_1769583158445_7q2a7h0tm",
-    "type": "status_changed",
-    "taskId": "task_20260128_qImfEu",
-    "taskTitle": "US-307: Agent completion handling",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:38.445Z"
-  },
-  {
-    "id": "activity_1769583158435_9sbnapa4g",
-    "type": "comment_added",
-    "taskId": "task_20260128_8De44X",
-    "taskTitle": "US-306: Stop agent",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:38.435Z"
-  },
-  {
-    "id": "activity_1769583158426_jcsu1g66m",
-    "type": "status_changed",
-    "taskId": "task_20260128_8De44X",
-    "taskTitle": "US-306: Stop agent",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:38.426Z"
   }
 ]

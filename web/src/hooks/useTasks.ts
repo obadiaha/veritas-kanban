@@ -6,6 +6,8 @@ export function useTasks() {
   return useQuery({
     queryKey: ['tasks'],
     queryFn: api.tasks.list,
+    refetchInterval: 10000, // Poll every 10s as fallback (WebSocket handles instant updates)
+    staleTime: 5000, // Consider data stale after 5s
   });
 }
 

@@ -22,6 +22,7 @@ import metricsRoutes from './routes/metrics.js';
 import tracesRoutes from './routes/traces.js';
 import attachmentRoutes from './routes/attachments.js';
 import { getTelemetryService } from './services/telemetry-service.js';
+import { initBroadcast } from './services/broadcast-service.js';
 import type { AgentOutput } from './services/agent-service.js';
 
 const app = express();
@@ -67,6 +68,9 @@ const server = createServer(app);
 
 // WebSocket server for real-time updates
 const wss = new WebSocketServer({ server, path: '/ws' });
+
+// Initialize broadcast service for task change notifications
+initBroadcast(wss);
 
 // Track subscriptions: taskId -> Set of WebSocket clients
 const agentSubscriptions = new Map<string, Set<WebSocket>>();

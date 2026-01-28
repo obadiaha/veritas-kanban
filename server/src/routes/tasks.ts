@@ -4,6 +4,7 @@ import { TaskService } from '../services/task-service.js';
 import { WorktreeService } from '../services/worktree-service.js';
 import { activityService } from '../services/activity-service.js';
 import type { CreateTaskInput, UpdateTaskInput } from '@veritas-kanban/shared';
+import { broadcastTaskChange } from '../services/broadcast-service.js';
 
 const router: RouterType = Router();
 const taskService = new TaskService();
@@ -139,6 +140,7 @@ router.post('/reorder', async (req, res) => {
       return res.status(400).json({ error: 'orderedIds must be a non-empty array of task IDs' });
     }
     const updated = await taskService.reorderTasks(orderedIds);
+    broadcastTaskChange('reordered');
     res.json({ updated: updated.length });
   } catch (error) {
     console.error('Error reordering tasks:', error);
@@ -203,6 +205,7 @@ router.post('/', async (req, res) => {
   try {
     const input = createTaskSchema.parse(req.body) as CreateTaskInput;
     const task = await taskService.createTask(input);
+    broadcastTaskChange('created', task.id);
     
     // Log activity
     await activityService.logActivity('task_created', task.id, task.title, {
@@ -248,6 +251,7 @@ router.patch('/:id', async (req, res) => {
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
+    broadcastTaskChange('updated', task.id);
     
     // Log activity for status changes
     if (input.status && oldTask.status !== input.status) {
@@ -277,6 +281,7 @@ router.delete('/:id', async (req, res) => {
     if (!success) {
       return res.status(404).json({ error: 'Task not found' });
     }
+    broadcastTaskChange('deleted', req.params.id);
     
     // Log activity
     if (task) {
@@ -298,6 +303,7 @@ router.post('/:id/archive', async (req, res) => {
     if (!success) {
       return res.status(404).json({ error: 'Task not found' });
     }
+    broadcastTaskChange('archived', req.params.id);
     
     // Log activity
     if (task) {
@@ -349,6 +355,7 @@ router.post('/:id/restore', async (req, res) => {
     if (!task) {
       return res.status(404).json({ error: 'Archived task not found' });
     }
+    broadcastTaskChange('restored', task.id);
     
     // Log activity
     await activityService.logActivity('status_changed', task.id, task.title, {
