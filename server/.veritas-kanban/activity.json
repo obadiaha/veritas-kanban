@@ -1,5 +1,12 @@
 [
   {
+    "id": "activity_1769566823396_8obnvtzid",
+    "type": "task_archived",
+    "taskId": "task_20260128_nYPgZw",
+    "taskTitle": "FEATURE REQUEST: Add Task Templates to Veritas Kanban",
+    "timestamp": "2026-01-28T02:20:23.396Z"
+  },
+  {
     "id": "activity_1769566473695_jne5hxkae",
     "type": "task_updated",
     "taskId": "task_20260128_nYPgZw",
@@ -973,16 +980,5 @@
       "project": "veritas-kanban"
     },
     "timestamp": "2026-01-26T11:52:18.411Z"
-  },
-  {
-    "id": "activity_1769428327832_17zksrrf9",
-    "type": "status_changed",
-    "taskId": "task_20260126_leQOQ5",
-    "taskTitle": "US-704: Task dependencies",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T11:52:07.832Z"
   }
 ]

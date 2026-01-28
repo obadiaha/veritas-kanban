@@ -1,41 +1,15 @@
-import type { Task, CreateTaskInput, UpdateTaskInput, AppConfig, RepoConfig, AgentConfig, AgentType, TaskType, TaskPriority } from '@veritas-kanban/shared';
-
-// Template types
-export interface TaskTemplate {
-  id: string;
-  name: string;
-  description?: string;
-  taskDefaults: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-  created: string;
-  updated: string;
-}
-
-export interface CreateTemplateInput {
-  name: string;
-  description?: string;
-  taskDefaults: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-}
-
-export interface UpdateTemplateInput {
-  name?: string;
-  description?: string;
-  taskDefaults?: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-}
+import type { 
+  Task, 
+  CreateTaskInput, 
+  UpdateTaskInput, 
+  AppConfig, 
+  RepoConfig, 
+  AgentConfig, 
+  AgentType,
+  TaskTemplate,
+  CreateTemplateInput,
+  UpdateTemplateInput,
+} from '@veritas-kanban/shared';
 
 const API_BASE = '/api';
 

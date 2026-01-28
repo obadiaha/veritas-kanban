@@ -2,43 +2,7 @@ import { readdir, readFile, writeFile, unlink, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
-import type { TaskType, TaskPriority } from '@veritas-kanban/shared';
-
-export interface TaskTemplate {
-  id: string;
-  name: string;
-  description?: string;
-  taskDefaults: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-  created: string;
-  updated: string;
-}
-
-export interface CreateTemplateInput {
-  name: string;
-  description?: string;
-  taskDefaults: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-}
-
-export interface UpdateTemplateInput {
-  name?: string;
-  description?: string;
-  taskDefaults?: {
-    type?: TaskType;
-    priority?: TaskPriority;
-    project?: string;
-    descriptionTemplate?: string;
-  };
-}
+import type { TaskTemplate, CreateTemplateInput, UpdateTemplateInput } from '@veritas-kanban/shared';
 
 export class TemplateService {
   private templatesDir: string;
@@ -65,6 +29,42 @@ export class TemplateService {
     return join(this.templatesDir, `${id}.md`);
   }
 
+  /**
+   * Migrate v0 (legacy) templates to v1 (enhanced) format
+   * v0 templates don't have a version field
+   */
+  private migrateTemplate(data: any): TaskTemplate {
+    // If version is already 1, no migration needed
+    if (data.version === 1) {
+      return data as TaskTemplate;
+    }
+
+    // Migrate v0 to v1
+    const migrated: TaskTemplate = {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      version: 1,
+      taskDefaults: {
+        type: data.taskDefaults?.type,
+        priority: data.taskDefaults?.priority,
+        project: data.taskDefaults?.project,
+        descriptionTemplate: data.taskDefaults?.descriptionTemplate,
+        // New v1 fields initialized as undefined
+        tags: undefined,
+        agent: undefined,
+      },
+      // New v1 fields
+      category: undefined,
+      subtaskTemplates: undefined,
+      blueprint: undefined,
+      created: data.created,
+      updated: data.updated,
+    };
+
+    return migrated;
+  }
+
   async getTemplates(): Promise<TaskTemplate[]> {
     await this.ensureDir();
     
@@ -77,7 +77,8 @@ export class TemplateService {
       try {
         const content = await readFile(join(this.templatesDir, file), 'utf-8');
         const { data } = matter(content);
-        templates.push(data as TaskTemplate);
+        const migrated = this.migrateTemplate(data);
+        templates.push(migrated);
       } catch (err) {
         console.error(`Error reading template ${file}:`, err);
       }
@@ -96,7 +97,7 @@ export class TemplateService {
     try {
       const content = await readFile(path, 'utf-8');
       const { data } = matter(content);
-      return data as TaskTemplate;
+      return this.migrateTemplate(data);
     } catch (err) {
       console.error(`Error reading template ${id}:`, err);
       return null;
@@ -113,7 +114,11 @@ export class TemplateService {
       id,
       name: input.name,
       description: input.description,
+      category: input.category,
+      version: 1, // All new templates are v1
       taskDefaults: input.taskDefaults,
+      subtaskTemplates: input.subtaskTemplates,
+      blueprint: input.blueprint,
       created: now,
       updated: now,
     };
@@ -130,11 +135,16 @@ export class TemplateService {
 
     const updated: TaskTemplate = {
       ...existing,
-      ...input,
+      name: input.name ?? existing.name,
+      description: input.description ?? existing.description,
+      category: input.category ?? existing.category,
+      version: existing.version, // Preserve version
       taskDefaults: {
         ...existing.taskDefaults,
         ...input.taskDefaults,
       },
+      subtaskTemplates: input.subtaskTemplates ?? existing.subtaskTemplates,
+      blueprint: input.blueprint ?? existing.blueprint,
       updated: new Date().toISOString(),
     };
 

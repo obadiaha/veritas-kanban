@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, type TaskTemplate, type CreateTemplateInput, type UpdateTemplateInput } from '@/lib/api';
+import { api } from '@/lib/api';
+import type { TaskTemplate, CreateTemplateInput, UpdateTemplateInput } from '@veritas-kanban/shared';
 
 export type { TaskTemplate, CreateTemplateInput, UpdateTemplateInput };
 
