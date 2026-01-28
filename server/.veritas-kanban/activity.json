@@ -1,5 +1,38 @@
 [
   {
+    "id": "activity_1769642837550_cmukzh57h",
+    "type": "status_changed",
+    "taskId": "task_20260128_LTxaqy",
+    "taskTitle": "PERF: Optimize telemetry storage growth and query performance",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T23:27:17.550Z"
+  },
+  {
+    "id": "activity_1769642805992_n500diz9w",
+    "type": "comment_added",
+    "taskId": "task_20260128_iFNFgD",
+    "taskTitle": "QUALITY: Audit and fix 39 silent catch blocks",
+    "details": {
+      "author": "Veritas",
+      "preview": "Audited all catch blocks across server/src and web..."
+    },
+    "timestamp": "2026-01-28T23:26:45.992Z"
+  },
+  {
+    "id": "activity_1769642799708_eggjdun33",
+    "type": "status_changed",
+    "taskId": "task_20260128_iFNFgD",
+    "taskTitle": "QUALITY: Audit and fix 39 silent catch blocks",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T23:26:39.708Z"
+  },
+  {
     "id": "activity_1769642381071_3yttsvfj6",
     "type": "status_changed",
     "taskId": "task_20260128_fTudfN",
