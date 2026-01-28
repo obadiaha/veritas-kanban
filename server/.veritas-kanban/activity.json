@@ -1,5 +1,27 @@
 [
   {
+    "id": "activity_1769581827147_vjghawrwv",
+    "type": "status_changed",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T06:30:27.147Z"
+  },
+  {
+    "id": "activity_1769581762978_pga8pumqt",
+    "type": "comment_added",
+    "taskId": "task_20260128_346aMO",
+    "taskTitle": "BUG: Can't add or remove sprints and I have no way of adding and removing sprints either. Add a similar workflow like you gave me for projects and task types for sprint number management.",
+    "details": {
+      "author": "Veritas",
+      "preview": "Converted hardcoded sprints to managed list. Added..."
+    },
+    "timestamp": "2026-01-28T06:29:22.978Z"
+  },
+  {
     "id": "activity_1769581385740_3jvunl52p",
     "type": "status_changed",
     "taskId": "task_20260128_346aMO",
@@ -829,19 +851,5 @@
       "project": "veritas-kanban"
     },
     "timestamp": "2026-01-28T05:35:39.231Z"
-  },
-  {
-    "id": "activity_1769577400231_glwzquiig",
-    "type": "task_updated",
-    "taskId": "task_20260128_WOCpqE",
-    "taskTitle": "US-913: Custom task type management",
-    "timestamp": "2026-01-28T05:16:40.231Z"
-  },
-  {
-    "id": "activity_1769577019279_csagyr39x",
-    "type": "task_updated",
-    "taskId": "task_20260128_Foonyv",
-    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
-    "timestamp": "2026-01-28T05:10:19.279Z"
   }
 ]

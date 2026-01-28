@@ -50,7 +50,6 @@ import { useTaskTypesManager, getTypeIcon, getAvailableIcons, AVAILABLE_COLORS }
 import { useProjectsManager, AVAILABLE_PROJECT_COLORS } from '@/hooks/useProjects';
 import { useSprintsManager } from '@/hooks/useSprints';
 import { ManagedListManager } from './ManagedListManager';
-import type { ProjectConfig } from '@veritas-kanban/shared';
 
 interface SettingsDialogProps {
   open: boolean;
