@@ -5,6 +5,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { taskRoutes } from './routes/tasks.js';
 import { taskCommentRoutes } from './routes/task-comments.js';
 import { taskSubtaskRoutes } from './routes/task-subtasks.js';
@@ -186,6 +188,30 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/agent/status', agentStatusRoutes);
 app.use('/api/status-history', statusHistoryRoutes);
 app.use('/api/digest', digestRoutes);
+
+// ============================================
+// Static File Serving (Production SPA)
+// ============================================
+// In production, serve the built frontend from web/dist.
+// All non-API routes fall through to index.html for client-side routing.
+if (process.env.NODE_ENV === 'production') {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const webDistPath = path.resolve(__dirname, '../../web/dist');
+
+  app.use(express.static(webDistPath, {
+    maxAge: '1d',
+    etag: true,
+  }));
+
+  // SPA fallback: serve index.html for any non-API route
+  app.get('*', (_req, res, next) => {
+    // Don't serve index.html for API routes or WebSocket
+    if (_req.path.startsWith('/api') || _req.path.startsWith('/ws') || _req.path === '/health') {
+      return next();
+    }
+    res.sendFile(path.join(webDistPath, 'index.html'));
+  });
+}
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
