@@ -1,5 +1,266 @@
 [
   {
+    "id": "activity_1769578663969_jhi3rdr91",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:37:43.969Z"
+  },
+  {
+    "id": "activity_1769578656549_8sofp2iwn",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:37:36.549Z"
+  },
+  {
+    "id": "activity_1769578628381_fvhrr2y3d",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:37:08.381Z"
+  },
+  {
+    "id": "activity_1769578612292_p6l8vmqai",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:36:52.292Z"
+  },
+  {
+    "id": "activity_1769578609235_5q269sb61",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:36:49.235Z"
+  },
+  {
+    "id": "activity_1769578587214_wpmur2ige",
+    "type": "task_created",
+    "taskId": "task_20260128_-RJ73c",
+    "taskTitle": "BUG: Metrics arent working",
+    "details": {
+      "type": "bug-GdN5rT",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:36:27.214Z"
+  },
+  {
+    "id": "activity_1769578575082_l4n98i014",
+    "type": "task_updated",
+    "taskId": "task_20260128_fL0JN1",
+    "taskTitle": "US-901: Enhanced template schema",
+    "timestamp": "2026-01-28T05:36:15.082Z"
+  },
+  {
+    "id": "activity_1769578575065_nmb5apz2f",
+    "type": "task_updated",
+    "taskId": "task_20260128_z6OIb_",
+    "taskTitle": "US-902: Subtask templates",
+    "timestamp": "2026-01-28T05:36:15.065Z"
+  },
+  {
+    "id": "activity_1769578575049_u19cs08w6",
+    "type": "task_updated",
+    "taskId": "task_20260128_nyIFMc",
+    "taskTitle": "US-903: Variable interpolation",
+    "timestamp": "2026-01-28T05:36:15.049Z"
+  },
+  {
+    "id": "activity_1769578575033_kpeawgcaz",
+    "type": "task_updated",
+    "taskId": "task_20260128_dvaLco",
+    "taskTitle": "US-904: Template categories",
+    "timestamp": "2026-01-28T05:36:15.033Z"
+  },
+  {
+    "id": "activity_1769578575016_4hj9zirss",
+    "type": "task_updated",
+    "taskId": "task_20260128_8ro0pA",
+    "taskTitle": "US-905: Multi-task blueprints",
+    "timestamp": "2026-01-28T05:36:15.016Z"
+  },
+  {
+    "id": "activity_1769578574999_5f2coslxp",
+    "type": "task_updated",
+    "taskId": "task_20260128_9Jlp1m",
+    "taskTitle": "US-906: Agent & dependency defaults",
+    "timestamp": "2026-01-28T05:36:14.999Z"
+  },
+  {
+    "id": "activity_1769578574972_fe7qpwyxr",
+    "type": "task_updated",
+    "taskId": "task_20260128_dKzctW",
+    "taskTitle": "US-908: Template import/export",
+    "timestamp": "2026-01-28T05:36:14.972Z"
+  },
+  {
+    "id": "activity_1769578574953_jp9l3n9io",
+    "type": "task_updated",
+    "taskId": "task_20260128_AaRWcX",
+    "taskTitle": "US-909: Enhanced template UI",
+    "timestamp": "2026-01-28T05:36:14.953Z"
+  },
+  {
+    "id": "activity_1769578574937_x3ggymkdn",
+    "type": "task_updated",
+    "taskId": "task_20260128_qcy3FJ",
+    "taskTitle": "US-907: Apply template to existing task",
+    "timestamp": "2026-01-28T05:36:14.937Z"
+  },
+  {
+    "id": "activity_1769578574920_v2h7gsdjs",
+    "type": "task_updated",
+    "taskId": "task_20260128_2AhuSW",
+    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
+    "timestamp": "2026-01-28T05:36:14.920Z"
+  },
+  {
+    "id": "activity_1769578574903_wqt9xwaa7",
+    "type": "task_updated",
+    "taskId": "task_20260128_7_9GhV",
+    "taskTitle": "US-912: Task attachments for agent context",
+    "timestamp": "2026-01-28T05:36:14.903Z"
+  },
+  {
+    "id": "activity_1769578574886_y62bhcrg8",
+    "type": "task_updated",
+    "taskId": "task_20260128_nfa0sK",
+    "taskTitle": "US-911: Task comments system for agent activity logs",
+    "timestamp": "2026-01-28T05:36:14.886Z"
+  },
+  {
+    "id": "activity_1769578574865_7hizzbo95",
+    "type": "task_updated",
+    "taskId": "task_20260128_gVorh6",
+    "taskTitle": "US-916: Tag management with managed list",
+    "timestamp": "2026-01-28T05:36:14.865Z"
+  },
+  {
+    "id": "activity_1769578574847_j7ewhy972",
+    "type": "task_updated",
+    "taskId": "task_20260128_UWrGIB",
+    "taskTitle": "US-914: Project management with dropdown selection",
+    "timestamp": "2026-01-28T05:36:14.847Z"
+  },
+  {
+    "id": "activity_1769578574826_qdszh0nou",
+    "type": "task_updated",
+    "taskId": "task_20260128_Oq5P-O",
+    "taskTitle": "US-915: ManagedListService — reusable foundation for managed entity lists",
+    "timestamp": "2026-01-28T05:36:14.826Z"
+  },
+  {
+    "id": "activity_1769578574765_066nxiy59",
+    "type": "task_updated",
+    "taskId": "task_20260128_WOCpqE",
+    "taskTitle": "US-913: Custom task type management",
+    "timestamp": "2026-01-28T05:36:14.765Z"
+  },
+  {
+    "id": "activity_1769578564808_5t0z9jshx",
+    "type": "comment_added",
+    "taskId": "task_20260128_BECmyk",
+    "taskTitle": "US-919: Display task type on Kanban card view",
+    "details": {
+      "author": "Veritas",
+      "preview": "Task type display implemented in TaskCard.tsx. Sho..."
+    },
+    "timestamp": "2026-01-28T05:36:04.808Z"
+  },
+  {
+    "id": "activity_1769578564799_xezfbgbjb",
+    "type": "status_changed",
+    "taskId": "task_20260128_BECmyk",
+    "taskTitle": "US-919: Display task type on Kanban card view",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T05:36:04.799Z"
+  },
+  {
+    "id": "activity_1769578560178_3icis1gt4",
+    "type": "task_created",
+    "taskId": "task_20260128_BECmyk",
+    "taskTitle": "US-919: Display task type on Kanban card view",
+    "details": {
+      "type": "feature",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:36:00.178Z"
+  },
+  {
+    "id": "activity_1769578555201_lzu3a54bv",
+    "type": "comment_added",
+    "taskId": "task_20260128_ot4jGs",
+    "taskTitle": "US-918: Subtask progress count on Kanban task cards",
+    "details": {
+      "author": "Veritas",
+      "preview": "Subtask progress count implemented in TaskCard.tsx..."
+    },
+    "timestamp": "2026-01-28T05:35:55.201Z"
+  },
+  {
+    "id": "activity_1769578555192_a2xvq5mrv",
+    "type": "status_changed",
+    "taskId": "task_20260128_ot4jGs",
+    "taskTitle": "US-918: Subtask progress count on Kanban task cards",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T05:35:55.192Z"
+  },
+  {
+    "id": "activity_1769578550360_bqb24seft",
+    "type": "task_created",
+    "taskId": "task_20260128_ot4jGs",
+    "taskTitle": "US-918: Subtask progress count on Kanban task cards",
+    "details": {
+      "type": "feature",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:35:50.360Z"
+  },
+  {
+    "id": "activity_1769578544080_2lmdi15h8",
+    "type": "comment_added",
+    "taskId": "task_20260128_WoP27q",
+    "taskTitle": "US-917: Sprint assignment field on tasks",
+    "details": {
+      "author": "Veritas",
+      "preview": "Sprint assignment field implemented. Added sprint ..."
+    },
+    "timestamp": "2026-01-28T05:35:44.080Z"
+  },
+  {
+    "id": "activity_1769578544071_8lx64pwix",
+    "type": "status_changed",
+    "taskId": "task_20260128_WoP27q",
+    "taskTitle": "US-917: Sprint assignment field on tasks",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T05:35:44.071Z"
+  },
+  {
+    "id": "activity_1769578539231_rv6fcvync",
+    "type": "task_created",
+    "taskId": "task_20260128_WoP27q",
+    "taskTitle": "US-917: Sprint assignment field on tasks",
+    "details": {
+      "type": "feature",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T05:35:39.231Z"
+  },
+  {
     "id": "activity_1769577400231_glwzquiig",
     "type": "task_updated",
     "taskId": "task_20260128_WOCpqE",
@@ -645,311 +906,5 @@
       "status": "in-progress"
     },
     "timestamp": "2026-01-28T02:36:31.644Z"
-  },
-  {
-    "id": "activity_1769567696533_qfmr8x62s",
-    "type": "status_changed",
-    "taskId": "task_20260128_qcy3FJ",
-    "taskTitle": "US-907: Apply template to existing task",
-    "details": {
-      "from": "done",
-      "status": "todo"
-    },
-    "timestamp": "2026-01-28T02:34:56.533Z"
-  },
-  {
-    "id": "activity_1769567681146_fxg33ratb",
-    "type": "task_updated",
-    "taskId": "task_20260128_AaRWcX",
-    "taskTitle": "US-909: Enhanced template UI",
-    "timestamp": "2026-01-28T02:34:41.146Z"
-  },
-  {
-    "id": "activity_1769567681136_tobnbsg2u",
-    "type": "task_updated",
-    "taskId": "task_20260128_dKzctW",
-    "taskTitle": "US-908: Template import/export",
-    "timestamp": "2026-01-28T02:34:41.136Z"
-  },
-  {
-    "id": "activity_1769567681127_rt6kve88l",
-    "type": "task_updated",
-    "taskId": "task_20260128_9Jlp1m",
-    "taskTitle": "US-906: Agent & dependency defaults",
-    "timestamp": "2026-01-28T02:34:41.127Z"
-  },
-  {
-    "id": "activity_1769567681110_p30y0xvku",
-    "type": "task_updated",
-    "taskId": "task_20260128_8ro0pA",
-    "taskTitle": "US-905: Multi-task blueprints",
-    "timestamp": "2026-01-28T02:34:41.110Z"
-  },
-  {
-    "id": "activity_1769567681102_e8wwvvm0q",
-    "type": "task_updated",
-    "taskId": "task_20260128_dvaLco",
-    "taskTitle": "US-904: Template categories",
-    "timestamp": "2026-01-28T02:34:41.102Z"
-  },
-  {
-    "id": "activity_1769567681092_x1p500byz",
-    "type": "task_updated",
-    "taskId": "task_20260128_nyIFMc",
-    "taskTitle": "US-903: Variable interpolation",
-    "timestamp": "2026-01-28T02:34:41.092Z"
-  },
-  {
-    "id": "activity_1769567681083_7plxvn7o7",
-    "type": "task_updated",
-    "taskId": "task_20260128_z6OIb_",
-    "taskTitle": "US-902: Subtask templates",
-    "timestamp": "2026-01-28T02:34:41.083Z"
-  },
-  {
-    "id": "activity_1769567681073_70343o38y",
-    "type": "task_updated",
-    "taskId": "task_20260128_fL0JN1",
-    "taskTitle": "US-901: Enhanced template schema",
-    "timestamp": "2026-01-28T02:34:41.073Z"
-  },
-  {
-    "id": "activity_1769567653758_gip0r8h6y",
-    "type": "status_changed",
-    "taskId": "task_20260128_AaRWcX",
-    "taskTitle": "US-909: Enhanced template UI",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:34:13.758Z"
-  },
-  {
-    "id": "activity_1769567573111_d3sd566d0",
-    "type": "status_changed",
-    "taskId": "task_20260128_dKzctW",
-    "taskTitle": "US-908: Template import/export",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:32:53.111Z"
-  },
-  {
-    "id": "activity_1769567573103_gq0w25ivg",
-    "type": "status_changed",
-    "taskId": "task_20260128_qcy3FJ",
-    "taskTitle": "US-907: Apply template to existing task",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:32:53.103Z"
-  },
-  {
-    "id": "activity_1769567442734_qku392zbw",
-    "type": "status_changed",
-    "taskId": "task_20260128_9Jlp1m",
-    "taskTitle": "US-906: Agent & dependency defaults",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:30:42.734Z"
-  },
-  {
-    "id": "activity_1769567442725_ltpmruu8i",
-    "type": "status_changed",
-    "taskId": "task_20260128_8ro0pA",
-    "taskTitle": "US-905: Multi-task blueprints",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:30:42.725Z"
-  },
-  {
-    "id": "activity_1769567266383_ut80rcg2n",
-    "type": "status_changed",
-    "taskId": "task_20260128_8ro0pA",
-    "taskTitle": "US-905: Multi-task blueprints",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T02:27:46.383Z"
-  },
-  {
-    "id": "activity_1769567258853_nkltjswl0",
-    "type": "status_changed",
-    "taskId": "task_20260128_dvaLco",
-    "taskTitle": "US-904: Template categories",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:27:38.853Z"
-  },
-  {
-    "id": "activity_1769567174383_m7x6gmc5y",
-    "type": "status_changed",
-    "taskId": "task_20260128_nyIFMc",
-    "taskTitle": "US-903: Variable interpolation",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:26:14.383Z"
-  },
-  {
-    "id": "activity_1769567174374_ohsrrzie6",
-    "type": "status_changed",
-    "taskId": "task_20260128_z6OIb_",
-    "taskTitle": "US-902: Subtask templates",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:26:14.374Z"
-  },
-  {
-    "id": "activity_1769567174363_s22kscv30",
-    "type": "status_changed",
-    "taskId": "task_20260128_fL0JN1",
-    "taskTitle": "US-901: Enhanced template schema",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T02:26:14.363Z"
-  },
-  {
-    "id": "activity_1769567065219_a6upvequb",
-    "type": "task_created",
-    "taskId": "task_20260128_AaRWcX",
-    "taskTitle": "US-909: Enhanced template UI",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.219Z"
-  },
-  {
-    "id": "activity_1769567065211_4isatalc8",
-    "type": "task_created",
-    "taskId": "task_20260128_dKzctW",
-    "taskTitle": "US-908: Template import/export",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.211Z"
-  },
-  {
-    "id": "activity_1769567065203_99rmbequ2",
-    "type": "task_created",
-    "taskId": "task_20260128_qcy3FJ",
-    "taskTitle": "US-907: Apply template to existing task",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.203Z"
-  },
-  {
-    "id": "activity_1769567065196_78f3ln7f3",
-    "type": "task_created",
-    "taskId": "task_20260128_9Jlp1m",
-    "taskTitle": "US-906: Agent & dependency defaults",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.196Z"
-  },
-  {
-    "id": "activity_1769567065189_97rq3pry3",
-    "type": "task_created",
-    "taskId": "task_20260128_8ro0pA",
-    "taskTitle": "US-905: Multi-task blueprints",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.189Z"
-  },
-  {
-    "id": "activity_1769567065182_rhdkjptbj",
-    "type": "task_created",
-    "taskId": "task_20260128_dvaLco",
-    "taskTitle": "US-904: Template categories",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.182Z"
-  },
-  {
-    "id": "activity_1769567065175_80iu7gfnj",
-    "type": "task_created",
-    "taskId": "task_20260128_nyIFMc",
-    "taskTitle": "US-903: Variable interpolation",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.175Z"
-  },
-  {
-    "id": "activity_1769567065167_9zwyul2za",
-    "type": "task_created",
-    "taskId": "task_20260128_z6OIb_",
-    "taskTitle": "US-902: Subtask templates",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.167Z"
-  },
-  {
-    "id": "activity_1769567065157_6ercfkv06",
-    "type": "task_created",
-    "taskId": "task_20260128_fL0JN1",
-    "taskTitle": "US-901: Enhanced template schema",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T02:24:25.157Z"
-  },
-  {
-    "id": "activity_1769566823396_8obnvtzid",
-    "type": "task_archived",
-    "taskId": "task_20260128_nYPgZw",
-    "taskTitle": "FEATURE REQUEST: Add Task Templates to Veritas Kanban",
-    "timestamp": "2026-01-28T02:20:23.396Z"
-  },
-  {
-    "id": "activity_1769566473695_jne5hxkae",
-    "type": "task_updated",
-    "taskId": "task_20260128_nYPgZw",
-    "taskTitle": "FEATURE REQUEST: Add Task Templates to Veritas Kanban",
-    "timestamp": "2026-01-28T02:14:33.699Z"
-  },
-  {
-    "id": "activity_1769566468400_nj65zjnpq",
-    "type": "task_updated",
-    "taskId": "task_20260128_nYPgZw",
-    "taskTitle": "FEATURE REQUEST: Add Task Templates to Veritas Kanban",
-    "timestamp": "2026-01-28T02:14:28.400Z"
   }
 ]
