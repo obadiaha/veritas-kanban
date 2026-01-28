@@ -34,7 +34,7 @@ import FeatureErrorBoundary from '@/components/shared/FeatureErrorBoundary';
 const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'todo', title: 'To Do' },
   { id: 'in-progress', title: 'In Progress' },
-  { id: 'review', title: 'Review' },
+  { id: 'blocked', title: 'Blocked' },
   { id: 'done', title: 'Done' },
 ];
 

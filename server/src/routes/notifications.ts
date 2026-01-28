@@ -194,7 +194,7 @@ router.post('/check', asyncHandler(async (_req, res) => {
   
   // Check for tasks in review (needs review notification)
   const inReview = tasks.filter(t => 
-    t.status === 'review' && 
+    t.status === 'blocked' && 
     t.attempt?.status === 'complete' &&
     t.attempt?.agent !== 'veritas'
   );

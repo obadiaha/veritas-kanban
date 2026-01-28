@@ -1,5 +1,38 @@
 [
   {
+    "id": "activity_1769604505548_u0nvgi0nq",
+    "type": "status_changed",
+    "taskId": "task_20260128_iFFyez",
+    "taskTitle": "US-1502: Update Kanban column display — Blocked title + red color",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T12:48:25.548Z"
+  },
+  {
+    "id": "activity_1769604486483_yln4lo1t6",
+    "type": "comment_added",
+    "taskId": "task_20260128_-WSaw3",
+    "taskTitle": "US-1501: Rename TaskStatus review → blocked in shared types",
+    "details": {
+      "author": "Veritas",
+      "preview": "Updated TaskStatus from review → blocked in types ..."
+    },
+    "timestamp": "2026-01-28T12:48:06.483Z"
+  },
+  {
+    "id": "activity_1769604486446_s45ozs78g",
+    "type": "status_changed",
+    "taskId": "task_20260128_-WSaw3",
+    "taskTitle": "US-1501: Rename TaskStatus review → blocked in shared types",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T12:48:06.446Z"
+  },
+  {
     "id": "activity_1769604473427_cksmodaid",
     "type": "task_updated",
     "taskId": "task_20260128_-WSaw3",

@@ -81,7 +81,7 @@ router.post('/:taskId/complete', async (req, res) => {
 
     // Update task
     const updated = await taskService.updateTask(task.id, {
-      status: isSuccess ? 'done' : 'review',
+      status: isSuccess ? 'done' : 'blocked',
       attempt: {
         ...task.attempt,
         status: isSuccess ? 'complete' : 'failed',
@@ -119,7 +119,7 @@ router.get('/pending', async (_req, res) => {
     const pending = tasks.filter(task => {
       if (task.type !== 'automation') return false;
       if (task.status === 'todo') return true;
-      if (task.status === 'review' && task.attempt?.agent === 'veritas' && task.attempt?.status === 'failed') {
+      if (task.status === 'blocked' && task.attempt?.agent === 'veritas' && task.attempt?.status === 'failed') {
         return true; // Failed, might need retry
       }
       return false;
