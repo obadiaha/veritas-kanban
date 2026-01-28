@@ -6,8 +6,11 @@ import { KeyboardShortcutsDialog } from './components/layout/KeyboardShortcutsDi
 import { BulkActionsProvider } from './hooks/useBulkActions';
 import { useTaskSync } from './hooks/useTaskSync';
 import { TaskConfigProvider } from './contexts/TaskConfigContext';
+import { AuthProvider } from './hooks/useAuth';
+import { AuthGuard } from './components/auth';
 
-function App() {
+// Main app content (only rendered when authenticated)
+function AppContent() {
   // Connect to WebSocket for real-time task updates
   useTaskSync();
 
@@ -26,6 +29,17 @@ function App() {
         </TaskConfigProvider>
       </BulkActionsProvider>
     </KeyboardProvider>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AuthGuard>
+        <AppContent />
+      </AuthGuard>
+      <Toaster />
+    </AuthProvider>
   );
 }
 

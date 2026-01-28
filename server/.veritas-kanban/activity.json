@@ -1,5 +1,439 @@
 [
   {
+    "id": "activity_1769615050495_tu1w3vj5z",
+    "type": "comment_added",
+    "taskId": "task_20260128_fCAsJx",
+    "taskTitle": "Settings > Security Tab",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created SecurityTab.tsx with change password secti..."
+    },
+    "timestamp": "2026-01-28T15:44:10.495Z"
+  },
+  {
+    "id": "activity_1769615050487_ixec7d9cr",
+    "type": "status_changed",
+    "taskId": "task_20260128_fCAsJx",
+    "taskTitle": "Settings > Security Tab",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:44:10.487Z"
+  },
+  {
+    "id": "activity_1769615050452_y5anmkyzc",
+    "type": "comment_added",
+    "taskId": "task_20260128_d-eQbD",
+    "taskTitle": "Logout & Session Indicator",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created UserMenu.tsx with lock icon, session expir..."
+    },
+    "timestamp": "2026-01-28T15:44:10.452Z"
+  },
+  {
+    "id": "activity_1769615050408_0olqv8m6n",
+    "type": "status_changed",
+    "taskId": "task_20260128_d-eQbD",
+    "taskTitle": "Logout & Session Indicator",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:44:10.408Z"
+  },
+  {
+    "id": "activity_1769614834434_gudw7uirw",
+    "type": "comment_added",
+    "taskId": "task_20260128_83x9VT",
+    "taskTitle": "Password Recovery System",
+    "details": {
+      "author": "Veritas",
+      "preview": "Recovery key generation, /recover endpoint, reset-..."
+    },
+    "timestamp": "2026-01-28T15:40:34.434Z"
+  },
+  {
+    "id": "activity_1769614834411_0kxt8wds7",
+    "type": "comment_added",
+    "taskId": "task_20260128_jbGyCa",
+    "taskTitle": "Frontend Auth Guard",
+    "details": {
+      "author": "Veritas",
+      "preview": "AuthGuard.tsx + useAuth.tsx context hook, loading ..."
+    },
+    "timestamp": "2026-01-28T15:40:34.411Z"
+  },
+  {
+    "id": "activity_1769614834396_m32fqzf9x",
+    "type": "comment_added",
+    "taskId": "task_20260128_7YQpQg",
+    "taskTitle": "JWT Session Management",
+    "details": {
+      "author": "Veritas",
+      "preview": "JWT generation in auth routes, httpOnly cookies, 2..."
+    },
+    "timestamp": "2026-01-28T15:40:34.396Z"
+  },
+  {
+    "id": "activity_1769614834382_kedzgk7kv",
+    "type": "comment_added",
+    "taskId": "task_20260128_NdRh34",
+    "taskTitle": "Login Screen",
+    "details": {
+      "author": "Veritas",
+      "preview": "LoginScreen.tsx with password field, show/hide tog..."
+    },
+    "timestamp": "2026-01-28T15:40:34.382Z"
+  },
+  {
+    "id": "activity_1769614834369_qb9qx6teo",
+    "type": "comment_added",
+    "taskId": "task_20260128_nQmY0m",
+    "taskTitle": "Password Setup Flow",
+    "details": {
+      "author": "Veritas",
+      "preview": "SetupScreen.tsx with password strength indicator, ..."
+    },
+    "timestamp": "2026-01-28T15:40:34.369Z"
+  },
+  {
+    "id": "activity_1769614819657_i93po6lg2",
+    "type": "status_changed",
+    "taskId": "task_20260128_83x9VT",
+    "taskTitle": "Password Recovery System",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:40:19.657Z"
+  },
+  {
+    "id": "activity_1769614819639_z44zbzlo0",
+    "type": "status_changed",
+    "taskId": "task_20260128_jbGyCa",
+    "taskTitle": "Frontend Auth Guard",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:40:19.639Z"
+  },
+  {
+    "id": "activity_1769614819621_kuer9asxr",
+    "type": "status_changed",
+    "taskId": "task_20260128_7YQpQg",
+    "taskTitle": "JWT Session Management",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:40:19.621Z"
+  },
+  {
+    "id": "activity_1769614819583_c72jxitqu",
+    "type": "status_changed",
+    "taskId": "task_20260128_NdRh34",
+    "taskTitle": "Login Screen",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:40:19.583Z"
+  },
+  {
+    "id": "activity_1769614810663_eyfkx0fm6",
+    "type": "status_changed",
+    "taskId": "task_20260128_nQmY0m",
+    "taskTitle": "Password Setup Flow",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:40:10.663Z"
+  },
+  {
+    "id": "activity_1769614731233_8kuieq4oq",
+    "type": "task_updated",
+    "taskId": "task_20260128_nQmY0m",
+    "taskTitle": "Password Setup Flow",
+    "timestamp": "2026-01-28T15:38:51.233Z"
+  },
+  {
+    "id": "activity_1769614727266_14t7ubi98",
+    "type": "task_updated",
+    "taskId": "task_20260128_nQmY0m",
+    "taskTitle": "Password Setup Flow",
+    "timestamp": "2026-01-28T15:38:47.266Z"
+  },
+  {
+    "id": "activity_1769614719985_zv46qi9ij",
+    "type": "task_updated",
+    "taskId": "task_20260128_NdRh34",
+    "taskTitle": "Login Screen",
+    "timestamp": "2026-01-28T15:38:39.985Z"
+  },
+  {
+    "id": "activity_1769614717748_3dm1yjrui",
+    "type": "task_updated",
+    "taskId": "task_20260128_NdRh34",
+    "taskTitle": "Login Screen",
+    "timestamp": "2026-01-28T15:38:37.748Z"
+  },
+  {
+    "id": "activity_1769614710699_pzy8usljc",
+    "type": "task_updated",
+    "taskId": "task_20260128_7YQpQg",
+    "taskTitle": "JWT Session Management",
+    "timestamp": "2026-01-28T15:38:30.699Z"
+  },
+  {
+    "id": "activity_1769614708122_ck9ne7ubd",
+    "type": "task_updated",
+    "taskId": "task_20260128_7YQpQg",
+    "taskTitle": "JWT Session Management",
+    "timestamp": "2026-01-28T15:38:28.122Z"
+  },
+  {
+    "id": "activity_1769614186733_5ryxxyhye",
+    "type": "task_updated",
+    "taskId": "task_20260128_fCAsJx",
+    "taskTitle": "Settings > Security Tab",
+    "timestamp": "2026-01-28T15:29:46.733Z"
+  },
+  {
+    "id": "activity_1769614138782_nij3bwkda",
+    "type": "task_updated",
+    "taskId": "task_20260128_d-eQbD",
+    "taskTitle": "Logout & Session Indicator",
+    "timestamp": "2026-01-28T15:28:58.782Z"
+  },
+  {
+    "id": "activity_1769614136420_7ktnduxyo",
+    "type": "task_updated",
+    "taskId": "task_20260128_d-eQbD",
+    "taskTitle": "Logout & Session Indicator",
+    "timestamp": "2026-01-28T15:28:56.420Z"
+  },
+  {
+    "id": "activity_1769614129317_7x8uqt3rn",
+    "type": "task_updated",
+    "taskId": "task_20260128_83x9VT",
+    "taskTitle": "Password Recovery System",
+    "timestamp": "2026-01-28T15:28:49.317Z"
+  },
+  {
+    "id": "activity_1769614126069_z4jwba593",
+    "type": "task_updated",
+    "taskId": "task_20260128_83x9VT",
+    "taskTitle": "Password Recovery System",
+    "timestamp": "2026-01-28T15:28:46.069Z"
+  },
+  {
+    "id": "activity_1769614101216_7qro2qoy9",
+    "type": "task_updated",
+    "taskId": "task_20260128_jbGyCa",
+    "taskTitle": "Frontend Auth Guard",
+    "timestamp": "2026-01-28T15:28:21.216Z"
+  },
+  {
+    "id": "activity_1769614096641_nvaq0sgb8",
+    "type": "task_updated",
+    "taskId": "task_20260128_jbGyCa",
+    "taskTitle": "Frontend Auth Guard",
+    "timestamp": "2026-01-28T15:28:16.641Z"
+  },
+  {
+    "id": "activity_1769614071984_clphr6zab",
+    "type": "status_changed",
+    "taskId": "task_20260128_QoJx2b",
+    "taskTitle": "Server Auth Middleware Refactor",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T15:27:51.984Z"
+  },
+  {
+    "id": "activity_1769614040537_9wg5ckkr8",
+    "type": "task_updated",
+    "taskId": "task_20260128_QoJx2b",
+    "taskTitle": "Server Auth Middleware Refactor",
+    "timestamp": "2026-01-28T15:27:20.537Z"
+  },
+  {
+    "id": "activity_1769614033309_u6ss12a5h",
+    "type": "task_updated",
+    "taskId": "task_20260128_QoJx2b",
+    "taskTitle": "Server Auth Middleware Refactor",
+    "timestamp": "2026-01-28T15:27:13.309Z"
+  },
+  {
+    "id": "activity_1769613743088_kwwetfkzs",
+    "type": "task_created",
+    "taskId": "task_20260128_83x9VT",
+    "taskTitle": "Password Recovery System",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:22:23.088Z"
+  },
+  {
+    "id": "activity_1769613614825_aq6lq520f",
+    "type": "task_created",
+    "taskId": "task_20260128_jbGyCa",
+    "taskTitle": "Frontend Auth Guard",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:20:14.825Z"
+  },
+  {
+    "id": "activity_1769613607772_oscw28hji",
+    "type": "task_created",
+    "taskId": "task_20260128_d-eQbD",
+    "taskTitle": "Logout & Session Indicator",
+    "details": {
+      "type": "feature-request",
+      "priority": "medium"
+    },
+    "timestamp": "2026-01-28T15:20:07.772Z"
+  },
+  {
+    "id": "activity_1769613592193_uuzkpx7k4",
+    "type": "task_created",
+    "taskId": "task_20260128_QoJx2b",
+    "taskTitle": "Server Auth Middleware Refactor",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:19:52.193Z"
+  },
+  {
+    "id": "activity_1769613585089_1d5f4drhb",
+    "type": "task_created",
+    "taskId": "task_20260128_fCAsJx",
+    "taskTitle": "Settings > Security Tab",
+    "details": {
+      "type": "feature-request",
+      "priority": "medium"
+    },
+    "timestamp": "2026-01-28T15:19:45.089Z"
+  },
+  {
+    "id": "activity_1769613578182_3wnwc5why",
+    "type": "task_created",
+    "taskId": "task_20260128_7YQpQg",
+    "taskTitle": "JWT Session Management",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:19:38.182Z"
+  },
+  {
+    "id": "activity_1769613571365_fvwkb0qg2",
+    "type": "task_created",
+    "taskId": "task_20260128_NdRh34",
+    "taskTitle": "Login Screen",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:19:31.365Z"
+  },
+  {
+    "id": "activity_1769613564791_smdhwlfm1",
+    "type": "task_created",
+    "taskId": "task_20260128_nQmY0m",
+    "taskTitle": "Password Setup Flow",
+    "details": {
+      "type": "feature-request",
+      "priority": "high"
+    },
+    "timestamp": "2026-01-28T15:19:24.791Z"
+  },
+  {
+    "id": "activity_1769610326657_falekbevu",
+    "type": "sprint_archived",
+    "taskId": "US-1000",
+    "taskTitle": "US-1000",
+    "details": {
+      "taskCount": 12
+    },
+    "timestamp": "2026-01-28T14:25:26.657Z"
+  },
+  {
+    "id": "activity_1769610287506_3oiee830p",
+    "type": "comment_added",
+    "taskId": "task_20260128_rQvOgG",
+    "taskTitle": "US-1008: Agent comparison",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added agent comparison feature to dashboard with c..."
+    },
+    "timestamp": "2026-01-28T14:24:47.506Z"
+  },
+  {
+    "id": "activity_1769610282054_mrkvnhty5",
+    "type": "status_changed",
+    "taskId": "task_20260128_rQvOgG",
+    "taskTitle": "US-1008: Agent comparison",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T14:24:42.054Z"
+  },
+  {
+    "id": "activity_1769610279667_vgp9fsbod",
+    "type": "comment_added",
+    "taskId": "task_20260128_Zz5vOl",
+    "taskTitle": "US-1012: Sprint velocity",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented sprint velocity tracking with bar char..."
+    },
+    "timestamp": "2026-01-28T14:24:39.667Z"
+  },
+  {
+    "id": "activity_1769610279602_6u6nsufkt",
+    "type": "status_changed",
+    "taskId": "task_20260128_Zz5vOl",
+    "taskTitle": "US-1012: Sprint velocity",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T14:24:39.602Z"
+  },
+  {
+    "id": "activity_1769610266728_uy7ots8i8",
+    "type": "comment_added",
+    "taskId": "task_20260128_XLZgpo",
+    "taskTitle": "US-1006: Metrics export",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added metrics export functionality with CSV and JS..."
+    },
+    "timestamp": "2026-01-28T14:24:26.728Z"
+  },
+  {
+    "id": "activity_1769610262042_7i37tdcy9",
+    "type": "status_changed",
+    "taskId": "task_20260128_XLZgpo",
+    "taskTitle": "US-1006: Metrics export",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T14:24:22.042Z"
+  },
+  {
     "id": "activity_1769610006115_v6cqb35tq",
     "type": "status_changed",
     "taskId": "task_20260128_rQvOgG",

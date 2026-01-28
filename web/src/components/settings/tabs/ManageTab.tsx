@@ -110,11 +110,11 @@ export function ManageTab() {
             onReorder={taskTypesManager.reorder}
             canDeleteCheck={taskTypesManager.canDelete}
             renderExtraFields={(item, onChange) => (
-              <div className="flex gap-2 mt-2">
-                <div className="flex-1">
-                  <Label className="text-xs text-muted-foreground">Icon</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Icon</Label>
                   <Select value={item.icon} onValueChange={(icon) => onChange({ icon })}>
-                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-7 w-[120px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {getAvailableIcons().map((iconName) => {
                         const IconComponent = getTypeIcon(iconName);
@@ -130,10 +130,10 @@ export function ManageTab() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex-1">
-                  <Label className="text-xs text-muted-foreground">Color</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Color</Label>
                   <Select value={item.color || 'border-l-gray-500'} onValueChange={(color) => onChange({ color })}>
-                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-7 w-[120px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {AVAILABLE_COLORS.map((color) => (
                         <SelectItem key={color.value} value={color.value}>
@@ -167,20 +167,20 @@ export function ManageTab() {
             onReorder={projectsManager.reorder}
             canDeleteCheck={projectsManager.canDelete}
             renderExtraFields={(item, onChange) => (
-              <div className="flex gap-2 mt-2">
-                <div className="flex-1">
-                  <Label className="text-xs text-muted-foreground">Description</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-2 flex-1">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Desc</Label>
                   <Input
                     value={item.description || ''}
                     onChange={(e) => onChange({ description: e.target.value })}
-                    placeholder="Optional description..."
-                    className="h-8 mt-1"
+                    placeholder="Optional..."
+                    className="h-7 flex-1"
                   />
                 </div>
-                <div className="flex-1">
-                  <Label className="text-xs text-muted-foreground">Badge Color</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Color</Label>
                   <Select value={item.color || 'bg-muted'} onValueChange={(color) => onChange({ color })}>
-                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-7 w-[120px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {AVAILABLE_PROJECT_COLORS.map((color) => (
                         <SelectItem key={color.value} value={color.value}>
@@ -214,13 +214,13 @@ export function ManageTab() {
             onReorder={sprintsManager.reorder}
             canDeleteCheck={sprintsManager.canDelete}
             renderExtraFields={(item, onChange) => (
-              <div className="mt-2">
-                <Label className="text-xs text-muted-foreground">Description</Label>
+              <div className="flex items-center gap-2 mt-2">
+                <Label className="text-xs text-muted-foreground whitespace-nowrap">Desc</Label>
                 <Input
                   value={item.description || ''}
                   onChange={(e) => onChange({ description: e.target.value })}
-                  placeholder="Optional description..."
-                  className="h-8 mt-1"
+                  placeholder="Optional..."
+                  className="h-7 flex-1"
                 />
               </div>
             )}
