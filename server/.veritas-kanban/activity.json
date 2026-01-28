@@ -1,5 +1,27 @@
 [
   {
+    "id": "activity_1769567573111_d3sd566d0",
+    "type": "status_changed",
+    "taskId": "task_20260128_dKzctW",
+    "taskTitle": "US-908: Template import/export",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T02:32:53.111Z"
+  },
+  {
+    "id": "activity_1769567573103_gq0w25ivg",
+    "type": "status_changed",
+    "taskId": "task_20260128_qcy3FJ",
+    "taskTitle": "US-907: Apply template to existing task",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T02:32:53.103Z"
+  },
+  {
     "id": "activity_1769567442734_qku392zbw",
     "type": "status_changed",
     "taskId": "task_20260128_9Jlp1m",
@@ -989,23 +1011,5 @@
       "status": "done"
     },
     "timestamp": "2026-01-26T17:12:39.137Z"
-  },
-  {
-    "id": "activity_1769447556556_p485o3bml",
-    "type": "status_changed",
-    "taskId": "task_20260126_elXGhz",
-    "taskTitle": "US-710: Time tracking",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T17:12:36.556Z"
-  },
-  {
-    "id": "activity_1769430230977_j23cqvfdt",
-    "type": "task_deleted",
-    "taskId": "task_20260126_yi65DL",
-    "taskTitle": "Second test task",
-    "timestamp": "2026-01-26T12:23:50.977Z"
   }
 ]
