@@ -151,7 +151,12 @@ export function BudgetCard({ project }: BudgetCardProps) {
 
       {/* Period info */}
       <div className="text-xs text-muted-foreground">
-        {new Date(metrics.periodStart).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        {(() => {
+          // Parse as local date to avoid timezone issues (YYYY-MM-DD format)
+          const [year, month] = metrics.periodStart.split('-').map(Number);
+          const date = new Date(year, month - 1, 1);
+          return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        })()}
         {' • '}
         Day {metrics.daysElapsed} of {metrics.daysInMonth}
         {' • '}

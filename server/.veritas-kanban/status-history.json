@@ -1,5 +1,61 @@
 [
   {
+    "id": "status_1769615050503_ksmh8ag0c",
+    "timestamp": "2026-01-28T15:44:10.503Z",
+    "previousStatus": "working",
+    "newStatus": "idle",
+    "subAgentCount": 0,
+    "durationMs": 146659
+  },
+  {
+    "id": "status_1769614903844_w7fg5vzhs",
+    "timestamp": "2026-01-28T15:41:43.844Z",
+    "previousStatus": "idle",
+    "newStatus": "working",
+    "subAgentCount": 0,
+    "durationMs": 658328
+  },
+  {
+    "id": "status_1769614245517_i4puwpbld",
+    "timestamp": "2026-01-28T15:30:45.516Z",
+    "previousStatus": "working",
+    "newStatus": "idle",
+    "subAgentCount": 0,
+    "durationMs": 158826
+  },
+  {
+    "id": "status_1769614086690_epv9ru98a",
+    "timestamp": "2026-01-28T15:28:06.690Z",
+    "previousStatus": "idle",
+    "newStatus": "working",
+    "subAgentCount": 0,
+    "durationMs": 294797
+  },
+  {
+    "id": "status_1769613791893_xb442y8n9",
+    "timestamp": "2026-01-28T15:23:11.893Z",
+    "previousStatus": "idle",
+    "newStatus": "working",
+    "subAgentCount": 0,
+    "durationMs": 3471368
+  },
+  {
+    "id": "status_1769610320525_xbtwzm95c",
+    "timestamp": "2026-01-28T14:25:20.525Z",
+    "previousStatus": "sub-agent",
+    "newStatus": "idle",
+    "subAgentCount": 2,
+    "durationMs": 30797
+  },
+  {
+    "id": "status_1769610289728_80208mj7e",
+    "timestamp": "2026-01-28T14:24:49.728Z",
+    "previousStatus": "idle",
+    "newStatus": "sub-agent",
+    "subAgentCount": 2,
+    "durationMs": 283529
+  },
+  {
     "id": "status_1769610006199_ss6ncpo5q",
     "timestamp": "2026-01-28T14:20:06.199Z",
     "previousStatus": "idle",

@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
 import { taskRoutes } from './routes/tasks.js';
@@ -35,6 +36,7 @@ import { initBroadcast } from './services/broadcast-service.js';
 import { runStartupMigrations } from './services/migration-service.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authenticate, authenticateWebSocket, getAuthStatus, type AuthenticatedWebSocket } from './middleware/auth.js';
+import authRoutes from './routes/auth.js';
 import { apiRateLimit } from './middleware/rate-limit.js';
 import type { AgentOutput } from './services/clawdbot-agent-service.js';
 
@@ -71,6 +73,7 @@ const corsOptions: cors.CorsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // ============================================
 // Security: Request Size Limit (1MB)
@@ -82,17 +85,22 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Auth status endpoint (unauthenticated - for diagnostics)
-app.get('/api/auth/status', (_req, res) => {
+// Auth diagnostic endpoint (separate from auth routes)
+app.get('/api/auth/diagnostics', (_req, res) => {
   res.json(getAuthStatus());
 });
+
+// ============================================
+// Auth Routes (unauthenticated - for login/setup)
+// ============================================
+app.use('/api/auth', authRoutes);
 
 // ============================================
 // Security: Rate Limiting (100 req/min)
 // ============================================
 app.use('/api', apiRateLimit);
 
-// Apply authentication to all API routes
+// Apply authentication to all API routes (except /api/auth which is handled above)
 app.use('/api', authenticate);
 
 // API Routes - Task routes (split for maintainability)

@@ -29,13 +29,6 @@ export function DataTab() {
     });
   };
 
-  // Format token value for display
-  const formatTokenDisplay = (tokens: number): string => {
-    if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
-    if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`;
-    return tokens.toString();
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -92,23 +85,25 @@ export function DataTab() {
             <>
               <NumberRow
                 label="Monthly Token Limit"
-                description={`Set monthly token budget (0 = no limit)${settings.budget.monthlyTokenLimit > 0 ? ` • Current: ${formatTokenDisplay(settings.budget.monthlyTokenLimit)} tokens` : ''}`}
+                description="Set monthly token budget (0 = no limit)"
                 value={settings.budget.monthlyTokenLimit}
                 onChange={(v) => updateBudget('monthlyTokenLimit', v)}
                 min={0}
-                max={100_000_000}
-                step={100_000}
+                max={9_999_999_999}
                 unit="tokens"
+                hideSpinners
+                maxLength={10}
               />
               <NumberRow
                 label="Monthly Cost Limit"
-                description={`Set monthly cost budget in dollars (0 = no limit)${settings.budget.monthlyCostLimit > 0 ? ` • Current: $${settings.budget.monthlyCostLimit}` : ''}`}
+                description="Set monthly cost budget in dollars (0 = no limit)"
                 value={settings.budget.monthlyCostLimit}
                 onChange={(v) => updateBudget('monthlyCostLimit', v)}
                 min={0}
-                max={10_000}
-                step={10}
+                max={9_999_999_999}
                 unit="USD"
+                hideSpinners
+                maxLength={10}
               />
               <NumberRow
                 label="Warning Threshold"
