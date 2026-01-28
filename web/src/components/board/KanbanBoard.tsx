@@ -1,21 +1,11 @@
 import { useTasks, useTasksByStatus, useUpdateTask, useReorderTasks } from '@/hooks/useTasks';
+import { useBoardDragDrop } from '@/hooks/useBoardDragDrop';
 import { KanbanColumn } from './KanbanColumn';
+import { BoardLoadingSkeleton } from './BoardLoadingSkeleton';
 import { TaskDetailPanel } from '@/components/task/TaskDetailPanel';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragOverlay,
-  DragStartEvent,
-  closestCorners,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TaskCard } from '@/components/task/TaskCard';
 import { useKeyboard } from '@/hooks/useKeyboard';
@@ -38,45 +28,9 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'done', title: 'Done' },
 ];
 
-function LoadingSkeleton() {
-  return (
-    <div className="grid grid-cols-4 gap-4">
-      {COLUMNS.map(column => (
-        <div
-          key={column.id}
-          className="flex flex-col rounded-lg bg-muted/50 border-t-2 border-t-muted-foreground/20"
-        >
-          <div className="flex items-center justify-between px-3 py-2">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-5 w-6 rounded-full" />
-          </div>
-          <div className="flex-1 p-2 space-y-2 min-h-[calc(100vh-200px)]">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-card border border-border rounded-md p-3 space-y-2">
-                <div className="flex items-start gap-2">
-                  <Skeleton className="h-4 w-4 mt-0.5" />
-                  <div className="flex-1 space-y-1">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-3 w-2/3" />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Skeleton className="h-5 w-16 rounded" />
-                  <Skeleton className="h-5 w-12 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function KanbanBoard() {
   const { data: tasks, isLoading, error } = useTasks();
   const { settings: featureSettings } = useFeatureSettings();
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
@@ -134,98 +88,25 @@ export function KanbanBoard() {
   // Register callbacks with keyboard context (refs, so no need for useEffect)
   setOnOpenTask(handleTaskClick);
   setOnMoveTask(handleMoveTask);
-  
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
 
-  // Find which column a task belongs to
-  const findColumnForTask = useCallback((taskId: string): TaskStatus | null => {
-    for (const col of COLUMNS) {
-      if (tasksByStatus[col.id]?.some((t: Task) => t.id === taskId)) {
-        return col.id;
-      }
-    }
-    return null;
-  }, [tasksByStatus]);
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const task = filteredTasks?.find(t => t.id === event.active.id);
-    if (task) {
-      setActiveTask(task);
-    }
-  };
-
-  const handleDragOver = (_event: DragOverEvent) => {
-    // We don't need real-time container switching since our columns
-    // are droppable targets and tasks are sortable within them.
-    // The visual reordering within a column is handled by SortableContext.
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    setActiveTask(null);
-    
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Check if dropped on a column (status) directly
-    const isOverColumn = COLUMNS.some(c => c.id === overId);
-    
-    if (isOverColumn) {
-      // Dropped on empty column area — change status only
-      const newStatus = overId as TaskStatus;
-      const task = filteredTasks?.find(t => t.id === activeId);
-      if (task && task.status !== newStatus) {
-        updateTask.mutate({
-          id: activeId,
-          input: { status: newStatus },
-        });
-      }
-      return;
-    }
-
-    // Dropped on another task — figure out source/destination columns
-    const activeColumn = findColumnForTask(activeId);
-    const overColumn = findColumnForTask(overId);
-    
-    if (!activeColumn || !overColumn) return;
-
-    if (activeColumn === overColumn) {
-      // Same column — reorder
-      const columnTasks = tasksByStatus[activeColumn];
-      const oldIndex = columnTasks.findIndex((t: Task) => t.id === activeId);
-      const newIndex = columnTasks.findIndex((t: Task) => t.id === overId);
-      
-      if (oldIndex !== newIndex) {
-        const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-        reorderTasks.mutate(reordered.map((t: Task) => t.id));
-      }
-    } else {
-      // Cross-column: change status, then insert at the target position
-      const destTasks = [...tasksByStatus[overColumn]];
-      const overIndex = destTasks.findIndex((t: Task) => t.id === overId);
-      
-      // First update the task's status
-      updateTask.mutate(
-        { id: activeId, input: { status: overColumn } },
-        {
-          onSuccess: () => {
-            // Build the new order for the destination column including the moved task
-            const newOrder = destTasks.map((t: Task) => t.id);
-            newOrder.splice(overIndex, 0, activeId);
-            reorderTasks.mutate(newOrder);
-          },
-        }
-      );
-    }
-  };
+  // Drag and drop logic
+  const {
+    activeTask,
+    sensors,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+  } = useBoardDragDrop({
+    tasks: filteredTasks,
+    tasksByStatus,
+    columns: COLUMNS,
+    onStatusChange: (taskId, status) => {
+      updateTask.mutate({ id: taskId, input: { status } });
+    },
+    onReorder: (taskIds) => {
+      reorderTasks.mutate(taskIds);
+    },
+  });
 
   const handleDetailClose = (open: boolean) => {
     setDetailOpen(open);
@@ -241,7 +122,7 @@ export function KanbanBoard() {
     : null;
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <BoardLoadingSkeleton columns={COLUMNS} />;
   }
 
   if (error) {

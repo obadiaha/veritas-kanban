@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import type { Task, TaskPriority, BlockedCategory } from '@veritas-kanban/shared';
-import { Check, Ban, Clock, Timer, Loader2, Paperclip, ListChecks, Zap, MessageSquare, Wrench, Link2, HelpCircle } from 'lucide-react';
+import { Check, Ban, Clock, Timer, Loader2, Paperclip, ListChecks, Zap, MessageSquare, Wrench, Link2, HelpCircle, Play, CheckCircle, XCircle } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
 import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
@@ -17,6 +17,7 @@ import { getProjectColor, getProjectLabel } from '@/hooks/useProjects';
 import { getSprintLabel } from '@/hooks/useSprints';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import { useTaskConfig } from '@/contexts/TaskConfigContext';
+import { type TaskCardMetrics, formatCompactDuration } from '@/hooks/useBulkTaskMetrics';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -40,6 +41,7 @@ interface TaskCardProps {
   isSelected?: boolean;
   isBlocked?: boolean;
   blockerTitles?: string[];
+  cardMetrics?: TaskCardMetrics;
 }
 
 const priorityColors: Record<TaskPriority, string> = {

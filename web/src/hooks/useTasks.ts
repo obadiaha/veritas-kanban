@@ -31,7 +31,45 @@ export function useCreateTask() {
   
   return useMutation({
     mutationFn: (input: CreateTaskInput) => api.tasks.create(input),
-    onSuccess: () => {
+    // Optimistic update: immediately add a placeholder task
+    onMutate: async (input) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+      
+      // Optimistically add new task with temporary ID
+      const optimisticTask: Task = {
+        id: `temp-${Date.now()}`,
+        title: input.title,
+        description: input.description || '',
+        type: (input.type || 'code') as Task['type'],
+        status: 'todo',
+        priority: input.priority || 'medium',
+        project: input.project,
+        sprint: input.sprint,
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        subtasks: [],
+        comments: [],
+        reviewComments: [],
+      };
+      
+      queryClient.setQueryData<Task[]>(['tasks'], (old) => 
+        old ? [optimisticTask, ...old] : [optimisticTask]
+      );
+      
+      return { previousTasks };
+    },
+    // On error, rollback to previous value
+    onError: (_err, _input, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    // Always refetch to sync with server
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -43,9 +81,52 @@ export function useUpdateTask() {
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateTaskInput }) => 
       api.tasks.update(id, input),
+    // Optimistic update: immediately apply the changes
+    onMutate: async ({ id, input }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      await queryClient.cancelQueries({ queryKey: ['tasks', id] });
+      
+      // Snapshot the previous values
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+      const previousTask = queryClient.getQueryData<Task>(['tasks', id]);
+      
+      // Optimistically update the task in the list
+      queryClient.setQueryData<Task[]>(['tasks'], (old) => 
+        old?.map(task => 
+          task.id === id 
+            ? { ...task, ...input, updated: new Date().toISOString() }
+            : task
+        )
+      );
+      
+      // Also update the individual task query
+      if (previousTask) {
+        queryClient.setQueryData<Task>(['tasks', id], {
+          ...previousTask,
+          ...input,
+          updated: new Date().toISOString(),
+        });
+      }
+      
+      return { previousTasks, previousTask };
+    },
+    // On error, rollback to previous values
+    onError: (_err, { id }, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+      if (context?.previousTask) {
+        queryClient.setQueryData(['tasks', id], context.previousTask);
+      }
+    },
+    // On success, update with actual server response
     onSuccess: (task) => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);
+    },
+    // Always refetch to sync with server
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 }
