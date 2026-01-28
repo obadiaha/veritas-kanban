@@ -1,5 +1,71 @@
 [
   {
+    "id": "activity_1769642143773_9uqzvizmj",
+    "type": "status_changed",
+    "taskId": "task_20260128_tJyjRS",
+    "taskTitle": "QUALITY: Add unhandledRejection and uncaughtException handlers",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T23:15:43.773Z"
+  },
+  {
+    "id": "activity_1769642103210_tovggm66n",
+    "type": "comment_added",
+    "taskId": "task_20260128_nhfrcW",
+    "taskTitle": "QUALITY: Replace console.* with structured logging (pino)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added structured logging with pino. Created server..."
+    },
+    "timestamp": "2026-01-28T23:15:03.210Z"
+  },
+  {
+    "id": "activity_1769642097169_on4e81f9u",
+    "type": "status_changed",
+    "taskId": "task_20260128_nhfrcW",
+    "taskTitle": "QUALITY: Replace console.* with structured logging (pino)",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T23:14:57.169Z"
+  },
+  {
+    "id": "activity_1769642081547_1xejl3vy7",
+    "type": "status_changed",
+    "taskId": "task_20260128_KXgXs-",
+    "taskTitle": "QUALITY: Fix 10 broken test files (dependency injection refactor)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T23:14:41.547Z"
+  },
+  {
+    "id": "activity_1769642064685_gdt034lt6",
+    "type": "comment_added",
+    "taskId": "task_20260128_UPGQip",
+    "taskTitle": "PERF: Lazy-load DashboardSection to remove recharts from main bundle",
+    "details": {
+      "author": "Veritas",
+      "preview": "Duplicate — already completed in task 8DUobI (bund..."
+    },
+    "timestamp": "2026-01-28T23:14:24.685Z"
+  },
+  {
+    "id": "activity_1769642064659_ahz5jl9x8",
+    "type": "status_changed",
+    "taskId": "task_20260128_UPGQip",
+    "taskTitle": "PERF: Lazy-load DashboardSection to remove recharts from main bundle",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T23:14:24.659Z"
+  },
+  {
     "id": "activity_1769642040747_2h6mphzd4",
     "type": "comment_added",
     "taskId": "task_20260128_gYodue",
