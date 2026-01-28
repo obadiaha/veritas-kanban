@@ -27,7 +27,8 @@ describe('ConfigService', () => {
   });
 
   afterEach(async () => {
-    // Clean up test directories
+    // Dispose watcher before removing test directories
+    service.dispose();
     if (testRoot) {
       await fs.rm(testRoot, { recursive: true, force: true }).catch(() => {});
     }
