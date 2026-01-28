@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 import { nanoid } from 'nanoid';
-import type { Task, CreateTaskInput, UpdateTaskInput, ReviewComment, Subtask, TaskTelemetryEvent } from '@veritas-kanban/shared';
+import type { Task, CreateTaskInput, UpdateTaskInput, ReviewComment, Subtask, TaskTelemetryEvent, TimeTracking } from '@veritas-kanban/shared';
 import { getTelemetryService, type TelemetryService } from './telemetry-service.js';
 
 // Simple slug function to avoid CJS/ESM issues with slugify
@@ -52,13 +52,31 @@ export class TaskService {
     return `${task.id}-${slug}.md`;
   }
 
+  /** Recursively strip undefined values from an object (YAML can't serialize them) */
+  private deepCleanUndefined(obj: Record<string, any>): Record<string, any> {
+    const clean: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value === undefined) continue;
+      if (Array.isArray(value)) {
+        clean[key] = value.map(item =>
+          item && typeof item === 'object' && !Array.isArray(item)
+            ? this.deepCleanUndefined(item)
+            : item
+        );
+      } else if (value && typeof value === 'object') {
+        clean[key] = this.deepCleanUndefined(value);
+      } else {
+        clean[key] = value;
+      }
+    }
+    return clean;
+  }
+
   private taskToMarkdown(task: Task): string {
     const { description, reviewComments, ...rest } = task;
     
     // Filter out undefined values (gray-matter can't serialize them)
-    const frontmatter = Object.fromEntries(
-      Object.entries(rest).filter(([_, v]) => v !== undefined)
-    );
+    const frontmatter = this.deepCleanUndefined(rest);
     
     const content = matter.stringify(description || '', frontmatter);
     
@@ -447,11 +465,10 @@ export class TaskService {
     // Recalculate total
     const totalSeconds = entries.reduce((sum, e) => sum + (e.duration || 0), 0);
 
-    const timeTracking = {
+    const timeTracking: TimeTracking = {
       entries,
       totalSeconds,
       isRunning: false,
-      activeEntryId: undefined,
     };
 
     return this.updateTask(taskId, { timeTracking }) as Promise<Task>;
@@ -510,7 +527,7 @@ export class TaskService {
       entries,
       totalSeconds,
       isRunning: wasActive ? false : (task.timeTracking?.isRunning || false),
-      activeEntryId: wasActive ? undefined : task.timeTracking?.activeEntryId,
+      ...(wasActive ? {} : { activeEntryId: task.timeTracking?.activeEntryId }),
     };
 
     return this.updateTask(taskId, { timeTracking }) as Promise<Task>;
