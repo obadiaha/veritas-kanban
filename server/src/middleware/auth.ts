@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
-import { getSecurityConfig } from '../config/security.js';
+import { getSecurityConfig, getJwtSecret } from '../config/security.js';
 
 // === Types ===
 

@@ -1,5 +1,38 @@
 [
   {
+    "id": "activity_1769623447737_ioe02qo88",
+    "type": "status_changed",
+    "taskId": "task_20260128_xu0DY5",
+    "taskTitle": "SECURITY: Encrypt security config file or move to env vars",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:04:07.737Z"
+  },
+  {
+    "id": "activity_1769623446933_zsztan3h6",
+    "type": "status_changed",
+    "taskId": "task_20260128_VVqEG1",
+    "taskTitle": "SECURITY: Add Content Security Policy (CSP) headers with Helmet",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:04:06.933Z"
+  },
+  {
+    "id": "activity_1769623446746_26xrzwcwv",
+    "type": "status_changed",
+    "taskId": "task_20260128_u73mT3",
+    "taskTitle": "SECURITY: Remove .env from git and create .env.example",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:04:06.746Z"
+  },
+  {
     "id": "activity_1769622035872_xdoj9wnyj",
     "type": "comment_added",
     "taskId": "task_20260128_frXVnb",

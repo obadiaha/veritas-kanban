@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -43,6 +44,58 @@ import type { AgentOutput } from './services/clawdbot-agent-service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// ============================================
+// Security: HTTP Headers (Helmet)
+// ============================================
+// Helmet sets various HTTP headers to help protect the app.
+// Content-Security-Policy (CSP) restricts which resources the browser
+// is allowed to load, mitigating XSS and data-injection attacks.
+//
+// CSP Directives:
+//   defaultSrc  - Fallback for all resource types: only same-origin
+//   scriptSrc   - Scripts: same-origin + inline (needed for Vite HMR in dev)
+//   styleSrc    - Styles: same-origin + inline (Tailwind/JSX inline styles)
+//   connectSrc  - XHR/fetch/WebSocket: same-origin + ws://localhost for dev WS
+//   imgSrc      - Images: same-origin + data: URIs (inline SVGs, base64 images)
+//   fontSrc     - Fonts: same-origin
+//   objectSrc   - Plugins (Flash, etc.): blocked entirely
+//   frameSrc    - Iframes: blocked entirely
+//   baseUri     - <base> tag: only same-origin
+//   formAction  - Form submissions: only same-origin
+//   upgradeInsecureRequests - Auto-upgrade HTTP → HTTPS in production
+//
+// In development, connectSrc includes ws://localhost:* for WebSocket hot-reload.
+// In production, tighten scriptSrc (remove 'unsafe-inline') and use nonces.
+const isDev = process.env.NODE_ENV !== 'production';
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", ...(isDev ? ["'unsafe-inline'", "'unsafe-eval'"] : [])],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        connectSrc: [
+          "'self'",
+          ...(isDev
+            ? ['ws://localhost:*', 'ws://127.0.0.1:*', 'http://localhost:*', 'http://127.0.0.1:*']
+            : []),
+        ],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        ...(isDev ? {} : { upgradeInsecureRequests: [] }),
+      },
+    },
+    // Cross-Origin-Embedder-Policy can break loading of cross-origin resources;
+    // disable it for now since we serve an API, not embedded content.
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // ============================================
 // Security: CORS Configuration

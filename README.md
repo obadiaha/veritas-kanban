@@ -48,6 +48,13 @@ A local-first task management and AI agent orchestration platform. Built for dev
 git clone https://github.com/dm-bradgroux/veritas-kanban.git
 cd veritas-kanban
 
+# Set up environment variables
+cp server/.env.example server/.env
+# Edit server/.env — at minimum, change VERITAS_ADMIN_KEY
+
+# (Optional) Set up web env if you need a custom API URL
+# cp web/.env.example web/.env
+
 # Install
 pnpm install
 
@@ -56,6 +63,8 @@ pnpm dev
 ```
 
 Open http://localhost:3000
+
+> **Note:** Never commit `.env` files. Use `.env.example` as a template — it contains safe placeholder values and documentation for every variable.
 
 ## Tech Stack
 
