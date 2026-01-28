@@ -102,4 +102,26 @@ router.get(
   })
 );
 
+/**
+ * GET /api/metrics/trends
+ * Get historical trends data aggregated by day
+ */
+router.get(
+  '/trends',
+  asyncHandler(async (req, res) => {
+    const metrics = getMetricsService();
+    const period = (req.query.period as '7d' | '30d') || '7d';
+    const project = req.query.project as string | undefined;
+    
+    // Validate period
+    if (period !== '7d' && period !== '30d') {
+      res.status(400).json({ error: 'Period must be 7d or 30d' });
+      return;
+    }
+    
+    const result = await metrics.getTrends(period, project);
+    res.json(result);
+  })
+);
+
 export default router;

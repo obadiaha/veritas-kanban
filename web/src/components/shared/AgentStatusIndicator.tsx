@@ -1,5 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useGlobalAgentStatus } from '@/hooks/useGlobalAgentStatus';
+import { api, Activity } from '@/lib/api';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Clock, Users, AlertCircle, PlayCircle, PauseCircle, Brain, Cpu } from 'lucide-react';
 
 type AgentState = 'idle' | 'working' | 'thinking' | 'subagents' | 'error';
 
@@ -8,6 +12,7 @@ interface StateConfig {
   bgColor: string;
   animation: string;
   label: string;
+  icon: typeof Clock;
 }
 
 const STATE_CONFIG: Record<AgentState, StateConfig> = {
@@ -16,30 +21,35 @@ const STATE_CONFIG: Record<AgentState, StateConfig> = {
     bgColor: 'rgba(107, 114, 128, 0.2)',
     animation: '',
     label: 'Idle',
+    icon: PauseCircle,
   },
   working: {
     color: '#22c55e',
     bgColor: 'rgba(34, 197, 94, 0.2)',
     animation: 'pulse',
-    label: 'Working...',
+    label: 'Working',
+    icon: PlayCircle,
   },
   thinking: {
     color: '#f59e0b',
     bgColor: 'rgba(245, 158, 11, 0.2)',
     animation: 'breathe',
-    label: 'Thinking...',
+    label: 'Thinking',
+    icon: Brain,
   },
   subagents: {
     color: '#3b82f6',
     bgColor: 'rgba(59, 130, 246, 0.2)',
     animation: 'ripple',
-    label: 'agents',
+    label: 'Sub-agents',
+    icon: Cpu,
   },
   error: {
     color: '#ef4444',
     bgColor: 'rgba(239, 68, 68, 0.2)',
     animation: 'flash',
     label: 'Error',
+    icon: AlertCircle,
   },
 };
 
@@ -92,7 +102,7 @@ const styles = `
     transition: background-color 300ms ease, color 300ms ease;
   }
 
-  .agent-status-dot.animate-pulse {
+  .agent-status-dot.animate-pulse-custom {
     animation: agent-pulse 1.5s ease-in-out infinite;
   }
 
@@ -113,31 +123,6 @@ const styles = `
       animation: none !important;
     }
   }
-
-  .agent-status-tooltip {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: hsl(var(--popover));
-    border: 1px solid hsl(var(--border));
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    white-space: nowrap;
-    z-index: 50;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 150ms ease, visibility 150ms ease;
-    pointer-events: none;
-  }
-
-  .agent-status-container:hover .agent-status-tooltip,
-  .agent-status-container:focus-within .agent-status-tooltip {
-    opacity: 1;
-    visibility: visible;
-  }
 `;
 
 function formatDuration(startTime: string): string {
@@ -150,6 +135,28 @@ function formatDuration(startTime: string): string {
   return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
 }
 
+function formatTimeAgo(timestamp: string): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  return `${Math.floor(seconds / 86400)}d ago`;
+}
+
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 1) + '…';
+}
+
+interface StatusHistoryEntry {
+  status: string;
+  taskTitle?: string;
+  timestamp: string;
+}
+
 interface AgentStatusIndicatorProps {
   className?: string;
 }
@@ -158,6 +165,23 @@ export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorPro
   const { data, isLoading, error } = useGlobalAgentStatus();
   const [hasFlashed, setHasFlashed] = useState(false);
   const [lastStatus, setLastStatus] = useState<string | null>(null);
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([]);
+  const [uptimeStart, setUptimeStart] = useState<Date | null>(null);
+  const [, forceUpdate] = useState(0);
+
+  // Fetch recent agent-related activity for status history
+  const { data: activities } = useQuery({
+    queryKey: ['activity', 'agent-status'],
+    queryFn: () => api.activity.list(20),
+    refetchInterval: 10000,
+    select: (data: Activity[]) => 
+      data.filter(a => 
+        a.type === 'agent_started' || 
+        a.type === 'agent_stopped' || 
+        a.type === 'agent_completed' ||
+        a.type === 'status_changed'
+      ).slice(0, 5),
+  });
 
   // Inject styles once
   useEffect(() => {
@@ -168,6 +192,36 @@ export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorPro
       styleEl.textContent = styles;
       document.head.appendChild(styleEl);
     }
+  }, []);
+
+  // Track uptime - when status changes from idle to working
+  useEffect(() => {
+    if (data?.status !== 'idle' && !uptimeStart) {
+      setUptimeStart(new Date(data?.lastUpdated || Date.now()));
+    } else if (data?.status === 'idle' && uptimeStart) {
+      setUptimeStart(null);
+    }
+  }, [data?.status, data?.lastUpdated, uptimeStart]);
+
+  // Update status history when status changes
+  useEffect(() => {
+    if (data && data.status !== lastStatus) {
+      setStatusHistory(prev => [
+        {
+          status: data.status,
+          taskTitle: data.activeTaskTitle,
+          timestamp: data.lastUpdated,
+        },
+        ...prev.slice(0, 4),
+      ]);
+      setLastStatus(data.status);
+    }
+  }, [data, lastStatus]);
+
+  // Force update every second for uptime display
+  useEffect(() => {
+    const interval = setInterval(() => forceUpdate(n => n + 1), 1000);
+    return () => clearInterval(interval);
   }, []);
 
   // Determine the visual state
@@ -185,122 +239,222 @@ export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorPro
   useEffect(() => {
     if (state === 'error' && lastStatus !== 'error') {
       setHasFlashed(false);
-      // Mark as flashed after animation completes
       const timer = setTimeout(() => setHasFlashed(true), 800);
       return () => clearTimeout(timer);
     }
-    setLastStatus(state);
   }, [state, lastStatus]);
 
   // Get animation class
   const animationClass = useMemo(() => {
     if (state === 'error' && hasFlashed) return '';
     if (state === 'idle') return '';
-    return config.animation ? `animate-${config.animation}` : '';
+    const animName = config.animation;
+    if (animName === 'pulse') return 'animate-pulse-custom';
+    return animName ? `animate-${animName}` : '';
   }, [state, hasFlashed, config.animation]);
 
-  // Build label
-  const label = useMemo(() => {
+  // Build short label for header
+  const shortLabel = useMemo(() => {
     if (state === 'subagents' && data?.subAgentCount) {
-      return `${data.subAgentCount} ${config.label}`;
+      return `${data.subAgentCount} agents`;
     }
     return config.label;
   }, [state, data?.subAgentCount, config.label]);
 
-  // Build tooltip content
-  const tooltipContent = useMemo(() => {
-    const lines: string[] = [];
-    
-    if (data?.activeTaskTitle) {
-      lines.push(`Task: ${data.activeTaskTitle}`);
-    }
-    
-    if (data?.lastUpdated && state !== 'idle') {
-      lines.push(`Duration: ${formatDuration(data.lastUpdated)}`);
-    }
-    
-    if (data?.subAgentCount && data.subAgentCount > 0) {
-      lines.push(`Sub-agents: ${data.subAgentCount}`);
-    }
-    
-    if (data?.error) {
-      lines.push(`Error: ${data.error}`);
-    }
-    
-    return lines.length > 0 ? lines : ['Agent is idle'];
-  }, [data, state]);
+  // Calculate uptime
+  const uptimeDisplay = useMemo(() => {
+    if (!uptimeStart) return null;
+    return formatDuration(uptimeStart.toISOString());
+  }, [uptimeStart, forceUpdate]); // forceUpdate triggers recalc
 
   // Screen reader announcement
   const ariaLabel = useMemo(() => {
-    let announcement = `Agent status: ${label}`;
+    let announcement = `Agent status: ${shortLabel}`;
     if (data?.activeTaskTitle) {
       announcement += `, working on ${data.activeTaskTitle}`;
     }
     return announcement;
-  }, [label, data?.activeTaskTitle]);
+  }, [shortLabel, data?.activeTaskTitle]);
+
+  // Get status icon color for history
+  const getStatusColor = useCallback((status: string) => {
+    const statusMap: Record<string, string> = {
+      idle: '#6b7280',
+      working: '#22c55e',
+      thinking: '#f59e0b',
+      error: '#ef4444',
+    };
+    return statusMap[status] || '#6b7280';
+  }, []);
 
   if (isLoading && !data) {
     return (
-      <div className={`flex items-center gap-2 ${className}`}>
+      <div className={`flex items-center gap-2 min-w-[140px] md:min-w-[180px] ${className}`}>
         <div 
-          className="w-2.5 h-2.5 rounded-full bg-gray-400 opacity-50"
+          className="w-2.5 h-2.5 rounded-full bg-gray-400 opacity-50 shrink-0"
           aria-hidden="true"
         />
-        <span className="text-sm text-muted-foreground">...</span>
+        <span className="text-sm text-muted-foreground hidden sm:inline">Loading...</span>
       </div>
     );
   }
 
-  return (
-    <div 
-      className={`agent-status-container relative flex items-center gap-2 ${className}`}
-      role="status"
-      aria-live="polite"
-      aria-label={ariaLabel}
-    >
-      {/* The pulsing dot */}
-      <div
-        className={`agent-status-dot w-2.5 h-2.5 rounded-full ${animationClass}`}
-        style={{ 
-          backgroundColor: config.color,
-          color: config.color,
-        }}
-        aria-hidden="true"
-      />
-      
-      {/* Label */}
-      <span 
-        className="text-sm font-medium"
-        style={{ color: config.color }}
-      >
-        {label}
-      </span>
-      
-      {/* Sub-agent count badge (only for subagents state) */}
-      {state === 'subagents' && data?.subAgentCount && data.subAgentCount > 0 && (
-        <span 
-          className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full"
-          style={{ 
-            backgroundColor: config.bgColor,
-            color: config.color,
-          }}
-          aria-hidden="true"
-        >
-          {data.subAgentCount}
-        </span>
-      )}
+  const Icon = config.icon;
 
-      {/* Tooltip */}
-      <div 
-        className="agent-status-tooltip text-sm text-popover-foreground"
-        role="tooltip"
-      >
-        {tooltipContent.map((line, i) => (
-          <div key={i} className={i > 0 ? 'mt-1' : ''}>
-            {line}
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className={`flex items-center gap-2 min-w-[32px] sm:min-w-[140px] md:min-w-[200px] cursor-pointer hover:bg-muted/50 rounded-md px-2 py-1 transition-colors ${className}`}
+          role="status"
+          aria-live="polite"
+          aria-label={ariaLabel}
+        >
+          {/* The pulsing dot */}
+          <div
+            className={`agent-status-dot w-2.5 h-2.5 rounded-full shrink-0 ${animationClass}`}
+            style={{ 
+              backgroundColor: config.color,
+              color: config.color,
+            }}
+            aria-hidden="true"
+          />
+          
+          {/* Status label - hidden on mobile */}
+          <span 
+            className="text-sm font-medium hidden sm:inline shrink-0"
+            style={{ color: config.color }}
+          >
+            {shortLabel}
+          </span>
+          
+          {/* Task name - truncated, hidden on small screens */}
+          {data?.activeTaskTitle && state !== 'idle' && (
+            <span className="text-sm text-muted-foreground truncate hidden md:inline max-w-[100px] lg:max-w-[150px]">
+              {truncateText(data.activeTaskTitle, 25)}
+            </span>
+          )}
+        </button>
+      </PopoverTrigger>
+      
+      <PopoverContent className="w-80" align="start">
+        <div className="space-y-4">
+          {/* Current Status Header */}
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-lg flex items-center justify-center`}
+              style={{ backgroundColor: config.bgColor }}
+            >
+              <Icon className="w-5 h-5" style={{ color: config.color }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-medium" style={{ color: config.color }}>
+                {shortLabel}
+              </div>
+              {uptimeDisplay && state !== 'idle' && (
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {uptimeDisplay}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
+
+          {/* Current Task */}
+          {data?.activeTaskTitle && state !== 'idle' && (
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Current Task
+              </div>
+              <div className="text-sm font-medium">
+                {data.activeTaskTitle}
+              </div>
+              {data.activeTask && (
+                <div className="text-xs text-muted-foreground">
+                  ID: {data.activeTask}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sub-agents */}
+          {data?.subAgentCount && data.subAgentCount > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md" style={{ backgroundColor: config.bgColor }}>
+              <Users className="w-4 h-4" style={{ color: config.color }} />
+              <span className="text-sm font-medium">
+                {data.subAgentCount} sub-agent{data.subAgentCount > 1 ? 's' : ''} active
+              </span>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {data?.error && (
+            <div className="flex items-start gap-2 px-3 py-2 rounded-md bg-destructive/10 text-destructive">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span className="text-sm">{data.error}</span>
+            </div>
+          )}
+
+          {/* Status History */}
+          {(statusHistory.length > 0 || (activities && activities.length > 0)) && (
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Recent Activity
+              </div>
+              <div className="space-y-1.5 max-h-[120px] overflow-y-auto">
+                {/* Use activities if available, otherwise use local status history */}
+                {activities && activities.length > 0 ? (
+                  activities.map((activity) => (
+                    <div key={activity.id} className="flex items-center gap-2 text-xs">
+                      <div
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ 
+                          backgroundColor: activity.type === 'agent_started' 
+                            ? '#22c55e' 
+                            : activity.type === 'agent_stopped' || activity.type === 'agent_completed'
+                            ? '#6b7280'
+                            : '#3b82f6'
+                        }}
+                      />
+                      <span className="text-muted-foreground truncate flex-1">
+                        {activity.type === 'agent_started' && 'Agent started'}
+                        {activity.type === 'agent_stopped' && 'Agent stopped'}
+                        {activity.type === 'agent_completed' && 'Agent completed'}
+                        {activity.type === 'status_changed' && `Status → ${(activity.details as any)?.status}`}
+                        {activity.taskTitle && `: ${truncateText(activity.taskTitle, 20)}`}
+                      </span>
+                      <span className="text-muted-foreground/60 shrink-0">
+                        {formatTimeAgo(activity.timestamp)}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  statusHistory.map((entry, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs">
+                      <div
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: getStatusColor(entry.status) }}
+                      />
+                      <span className="text-muted-foreground truncate flex-1">
+                        {entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                        {entry.taskTitle && `: ${truncateText(entry.taskTitle, 20)}`}
+                      </span>
+                      <span className="text-muted-foreground/60 shrink-0">
+                        {formatTimeAgo(entry.timestamp)}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Last Updated */}
+          <div className="text-xs text-muted-foreground/60 pt-2 border-t border-border">
+            Last updated: {data?.lastUpdated ? formatTimeAgo(data.lastUpdated) : 'never'}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

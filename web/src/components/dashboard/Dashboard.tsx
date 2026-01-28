@@ -28,6 +28,11 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DrillDownPanel, type DrillDownType } from './DrillDownPanel';
+import { TasksDrillDown } from './TasksDrillDown';
+import { ErrorsDrillDown } from './ErrorsDrillDown';
+import { TokensDrillDown } from './TokensDrillDown';
+import { DurationDrillDown } from './DurationDrillDown';
 
 interface MetricCardProps {
   label: string;
@@ -35,9 +40,11 @@ interface MetricCardProps {
   icon?: React.ReactNode;
   color?: 'default' | 'blue' | 'yellow' | 'green' | 'red' | 'muted';
   subValue?: string;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
-function MetricCard({ label, value, icon, color = 'default', subValue }: MetricCardProps) {
+function MetricCard({ label, value, icon, color = 'default', subValue, onClick, clickable }: MetricCardProps) {
   const colorClasses = {
     default: 'bg-card border-border',
     blue: 'bg-blue-500/10 border-blue-500/20',
@@ -56,11 +63,17 @@ function MetricCard({ label, value, icon, color = 'default', subValue }: MetricC
     muted: 'text-muted-foreground',
   };
 
+  const Component = clickable ? 'button' : 'div';
+
   return (
-    <div className={cn(
-      'rounded-lg border p-4 flex flex-col items-center justify-center min-w-[100px]',
-      colorClasses[color]
-    )}>
+    <Component 
+      className={cn(
+        'rounded-lg border p-4 flex flex-col items-center justify-center min-w-[100px]',
+        colorClasses[color],
+        clickable && 'cursor-pointer hover:ring-2 hover:ring-ring transition-all focus:outline-none focus:ring-2 focus:ring-ring'
+      )}
+      onClick={onClick}
+    >
       {icon && <div className={cn('mb-1', textClasses[color])}>{icon}</div>}
       <div className={cn('text-2xl font-bold', textClasses[color])}>
         {value}
@@ -69,18 +82,34 @@ function MetricCard({ label, value, icon, color = 'default', subValue }: MetricC
       {subValue && (
         <div className="text-xs text-muted-foreground mt-1">{subValue}</div>
       )}
-    </div>
+    </Component>
   );
 }
 
 interface StatCardProps {
   title: string;
   children: React.ReactNode;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
-function StatCard({ title, children }: StatCardProps) {
+function StatCard({ title, children, onClick, clickable }: StatCardProps) {
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div 
+      className={cn(
+        'rounded-lg border bg-card p-4',
+        clickable && 'cursor-pointer hover:ring-2 hover:ring-ring transition-all'
+      )}
+      onClick={onClick}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={clickable ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      } : undefined}
+    >
       <h4 className="text-sm font-medium text-muted-foreground mb-3">{title}</h4>
       <div className="space-y-2">
         {children}
@@ -115,6 +144,7 @@ function StatRow({ label, value, subLabel, highlight }: StatRowProps) {
 export function Dashboard() {
   const [period, setPeriod] = useState<MetricsPeriod>('24h');
   const [project, setProject] = useState<string | undefined>(undefined);
+  const [drillDown, setDrillDown] = useState<DrillDownType>(null);
   
   const { data: metrics, isLoading, error, dataUpdatedAt } = useMetrics(period, project);
   const { data: tasks } = useTasks();
@@ -136,6 +166,23 @@ export function Dashboard() {
     if (rate > 0.2) return 'red';
     if (rate > 0.1) return 'yellow';
     return 'green';
+  };
+
+  const getDrillDownTitle = () => {
+    switch (drillDown) {
+      case 'tasks': return 'Task Details';
+      case 'errors': return 'Failed Runs';
+      case 'tokens': return 'Token Usage Breakdown';
+      case 'duration': return 'Run Duration Breakdown';
+      default: return '';
+    }
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    // Close drill-down and navigate to task (you may want to integrate with your task panel)
+    setDrillDown(null);
+    // This could dispatch an event or call a callback to open the task detail panel
+    window.dispatchEvent(new CustomEvent('open-task', { detail: { taskId } }));
   };
 
   return (
@@ -187,6 +234,8 @@ export function Dashboard() {
               label="Total" 
               value={metrics.tasks.total}
               icon={<ListTodo className="h-4 w-4" />}
+              onClick={() => setDrillDown('tasks')}
+              clickable
             />
             <MetricCard 
               label="To Do" 
@@ -279,7 +328,11 @@ export function Dashboard() {
         ) : metrics && (
           <div className="grid grid-cols-3 gap-4">
             {/* Error Rate Card */}
-            <StatCard title="Success / Errors">
+            <StatCard 
+              title="Success / Errors" 
+              onClick={() => setDrillDown('errors')}
+              clickable
+            >
               <StatRow 
                 label="Total Runs" 
                 value={metrics.runs.runs} 
@@ -310,7 +363,11 @@ export function Dashboard() {
             </StatCard>
 
             {/* Tokens Card */}
-            <StatCard title="Token Usage">
+            <StatCard 
+              title="Token Usage"
+              onClick={() => setDrillDown('tokens')}
+              clickable
+            >
               <StatRow 
                 label="Total" 
                 value={formatTokens(metrics.tokens.totalTokens)} 
@@ -333,7 +390,11 @@ export function Dashboard() {
             </StatCard>
 
             {/* Duration Card */}
-            <StatCard title="Run Duration">
+            <StatCard 
+              title="Run Duration"
+              onClick={() => setDrillDown('duration')}
+              clickable
+            >
               <StatRow 
                 label="Runs" 
                 value={metrics.duration.runs} 
@@ -358,6 +419,39 @@ export function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Drill-Down Panel */}
+      <DrillDownPanel
+        type={drillDown}
+        title={getDrillDownTitle()}
+        onClose={() => setDrillDown(null)}
+      >
+        {drillDown === 'tasks' && (
+          <TasksDrillDown 
+            project={project} 
+            onTaskClick={handleTaskClick}
+          />
+        )}
+        {drillDown === 'errors' && (
+          <ErrorsDrillDown 
+            period={period} 
+            project={project}
+            onTaskClick={handleTaskClick}
+          />
+        )}
+        {drillDown === 'tokens' && (
+          <TokensDrillDown 
+            period={period} 
+            project={project}
+          />
+        )}
+        {drillDown === 'duration' && (
+          <DurationDrillDown 
+            period={period} 
+            project={project}
+          />
+        )}
+      </DrillDownPanel>
     </div>
   );
 }

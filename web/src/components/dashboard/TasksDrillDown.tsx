@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle, Play, Ban, ListTodo, Archive } from 'lucide-react';
+import { CheckCircle, Play, Ban, ListTodo } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
 
