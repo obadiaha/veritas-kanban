@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig, SprintConfig } from '@veritas-kanban/shared';
+import type { Task, TaskPriority } from '@veritas-kanban/shared';
 import { Check, Ban, Clock, Timer, Loader2, Paperclip, ListChecks, Zap } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
@@ -15,6 +15,7 @@ import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
 import { getProjectColor, getProjectLabel } from '@/hooks/useProjects';
 import { getSprintLabel } from '@/hooks/useSprints';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
+import { useTaskConfig } from '@/contexts/TaskConfigContext';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -31,9 +32,6 @@ interface TaskCardProps {
   isSelected?: boolean;
   isBlocked?: boolean;
   blockerTitles?: string[];
-  taskTypes?: TaskTypeConfig[];
-  projects?: ProjectConfig[];
-  sprints?: SprintConfig[];
 }
 
 const priorityColors: Record<TaskPriority, string> = {
@@ -42,7 +40,8 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [], sprints = [] }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles }: TaskCardProps) {
+  const { taskTypes, projects, sprints } = useTaskConfig();
   const {
     attributes,
     listeners,
@@ -107,6 +106,8 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
             {...listeners}
             {...attributes}
             onClick={handleClick}
+            role="article"
+            aria-label={`Task: ${task.title}, Status: ${task.status}, Priority: ${task.priority}`}
             className={cn(
               'group bg-card border border-border rounded-md cursor-grab active:cursor-grabbing',
               isCompact ? 'p-2' : 'p-3',
@@ -119,10 +120,12 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
               isAgentRunning && 'ring-2 ring-blue-500/50 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
             )}
           >
+            <span className="sr-only">Status: {task.status}</span>
             <div className="flex items-start gap-2">
               {isSelecting && (
                 <button
                   onClick={handleCheckboxClick}
+                  aria-label={isChecked ? 'Deselect task' : 'Select task'}
                   className={cn(
                     'h-4 w-4 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors',
                     isChecked
@@ -154,6 +157,7 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 flex items-center gap-1 animate-pulse">
+                      <span className="sr-only">Agent {agentNames[task.attempt?.agent || ''] || task.attempt?.agent} is actively running on this task</span>
                       <Loader2 className="h-3 w-3 animate-spin" />
                       {agentNames[task.attempt?.agent || ''] || 'Agent'} running
                     </span>

@@ -150,6 +150,35 @@ export class TaskService {
     );
   }
 
+  /**
+   * Batch-resolve task dependencies to avoid N+1 queries
+   * Loads all tasks once, then resolves dependencies from memory
+   */
+  async getTasksWithDependencies(taskIds?: string[]): Promise<Task[]> {
+    const allTasks = await this.listTasks();
+    const taskMap = new Map(allTasks.map(t => [t.id, t]));
+    
+    const tasksToResolve = taskIds 
+      ? allTasks.filter(t => taskIds.includes(t.id))
+      : allTasks;
+    
+    return tasksToResolve.map(task => {
+      if (!task.blockedBy || task.blockedBy.length === 0) {
+        return task;
+      }
+      
+      // Resolve dependencies from the in-memory map
+      const resolvedDependencies = task.blockedBy
+        .map(depId => taskMap.get(depId))
+        .filter((t): t is Task => t !== undefined);
+      
+      return {
+        ...task,
+        _dependencies: resolvedDependencies, // Add resolved deps without modifying schema
+      };
+    });
+  }
+
   async getTask(id: string): Promise<Task | null> {
     const tasks = await this.listTasks();
     return tasks.find(t => t.id === id) || null;
@@ -358,7 +387,7 @@ export class TaskService {
     // Find sprints where ALL tasks are done
     const suggestions: { sprint: string; taskCount: number; tasks: Task[] }[] = [];
     
-    for (const [sprint, sprintTaskList] of sprintTasks) {
+    for (const [sprint, sprintTaskList] of Array.from(sprintTasks.entries())) {
       const allDone = sprintTaskList.every(t => t.status === 'done');
       if (allDone && sprintTaskList.length > 0) {
         suggestions.push({

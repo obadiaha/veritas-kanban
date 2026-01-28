@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import { TextExtractionService } from '../services/text-extraction-service.js';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 describe('TextExtractionService', () => {
   let service: TextExtractionService;
@@ -77,18 +77,17 @@ describe('TextExtractionService', () => {
     it('should extract text from XLSX as CSV', async () => {
       const filepath = path.join(testRoot, 'test.xlsx');
       
-      // Create a real XLSX file using the xlsx library
-      const workbook = XLSX.utils.book_new();
-      const data = [
-        ['Name', 'Age', 'City'],
-        ['Alice', 30, 'New York'],
-        ['Bob', 25, 'London'],
-      ];
-      const worksheet = XLSX.utils.aoa_to_sheet(data);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      // Create a real XLSX file using exceljs
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Sheet1');
+      
+      // Add data
+      worksheet.addRow(['Name', 'Age', 'City']);
+      worksheet.addRow(['Alice', 30, 'New York']);
+      worksheet.addRow(['Bob', 25, 'London']);
       
       // Write to file
-      await fs.writeFile(filepath, XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }));
+      await workbook.xlsx.writeFile(filepath);
 
       const extracted = await service.extractText(filepath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       
@@ -101,19 +100,19 @@ describe('TextExtractionService', () => {
     it('should handle multiple sheets in XLSX', async () => {
       const filepath = path.join(testRoot, 'multi-sheet.xlsx');
       
-      const workbook = XLSX.utils.book_new();
+      const workbook = new ExcelJS.Workbook();
       
       // Sheet 1
-      const data1 = [['Column1'], ['Value1']];
-      const worksheet1 = XLSX.utils.aoa_to_sheet(data1);
-      XLSX.utils.book_append_sheet(workbook, worksheet1, 'Sheet1');
+      const worksheet1 = workbook.addWorksheet('Sheet1');
+      worksheet1.addRow(['Column1']);
+      worksheet1.addRow(['Value1']);
       
       // Sheet 2
-      const data2 = [['Column2'], ['Value2']];
-      const worksheet2 = XLSX.utils.aoa_to_sheet(data2);
-      XLSX.utils.book_append_sheet(workbook, worksheet2, 'Sheet2');
+      const worksheet2 = workbook.addWorksheet('Sheet2');
+      worksheet2.addRow(['Column2']);
+      worksheet2.addRow(['Value2']);
       
-      await fs.writeFile(filepath, XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }));
+      await workbook.xlsx.writeFile(filepath);
 
       const extracted = await service.extractText(filepath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       

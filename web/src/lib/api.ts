@@ -12,9 +12,9 @@ import type {
   TaskTypeConfig,
   SprintConfig,
   FeatureSettings,
+  Attachment,
 } from '@veritas-kanban/shared';
-
-const API_BASE = '/api';
+import { API_BASE } from './config';
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -517,6 +517,175 @@ export const api = {
       return handleResponse<SprintConfig[]>(response);
     },
   },
+
+  activity: {
+    list: async (limit: number = 50): Promise<Activity[]> => {
+      const response = await fetch(`${API_BASE}/activity?limit=${limit}`);
+      return handleResponse<Activity[]>(response);
+    },
+
+    clear: async (): Promise<void> => {
+      const response = await fetch(`${API_BASE}/activity`, {
+        method: 'DELETE',
+      });
+      return handleResponse<void>(response);
+    },
+  },
+
+  attachments: {
+    list: async (taskId: string): Promise<Attachment[]> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`);
+      return handleResponse<Attachment[]>(response);
+    },
+
+    upload: async (taskId: string, formData: FormData): Promise<AttachmentUploadResponse> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`, {
+        method: 'POST',
+        body: formData,
+      });
+      return handleResponse<AttachmentUploadResponse>(response);
+    },
+
+    delete: async (taskId: string, attachmentId: string): Promise<void> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments/${attachmentId}`, {
+        method: 'DELETE',
+      });
+      return handleResponse<void>(response);
+    },
+
+    getTaskContext: async (taskId: string): Promise<TaskContext> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/context`);
+      return handleResponse<TaskContext>(response);
+    },
+  },
+
+  conflicts: {
+    getStatus: async (taskId: string): Promise<ConflictStatus> => {
+      const response = await fetch(`${API_BASE}/conflicts/${taskId}`);
+      return handleResponse<ConflictStatus>(response);
+    },
+
+    getFile: async (taskId: string, filePath: string): Promise<ConflictFile> => {
+      const response = await fetch(`${API_BASE}/conflicts/${taskId}/file?path=${encodeURIComponent(filePath)}`);
+      return handleResponse<ConflictFile>(response);
+    },
+
+    resolve: async (
+      taskId: string,
+      filePath: string,
+      resolution: 'ours' | 'theirs' | 'manual',
+      manualContent?: string
+    ): Promise<ResolveResult> => {
+      const response = await fetch(`${API_BASE}/conflicts/${taskId}/resolve?path=${encodeURIComponent(filePath)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolution, manualContent }),
+      });
+      return handleResponse<ResolveResult>(response);
+    },
+
+    abort: async (taskId: string): Promise<{ success: boolean }> => {
+      const response = await fetch(`${API_BASE}/conflicts/${taskId}/abort`, {
+        method: 'POST',
+      });
+      return handleResponse<{ success: boolean }>(response);
+    },
+
+    continue: async (taskId: string, message?: string): Promise<{ success: boolean; error?: string }> => {
+      const response = await fetch(`${API_BASE}/conflicts/${taskId}/continue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      return handleResponse<{ success: boolean; error?: string }>(response);
+    },
+  },
+
+  github: {
+    getStatus: async (): Promise<GitHubStatus> => {
+      const response = await fetch(`${API_BASE}/github/status`);
+      return handleResponse<GitHubStatus>(response);
+    },
+
+    createPR: async (input: CreatePRInput): Promise<PRInfo> => {
+      const response = await fetch(`${API_BASE}/github/pr`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      return handleResponse<PRInfo>(response);
+    },
+
+    openPR: async (taskId: string): Promise<void> => {
+      const response = await fetch(`${API_BASE}/github/pr/${taskId}/open`, {
+        method: 'POST',
+      });
+      return handleResponse<void>(response);
+    },
+  },
+
+  preview: {
+    getStatus: async (taskId: string): Promise<PreviewServer | { status: 'stopped' }> => {
+      const response = await fetch(`${API_BASE}/preview/${taskId}`);
+      return handleResponse<PreviewServer | { status: 'stopped' }>(response);
+    },
+
+    getOutput: async (taskId: string, lines: number = 50): Promise<{ output: string[] }> => {
+      const response = await fetch(`${API_BASE}/preview/${taskId}/output?lines=${lines}`);
+      return handleResponse<{ output: string[] }>(response);
+    },
+
+    start: async (taskId: string): Promise<PreviewServer> => {
+      const response = await fetch(`${API_BASE}/preview/${taskId}/start`, {
+        method: 'POST',
+      });
+      return handleResponse<PreviewServer>(response);
+    },
+
+    stop: async (taskId: string): Promise<void> => {
+      const response = await fetch(`${API_BASE}/preview/${taskId}/stop`, {
+        method: 'POST',
+      });
+      return handleResponse<void>(response);
+    },
+  },
+
+  time: {
+    getSummary: async (): Promise<TimeSummary> => {
+      const response = await fetch(`${API_BASE}/tasks/time/summary`);
+      return handleResponse<TimeSummary>(response);
+    },
+
+    start: async (taskId: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/start`, {
+        method: 'POST',
+      });
+      return handleResponse<Task>(response);
+    },
+
+    stop: async (taskId: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/stop`, {
+        method: 'POST',
+      });
+      return handleResponse<Task>(response);
+    },
+
+    addEntry: async (taskId: string, duration: number, description?: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ duration, description }),
+      });
+      return handleResponse<Task>(response);
+    },
+
+    deleteEntry: async (taskId: string, entryId: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry/${entryId}`, {
+        method: 'DELETE',
+      });
+      return handleResponse<Task>(response);
+    },
+  },
 };
 
 // Types for archive suggestions
@@ -602,6 +771,127 @@ export interface WorktreeInfo {
   };
   hasChanges: boolean;
   changedFiles: number;
+}
+
+// Types for activity
+export type ActivityType = 
+  | 'task_created'
+  | 'task_updated'
+  | 'status_changed'
+  | 'agent_started'
+  | 'agent_stopped'
+  | 'agent_completed'
+  | 'task_archived'
+  | 'task_deleted'
+  | 'worktree_created'
+  | 'worktree_merged';
+
+export interface Activity {
+  id: string;
+  type: ActivityType;
+  taskId: string;
+  taskTitle: string;
+  details?: Record<string, unknown>;
+  timestamp: string;
+}
+
+// Types for attachments
+export interface AttachmentUploadResponse {
+  success: boolean;
+  attachments: Attachment[];
+  task: unknown;
+}
+
+export interface TaskContext {
+  taskId: string;
+  title: string;
+  description: string;
+  type: string;
+  status: string;
+  priority: string;
+  project?: string;
+  tags?: string[];
+  attachments: {
+    count: number;
+    documents: { filename: string; text: string }[];
+    images: string[];
+  };
+  created: string;
+  updated: string;
+}
+
+// Types for conflicts
+export interface ConflictStatus {
+  hasConflicts: boolean;
+  conflictingFiles: string[];
+  rebaseInProgress: boolean;
+  mergeInProgress: boolean;
+}
+
+export interface ConflictMarker {
+  startLine: number;
+  separatorLine: number;
+  endLine: number;
+  oursLines: string[];
+  theirsLines: string[];
+}
+
+export interface ConflictFile {
+  path: string;
+  content: string;
+  oursContent: string;
+  theirsContent: string;
+  baseContent: string;
+  markers: ConflictMarker[];
+}
+
+export interface ResolveResult {
+  success: boolean;
+  remainingConflicts: string[];
+}
+
+// Types for GitHub
+export interface GitHubStatus {
+  installed: boolean;
+  authenticated: boolean;
+  user?: string;
+}
+
+export interface PRInfo {
+  url: string;
+  number: number;
+  title: string;
+  state: string;
+  draft: boolean;
+  headBranch: string;
+  baseBranch: string;
+}
+
+export interface CreatePRInput {
+  taskId: string;
+  title?: string;
+  body?: string;
+  targetBranch?: string;
+  draft?: boolean;
+}
+
+// Types for preview
+export interface PreviewServer {
+  taskId: string;
+  repoName: string;
+  pid: number;
+  port: number;
+  url: string;
+  status: 'starting' | 'running' | 'stopped' | 'error';
+  startedAt: string;
+  output: string[];
+  error?: string;
+}
+
+// Types for time tracking
+export interface TimeSummary {
+  byProject: { project: string; totalSeconds: number; taskCount: number }[];
+  total: number;
 }
 
 // Managed List API helpers

@@ -1,926 +1,1006 @@
 [
   {
-    "id": "activity_1769594729028_e3u00fq38",
-    "type": "status_changed",
-    "taskId": "task_20260128_F-XLhL",
-    "taskTitle": "US-1156: Settings accessibility (WCAG 2.1 AA)",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T10:05:29.028Z"
-  },
-  {
-    "id": "activity_1769594718437_r5xkcmuti",
+    "id": "activity_1769598455726_9m6dfmawo",
     "type": "comment_added",
-    "taskId": "task_20260128_8HU2XD",
-    "taskTitle": "US-1158: Replace alert() calls with toast notifications",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
     "details": {
       "author": "Veritas",
-      "preview": "Replaced all 5 alert() calls with toast notificati..."
+      "preview": "Split 4 god components:\n\n• GitSection (645→78) — e..."
     },
-    "timestamp": "2026-01-28T10:05:18.437Z"
+    "timestamp": "2026-01-28T11:07:35.726Z"
   },
   {
-    "id": "activity_1769594718411_t76i5yv6c",
+    "id": "activity_1769598455703_wizi2w72n",
     "type": "status_changed",
-    "taskId": "task_20260128_8HU2XD",
-    "taskTitle": "US-1158: Replace alert() calls with toast notifications",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
     "details": {
       "from": "in-progress",
       "status": "done"
     },
-    "timestamp": "2026-01-28T10:05:18.411Z"
+    "timestamp": "2026-01-28T11:07:35.703Z"
   },
   {
-    "id": "activity_1769594599726_5lp9h98h5",
+    "id": "activity_1769598190964_uestvqhwo",
+    "type": "comment_added",
+    "taskId": "task_20260128_80Bww2",
+    "taskTitle": "RF-06: Server Error Handling Middleware",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created error handling middleware with AppError cl..."
+    },
+    "timestamp": "2026-01-28T11:03:10.964Z"
+  },
+  {
+    "id": "activity_1769598190943_2wedc751a",
     "type": "status_changed",
-    "taskId": "task_20260128_8HU2XD",
-    "taskTitle": "US-1158: Replace alert() calls with toast notifications",
+    "taskId": "task_20260128_80Bww2",
+    "taskTitle": "RF-06: Server Error Handling Middleware",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T11:03:10.943Z"
+  },
+  {
+    "id": "activity_1769598189293_mfiwr82z1",
+    "type": "comment_added",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created shared API client (api-client.ts) with cre..."
+    },
+    "timestamp": "2026-01-28T11:03:09.293Z"
+  },
+  {
+    "id": "activity_1769598189269_ei9e6h2qm",
+    "type": "status_changed",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T11:03:09.269Z"
+  },
+  {
+    "id": "activity_1769598089757_7fgiag2kr",
+    "type": "comment_added",
+    "taskId": "task_20260128_DmkA14",
+    "taskTitle": "RF-21: Server Performance & Reliability",
+    "details": {
+      "author": "Veritas",
+      "preview": "Fixed N+1 dependency loading with batch resolution..."
+    },
+    "timestamp": "2026-01-28T11:01:29.757Z"
+  },
+  {
+    "id": "activity_1769598089736_dgcoou8fp",
+    "type": "status_changed",
+    "taskId": "task_20260128_DmkA14",
+    "taskTitle": "RF-21: Server Performance & Reliability",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T11:01:29.736Z"
+  },
+  {
+    "id": "activity_1769598088502_zzb9tazwa",
+    "type": "task_created",
+    "taskId": "task_20260128_XP9oDM",
+    "taskTitle": "Document Claude Skills List",
+    "details": {
+      "type": "research",
+      "priority": "low",
+      "project": "brain"
+    },
+    "timestamp": "2026-01-28T11:01:28.502Z"
+  },
+  {
+    "id": "activity_1769598055446_btmwkbslc",
+    "type": "comment_added",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created shared utils (path, format, constants). Re..."
+    },
+    "timestamp": "2026-01-28T11:00:55.446Z"
+  },
+  {
+    "id": "activity_1769598055418_pk29g6cuc",
+    "type": "status_changed",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T11:00:55.418Z"
+  },
+  {
+    "id": "activity_1769598023288_jwheqtogc",
+    "type": "status_changed",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
     "details": {
       "from": "todo",
       "status": "in-progress"
     },
-    "timestamp": "2026-01-28T10:03:19.726Z"
+    "timestamp": "2026-01-28T11:00:23.288Z"
   },
   {
-    "id": "activity_1769592539931_twcrqcpt5",
-    "type": "sprint_archived",
-    "taskId": "US-1100",
-    "taskTitle": "US-1100",
+    "id": "activity_1769598022881_ro0xdrhdm",
+    "type": "status_changed",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
     "details": {
-      "taskCount": 10
+      "from": "todo",
+      "status": "in-progress"
     },
-    "timestamp": "2026-01-28T09:28:59.931Z"
+    "timestamp": "2026-01-28T11:00:22.881Z"
   },
   {
-    "id": "activity_1769592485058_6vdret7hw",
+    "id": "activity_1769597936244_662eea9k9",
+    "type": "status_changed",
+    "taskId": "task_20260128_DmkA14",
+    "taskTitle": "RF-21: Server Performance & Reliability",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:58:56.244Z"
+  },
+  {
+    "id": "activity_1769597934952_9aixjwxma",
+    "type": "status_changed",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:58:54.952Z"
+  },
+  {
+    "id": "activity_1769597879101_wwbdk687z",
+    "type": "comment_added",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Split 899-line CLI into modular command files unde..."
+    },
+    "timestamp": "2026-01-28T10:57:59.101Z"
+  },
+  {
+    "id": "activity_1769597879077_vpduqp956",
+    "type": "status_changed",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:57:59.077Z"
+  },
+  {
+    "id": "activity_1769597847802_kzqfu8t7m",
+    "type": "comment_added",
+    "taskId": "task_20260128_9ljJmb",
+    "taskTitle": "RF-16: Frontend Accessibility Improvements",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added ARIA labels, roles, sr-only text for color-o..."
+    },
+    "timestamp": "2026-01-28T10:57:27.802Z"
+  },
+  {
+    "id": "activity_1769597847749_rsjossoih",
+    "type": "status_changed",
+    "taskId": "task_20260128_9ljJmb",
+    "taskTitle": "RF-16: Frontend Accessibility Improvements",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:57:27.749Z"
+  },
+  {
+    "id": "activity_1769597845960_ygox535pm",
+    "type": "comment_added",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Split 843-line MCP server into modular tool handle..."
+    },
+    "timestamp": "2026-01-28T10:57:25.960Z"
+  },
+  {
+    "id": "activity_1769597845935_gt1tbplbv",
+    "type": "status_changed",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:57:25.935Z"
+  },
+  {
+    "id": "activity_1769597727572_50ynh5hr2",
+    "type": "status_changed",
+    "taskId": "task_20260128_9ljJmb",
+    "taskTitle": "RF-16: Frontend Accessibility Improvements",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:55:27.572Z"
+  },
+  {
+    "id": "activity_1769597725797_u7m2ogoae",
+    "type": "status_changed",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:55:25.797Z"
+  },
+  {
+    "id": "activity_1769597725591_pfu0udd2b",
+    "type": "status_changed",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:55:25.591Z"
+  },
+  {
+    "id": "activity_1769597723912_3smyv41mw",
+    "type": "status_changed",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:55:23.912Z"
+  },
+  {
+    "id": "activity_1769597722842_uwutz6is6",
+    "type": "status_changed",
+    "taskId": "task_20260128_80Bww2",
+    "taskTitle": "RF-06: Server Error Handling Middleware",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T10:55:22.842Z"
+  },
+  {
+    "id": "activity_1769597722772_q12wvry30",
     "type": "task_updated",
-    "taskId": "task_20260128_8KRThU",
-    "taskTitle": "FEATURE REQUEST: Change Review Column to Blocked",
-    "timestamp": "2026-01-28T09:28:05.058Z"
+    "taskId": "task_20260128_v5QxzF",
+    "taskTitle": "RF-01: Server Authentication & Authorization",
+    "timestamp": "2026-01-28T10:55:22.772Z"
   },
   {
-    "id": "activity_1769592479575_p0swcv4xx",
-    "type": "status_changed",
-    "taskId": "task_20260128_8KRThU",
-    "taskTitle": "FEATURE REQUEST: Change Review Column to Blocked",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T09:27:59.575Z"
-  },
-  {
-    "id": "activity_1769592048834_lnlgvfmr9",
-    "type": "status_changed",
-    "taskId": "task_20260128_8KRThU",
-    "taskTitle": "FEATURE REQUEST: Change Review Column to Blocked",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T09:20:48.834Z"
-  },
-  {
-    "id": "activity_1769592048818_rv4n02og5",
-    "type": "comment_added",
-    "taskId": "task_20260128_8KRThU",
-    "taskTitle": "FEATURE REQUEST: Change Review Column to Blocked",
-    "details": {
-      "author": "Veritas",
-      "preview": "Sprint US-1500 created with 7 stories (US-1501–US-..."
-    },
-    "timestamp": "2026-01-28T09:20:48.818Z"
-  },
-  {
-    "id": "activity_1769592037043_5b23m5plu",
-    "type": "task_created",
-    "taskId": "task_20260128_g86sZV",
-    "taskTitle": "US-1507: Add blocked reason tracking",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:20:37.043Z"
-  },
-  {
-    "id": "activity_1769592022111_s9qvt78ma",
-    "type": "task_created",
-    "taskId": "task_20260128_KTgZMx",
-    "taskTitle": "US-1506: Update test suite — review → blocked references",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:20:22.111Z"
-  },
-  {
-    "id": "activity_1769592012261_e2g8dvk3m",
-    "type": "task_created",
-    "taskId": "task_20260128_0hOHmd",
-    "taskTitle": "US-1505: Data migration — convert existing review tasks to blocked",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:20:12.261Z"
-  },
-  {
-    "id": "activity_1769592001252_wkek4tpfs",
-    "type": "task_created",
-    "taskId": "task_20260128_62_v6g",
-    "taskTitle": "US-1504: Propagate review → blocked across all backend routes and services",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:20:01.252Z"
-  },
-  {
-    "id": "activity_1769591988668_y93p97rtf",
-    "type": "task_created",
-    "taskId": "task_20260128_hQpqum",
-    "taskTitle": "US-1503: Propagate review → blocked across all frontend components",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:19:48.668Z"
-  },
-  {
-    "id": "activity_1769591973480_ed1rh84tf",
-    "type": "task_created",
-    "taskId": "task_20260128_iFFyez",
-    "taskTitle": "US-1502: Update Kanban column display — Blocked title + red color",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:19:33.480Z"
-  },
-  {
-    "id": "activity_1769591960496_c9xm2ql3x",
-    "type": "task_created",
-    "taskId": "task_20260128_-WSaw3",
-    "taskTitle": "US-1501: Rename TaskStatus review → blocked in shared types",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T09:19:20.496Z"
-  },
-  {
-    "id": "activity_1769591477776_dv9jz0ymr",
+    "id": "activity_1769597722759_k2ahcgkxi",
     "type": "task_updated",
-    "taskId": "task_20260128_d47DtQ",
-    "taskTitle": "FEATURE REQUEST: Host Kimi K2.5 Model In Azure",
-    "timestamp": "2026-01-28T09:11:17.776Z"
+    "taskId": "task_20260128_eib_Vw",
+    "taskTitle": "RF-04: Add Comprehensive Test Suite",
+    "timestamp": "2026-01-28T10:55:22.759Z"
   },
   {
-    "id": "activity_1769591429316_9kwem5ftu",
-    "type": "status_changed",
-    "taskId": "task_20260128_-KNOy3",
-    "taskTitle": "US-1155: Settings performance — memoization & lazy loading",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T09:10:29.316Z"
-  },
-  {
-    "id": "activity_1769591394306_t4h0ljnmv",
-    "type": "status_changed",
-    "taskId": "task_20260128_CnogQO",
-    "taskTitle": "US-1157: Sanitize settings import against prototype pollution",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T09:09:54.306Z"
-  },
-  {
-    "id": "activity_1769591389898_ue1r7w1pp",
-    "type": "comment_added",
-    "taskId": "task_20260128_CnogQO",
-    "taskTitle": "US-1157: Sanitize settings import against prototype pollution",
-    "details": {
-      "author": "Veritas",
-      "preview": "Already implemented in commit 3402051. Added Zod s..."
-    },
-    "timestamp": "2026-01-28T09:09:49.898Z"
-  },
-  {
-    "id": "activity_1769591349039_t0t1gp5dq",
-    "type": "comment_added",
-    "taskId": "task_20260128_-KNOy3",
-    "taskTitle": "US-1155: Settings performance — memoization & lazy loading",
-    "details": {
-      "author": "Veritas",
-      "preview": "Added React.memo to shared row components, lazy-lo..."
-    },
-    "timestamp": "2026-01-28T09:09:09.039Z"
-  },
-  {
-    "id": "activity_1769591243934_a59soco89",
-    "type": "status_changed",
-    "taskId": "task_20260128_CnogQO",
-    "taskTitle": "US-1157: Sanitize settings import against prototype pollution",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T09:07:23.934Z"
-  },
-  {
-    "id": "activity_1769591188250_6ff1szybq",
-    "type": "status_changed",
-    "taskId": "task_20260128_-KNOy3",
-    "taskTitle": "US-1155: Settings performance — memoization & lazy loading",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T09:06:28.250Z"
-  },
-  {
-    "id": "activity_1769591169459_ugp657565",
-    "type": "status_changed",
-    "taskId": "task_20260128_6SbOnv",
-    "taskTitle": "US-1154: Add test coverage for settings features",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T09:06:09.459Z"
-  },
-  {
-    "id": "activity_1769591162356_cdvv56zb6",
-    "type": "comment_added",
-    "taskId": "task_20260128_6SbOnv",
-    "taskTitle": "US-1154: Add test coverage for settings features",
-    "details": {
-      "author": "Veritas",
-      "preview": "Fixed test discovery (worktrees excluded), fixed e..."
-    },
-    "timestamp": "2026-01-28T09:06:02.356Z"
-  },
-  {
-    "id": "activity_1769590946523_ekw6m4yic",
-    "type": "task_created",
-    "taskId": "task_20260128_d47DtQ",
-    "taskTitle": "FEATURE REQUEST: Host Kimi K2.5 Model In Azure",
-    "details": {
-      "type": "model-EhHjEh",
-      "priority": "medium",
-      "project": "platform"
-    },
-    "timestamp": "2026-01-28T09:02:26.523Z"
-  },
-  {
-    "id": "activity_1769590855496_etxhp8xkm",
-    "type": "status_changed",
-    "taskId": "task_20260128_6SbOnv",
-    "taskTitle": "US-1154: Add test coverage for settings features",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T09:00:55.496Z"
-  },
-  {
-    "id": "activity_1769590817364_r5rm7bm00",
-    "type": "status_changed",
-    "taskId": "task_20260128_NrvUWe",
-    "taskTitle": "US-1153: Harden template import validation & security",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T09:00:17.364Z"
-  },
-  {
-    "id": "activity_1769590809751_ltmapn9s7",
-    "type": "comment_added",
-    "taskId": "task_20260128_NrvUWe",
-    "taskTitle": "US-1153: Harden template import validation & security",
-    "details": {
-      "author": "Veritas",
-      "preview": "Template import now validated via Zod schema with ..."
-    },
-    "timestamp": "2026-01-28T09:00:09.751Z"
-  },
-  {
-    "id": "activity_1769590750284_v0gs7kh7q",
-    "type": "status_changed",
-    "taskId": "task_20260128_SFb0-u",
-    "taskTitle": "US-1152: Add error boundaries to Settings dialog",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:59:10.284Z"
-  },
-  {
-    "id": "activity_1769590750269_ivtnnmt4z",
-    "type": "comment_added",
-    "taskId": "task_20260128_SFb0-u",
-    "taskTitle": "US-1152: Add error boundaries to Settings dialog",
-    "details": {
-      "author": "Veritas",
-      "preview": "Error boundaries added to all 7 settings tabs. Eac..."
-    },
-    "timestamp": "2026-01-28T08:59:10.269Z"
-  },
-  {
-    "id": "activity_1769590744864_d8axnsesd",
-    "type": "comment_added",
-    "taskId": "task_20260128_SFb0-u",
-    "taskTitle": "US-1152: Add error boundaries to Settings dialog",
-    "details": {
-      "author": "Veritas",
-      "preview": "Error boundaries added to all 7 settings tabs. Eac..."
-    },
-    "timestamp": "2026-01-28T08:59:04.864Z"
-  },
-  {
-    "id": "activity_1769590643978_93tt215h7",
-    "type": "status_changed",
-    "taskId": "task_20260128_NrvUWe",
-    "taskTitle": "US-1153: Harden template import validation & security",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:57:23.978Z"
-  },
-  {
-    "id": "activity_1769590643942_0khfec0mn",
-    "type": "status_changed",
-    "taskId": "task_20260128_SFb0-u",
-    "taskTitle": "US-1152: Add error boundaries to Settings dialog",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:57:23.942Z"
-  },
-  {
-    "id": "activity_1769590629182_1ij2bbqck",
-    "type": "status_changed",
-    "taskId": "task_20260128_Q78_6y",
-    "taskTitle": "US-1151: Extract Settings tab components from monolith",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:57:09.182Z"
-  },
-  {
-    "id": "activity_1769590629157_abpevivbd",
-    "type": "comment_added",
-    "taskId": "task_20260128_Q78_6y",
-    "taskTitle": "US-1151: Extract Settings tab components from monolith",
-    "details": {
-      "author": "Veritas",
-      "preview": "Extracted monolithic SettingsDialog.tsx (1,481→279..."
-    },
-    "timestamp": "2026-01-28T08:57:09.157Z"
-  },
-  {
-    "id": "activity_1769590226849_pj4gxcgf9",
+    "id": "activity_1769597722736_noefnouuk",
     "type": "task_updated",
-    "taskId": "task_20260128_Q78_6y",
-    "taskTitle": "US-1151: Extract Settings tab components from monolith",
-    "timestamp": "2026-01-28T08:50:26.849Z"
+    "taskId": "task_20260128_80Bww2",
+    "taskTitle": "RF-06: Server Error Handling Middleware",
+    "timestamp": "2026-01-28T10:55:22.736Z"
   },
   {
-    "id": "activity_1769590166795_2kk4ua4tk",
+    "id": "activity_1769597722706_wa5u0h76j",
+    "type": "task_updated",
+    "taskId": "task_20260128_9ljJmb",
+    "taskTitle": "RF-16: Frontend Accessibility Improvements",
+    "timestamp": "2026-01-28T10:55:22.706Z"
+  },
+  {
+    "id": "activity_1769597722691_5oj73ps8w",
+    "type": "task_updated",
+    "taskId": "task_20260128_DmkA14",
+    "taskTitle": "RF-21: Server Performance & Reliability",
+    "timestamp": "2026-01-28T10:55:22.691Z"
+  },
+  {
+    "id": "activity_1769597722677_xtm7rtri8",
+    "type": "task_updated",
+    "taskId": "task_20260128_oeprdJ",
+    "taskTitle": "RF-25: Code Cleanup & Organization",
+    "timestamp": "2026-01-28T10:55:22.677Z"
+  },
+  {
+    "id": "activity_1769597722644_hv02hwkg3",
+    "type": "task_updated",
+    "taskId": "task_20260128_XIY4cW",
+    "taskTitle": "RF-03: Server Security Hardening",
+    "timestamp": "2026-01-28T10:55:22.644Z"
+  },
+  {
+    "id": "activity_1769597722606_77lv25nid",
+    "type": "task_updated",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "timestamp": "2026-01-28T10:55:22.606Z"
+  },
+  {
+    "id": "activity_1769597722589_a66z45tfq",
+    "type": "task_updated",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "timestamp": "2026-01-28T10:55:22.589Z"
+  },
+  {
+    "id": "activity_1769597722572_l99a5fcp0",
+    "type": "task_updated",
+    "taskId": "task_20260128_wgJpvX",
+    "taskTitle": "RF-09: Move Business Logic from Routes to Services",
+    "timestamp": "2026-01-28T10:55:22.572Z"
+  },
+  {
+    "id": "activity_1769597722541_xetg84v9c",
+    "type": "task_updated",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
+    "timestamp": "2026-01-28T10:55:22.541Z"
+  },
+  {
+    "id": "activity_1769597722456_pytwtp2kf",
+    "type": "task_updated",
+    "taskId": "task_20260128_VnO-L8",
+    "taskTitle": "RF-12: Extract Shared WebSocket Hook",
+    "timestamp": "2026-01-28T10:55:22.456Z"
+  },
+  {
+    "id": "activity_1769597722439_hkn54ujkp",
+    "type": "task_updated",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
+    "timestamp": "2026-01-28T10:55:22.439Z"
+  },
+  {
+    "id": "activity_1769597722424_0jmkycp16",
+    "type": "task_updated",
+    "taskId": "task_20260128_1yHkWF",
+    "taskTitle": "RF-15: Split God Components — Board & Settings",
+    "timestamp": "2026-01-28T10:55:22.424Z"
+  },
+  {
+    "id": "activity_1769597722408_l7oy4kag1",
+    "type": "task_updated",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
+    "timestamp": "2026-01-28T10:55:22.408Z"
+  },
+  {
+    "id": "activity_1769597722375_s2y1gr116",
+    "type": "task_updated",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
+    "timestamp": "2026-01-28T10:55:22.375Z"
+  },
+  {
+    "id": "activity_1769597722329_9bpgzxpvv",
+    "type": "task_updated",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
+    "timestamp": "2026-01-28T10:55:22.329Z"
+  },
+  {
+    "id": "activity_1769597722269_5wxqiz7ff",
+    "type": "task_updated",
+    "taskId": "task_20260128_ksQUvs",
+    "taskTitle": "RF-20: Frontend Performance Optimization",
+    "timestamp": "2026-01-28T10:55:22.269Z"
+  },
+  {
+    "id": "activity_1769597722252_0ndhdok2q",
+    "type": "task_updated",
+    "taskId": "task_20260128_Qh60Ao",
+    "taskTitle": "RF-22: TypeScript Strictness & Linting",
+    "timestamp": "2026-01-28T10:55:22.253Z"
+  },
+  {
+    "id": "activity_1769597722235_gcvtvroxk",
+    "type": "task_updated",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
+    "timestamp": "2026-01-28T10:55:22.235Z"
+  },
+  {
+    "id": "activity_1769597722217_dlodb9szd",
+    "type": "task_updated",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
+    "timestamp": "2026-01-28T10:55:22.217Z"
+  },
+  {
+    "id": "activity_1769597722203_fbgxnu4s7",
+    "type": "task_updated",
+    "taskId": "task_20260128_fylTjw",
+    "taskTitle": "RF-13: Create TaskConfigContext — Fix Prop Drilling",
+    "timestamp": "2026-01-28T10:55:22.203Z"
+  },
+  {
+    "id": "activity_1769597722189_qmtf8ypqj",
+    "type": "task_updated",
+    "taskId": "task_20260128_IWTxzN",
+    "taskTitle": "RF-10: Split Shared types.ts (591 lines)",
+    "timestamp": "2026-01-28T10:55:22.189Z"
+  },
+  {
+    "id": "activity_1769597722174_48cuqhna8",
+    "type": "task_updated",
+    "taskId": "task_20260128_jS7k9o",
+    "taskTitle": "RF-02: Fix Dependency Security Vulnerabilities",
+    "timestamp": "2026-01-28T10:55:22.174Z"
+  },
+  {
+    "id": "activity_1769597722149_7femugrhu",
+    "type": "task_updated",
+    "taskId": "task_20260128_HtCf-y",
+    "taskTitle": "RF-05: Add React Error Boundaries",
+    "timestamp": "2026-01-28T10:55:22.149Z"
+  },
+  {
+    "id": "activity_1769597700935_1v1n64b8n",
+    "type": "task_deleted",
+    "taskId": "task_20260128_2sIFHb",
+    "taskTitle": "US-1206: Responsive design audit for tablets/phones",
+    "timestamp": "2026-01-28T10:55:00.935Z"
+  },
+  {
+    "id": "activity_1769597700924_w0ttc9tkh",
+    "type": "task_deleted",
+    "taskId": "task_20260128_SAHMz6",
+    "taskTitle": "US-1205: Auto-detect and display LAN URL",
+    "timestamp": "2026-01-28T10:55:00.924Z"
+  },
+  {
+    "id": "activity_1769597700913_7zn5cevnz",
+    "type": "task_deleted",
+    "taskId": "task_20260128_Q8rmjd",
+    "taskTitle": "US-1204: macOS firewall configuration guide",
+    "timestamp": "2026-01-28T10:55:00.913Z"
+  },
+  {
+    "id": "activity_1769597700901_rk6zsstoy",
+    "type": "task_deleted",
+    "taskId": "task_20260128_2jWpyv",
+    "taskTitle": "US-1203: Configure CORS for LAN origins",
+    "timestamp": "2026-01-28T10:55:00.901Z"
+  },
+  {
+    "id": "activity_1769597700891_jhmca6kez",
+    "type": "task_deleted",
+    "taskId": "task_20260128_aTOv4t",
+    "taskTitle": "US-1202: Bind Express API server to LAN",
+    "timestamp": "2026-01-28T10:55:00.891Z"
+  },
+  {
+    "id": "activity_1769597700880_4nutnn222",
+    "type": "task_deleted",
+    "taskId": "task_20260128_Z1vcc9",
+    "taskTitle": "US-1201: Bind Vite dev server to LAN",
+    "timestamp": "2026-01-28T10:55:00.880Z"
+  },
+  {
+    "id": "activity_1769597700862_6lvyv18vm",
+    "type": "task_deleted",
+    "taskId": "task_20260128_eUf_U7",
+    "taskTitle": "US-1201: Bind Vite dev server to LAN",
+    "timestamp": "2026-01-28T10:55:00.862Z"
+  },
+  {
+    "id": "activity_1769597643679_gema54xkr",
+    "type": "comment_added",
+    "taskId": "task_20260128_HtCf-y",
+    "taskTitle": "RF-05: Add React Error Boundaries",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created FeatureErrorBoundary component and wrapped..."
+    },
+    "timestamp": "2026-01-28T10:54:03.679Z"
+  },
+  {
+    "id": "activity_1769597643660_l1j6m6e6m",
     "type": "status_changed",
-    "taskId": "task_20260128_Q78_6y",
-    "taskTitle": "US-1151: Extract Settings tab components from monolith",
+    "taskId": "task_20260128_HtCf-y",
+    "taskTitle": "RF-05: Add React Error Boundaries",
     "details": {
       "from": "todo",
-      "status": "in-progress"
+      "status": "done"
     },
-    "timestamp": "2026-01-28T08:49:26.795Z"
+    "timestamp": "2026-01-28T10:54:03.660Z"
   },
   {
-    "id": "activity_1769589885558_p754qy6ot",
-    "type": "task_created",
-    "taskId": "task_20260128_8HU2XD",
-    "taskTitle": "US-1158: Replace alert() calls with toast notifications",
+    "id": "activity_1769597634283_7n16j9357",
+    "type": "comment_added",
+    "taskId": "task_20260128_jS7k9o",
+    "taskTitle": "RF-02: Fix Dependency Security Vulnerabilities",
     "details": {
-      "type": "code",
+      "author": "Veritas",
+      "preview": "Replaced xlsx with exceljs (fixes CVE-2023-30533/3..."
+    },
+    "timestamp": "2026-01-28T10:53:54.283Z"
+  },
+  {
+    "id": "activity_1769597634242_k9z2egqtr",
+    "type": "status_changed",
+    "taskId": "task_20260128_jS7k9o",
+    "taskTitle": "RF-02: Fix Dependency Security Vulnerabilities",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:53:54.242Z"
+  },
+  {
+    "id": "activity_1769597577923_86mu4bzf8",
+    "type": "comment_added",
+    "taskId": "task_20260128_IWTxzN",
+    "taskTitle": "RF-10: Split Shared types.ts (591 lines)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Split types.ts into domain-specific files under ty..."
+    },
+    "timestamp": "2026-01-28T10:52:57.923Z"
+  },
+  {
+    "id": "activity_1769597577897_ohfr8r1ya",
+    "type": "status_changed",
+    "taskId": "task_20260128_IWTxzN",
+    "taskTitle": "RF-10: Split Shared types.ts (591 lines)",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:52:57.897Z"
+  },
+  {
+    "id": "activity_1769597515063_a9dyrsz71",
+    "type": "comment_added",
+    "taskId": "task_20260128_fylTjw",
+    "taskTitle": "RF-13: Create TaskConfigContext — Fix Prop Drilling",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created TaskConfigContext/Provider/useTaskConfig h..."
+    },
+    "timestamp": "2026-01-28T10:51:55.063Z"
+  },
+  {
+    "id": "activity_1769597515038_obucllbc0",
+    "type": "status_changed",
+    "taskId": "task_20260128_fylTjw",
+    "taskTitle": "RF-13: Create TaskConfigContext — Fix Prop Drilling",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T10:51:55.038Z"
+  },
+  {
+    "id": "activity_1769597094577_qsxc455op",
+    "type": "task_updated",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
+    "timestamp": "2026-01-28T10:44:54.577Z"
+  },
+  {
+    "id": "activity_1769597094557_cagrqs0xy",
+    "type": "task_updated",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
+    "timestamp": "2026-01-28T10:44:54.557Z"
+  },
+  {
+    "id": "activity_1769597094533_34drwh772",
+    "type": "task_updated",
+    "taskId": "task_20260128_Qh60Ao",
+    "taskTitle": "RF-22: TypeScript Strictness & Linting",
+    "timestamp": "2026-01-28T10:44:54.533Z"
+  },
+  {
+    "id": "activity_1769597094507_n40rdj3ju",
+    "type": "task_updated",
+    "taskId": "task_20260128_ksQUvs",
+    "taskTitle": "RF-20: Frontend Performance Optimization",
+    "timestamp": "2026-01-28T10:44:54.507Z"
+  },
+  {
+    "id": "activity_1769597094487_l91g4belc",
+    "type": "task_updated",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
+    "timestamp": "2026-01-28T10:44:54.487Z"
+  },
+  {
+    "id": "activity_1769597094461_uy0gubgtv",
+    "type": "task_updated",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
+    "timestamp": "2026-01-28T10:44:54.461Z"
+  },
+  {
+    "id": "activity_1769597094439_ha1il6l9j",
+    "type": "task_updated",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
+    "timestamp": "2026-01-28T10:44:54.439Z"
+  },
+  {
+    "id": "activity_1769597094412_xn6j4owg1",
+    "type": "task_updated",
+    "taskId": "task_20260128_1yHkWF",
+    "taskTitle": "RF-15: Split God Components — Board & Settings",
+    "timestamp": "2026-01-28T10:44:54.412Z"
+  },
+  {
+    "id": "activity_1769597094397_8mfca4th3",
+    "type": "task_updated",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
+    "timestamp": "2026-01-28T10:44:54.397Z"
+  },
+  {
+    "id": "activity_1769597094366_d2xoqpwa9",
+    "type": "task_updated",
+    "taskId": "task_20260128_VnO-L8",
+    "taskTitle": "RF-12: Extract Shared WebSocket Hook",
+    "timestamp": "2026-01-28T10:44:54.366Z"
+  },
+  {
+    "id": "activity_1769597094359_zna4zchgs",
+    "type": "task_updated",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
+    "timestamp": "2026-01-28T10:44:54.359Z"
+  },
+  {
+    "id": "activity_1769597094354_fmii3vyp2",
+    "type": "task_updated",
+    "taskId": "task_20260128_wgJpvX",
+    "taskTitle": "RF-09: Move Business Logic from Routes to Services",
+    "timestamp": "2026-01-28T10:44:54.354Z"
+  },
+  {
+    "id": "activity_1769597094350_b5xvgesiw",
+    "type": "task_updated",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "timestamp": "2026-01-28T10:44:54.350Z"
+  },
+  {
+    "id": "activity_1769597094346_gakzl1var",
+    "type": "task_updated",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "timestamp": "2026-01-28T10:44:54.346Z"
+  },
+  {
+    "id": "activity_1769597094341_mgggbjq87",
+    "type": "task_updated",
+    "taskId": "task_20260128_XIY4cW",
+    "taskTitle": "RF-03: Server Security Hardening",
+    "timestamp": "2026-01-28T10:44:54.341Z"
+  },
+  {
+    "id": "activity_1769597094322_4ijtqw395",
+    "type": "task_created",
+    "taskId": "task_20260128_oeprdJ",
+    "taskTitle": "RF-25: Code Cleanup & Organization",
+    "details": {
+      "type": "refactor-saXoty",
       "priority": "low",
       "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:44:45.558Z"
+    "timestamp": "2026-01-28T10:44:54.322Z"
   },
   {
-    "id": "activity_1769589878257_3ffqbousc",
+    "id": "activity_1769597094318_dc3gn8fup",
     "type": "task_created",
-    "taskId": "task_20260128_CnogQO",
-    "taskTitle": "US-1157: Sanitize settings import against prototype pollution",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
     "details": {
-      "type": "code",
+      "type": "refactor-saXoty",
       "priority": "medium",
       "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:44:38.257Z"
+    "timestamp": "2026-01-28T10:44:54.318Z"
   },
   {
-    "id": "activity_1769589871074_en1h4id50",
+    "id": "activity_1769597094314_sm29llt3n",
     "type": "task_created",
-    "taskId": "task_20260128_F-XLhL",
-    "taskTitle": "US-1156: Settings accessibility (WCAG 2.1 AA)",
+    "taskId": "task_20260128_WYNpAQ",
+    "taskTitle": "RF-23: Extract Shared Utilities",
     "details": {
-      "type": "code",
+      "type": "refactor-saXoty",
       "priority": "medium",
       "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:44:31.074Z"
+    "timestamp": "2026-01-28T10:44:54.314Z"
   },
   {
-    "id": "activity_1769589861607_14bhx2k5g",
+    "id": "activity_1769597094311_yj5w5drfp",
     "type": "task_created",
-    "taskId": "task_20260128_-KNOy3",
-    "taskTitle": "US-1155: Settings performance — memoization & lazy loading",
+    "taskId": "task_20260128_Qh60Ao",
+    "taskTitle": "RF-22: TypeScript Strictness & Linting",
     "details": {
-      "type": "code",
+      "type": "refactor-saXoty",
       "priority": "medium",
       "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:44:21.607Z"
+    "timestamp": "2026-01-28T10:44:54.311Z"
   },
   {
-    "id": "activity_1769589851638_rj39j8yaz",
+    "id": "activity_1769597094309_m481jvdxm",
     "type": "task_created",
-    "taskId": "task_20260128_6SbOnv",
-    "taskTitle": "US-1154: Add test coverage for settings features",
+    "taskId": "task_20260128_DmkA14",
+    "taskTitle": "RF-21: Server Performance & Reliability",
     "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T08:44:11.638Z"
-  },
-  {
-    "id": "activity_1769589842836_6guypgz4i",
-    "type": "task_created",
-    "taskId": "task_20260128_NrvUWe",
-    "taskTitle": "US-1153: Harden template import validation & security",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T08:44:02.836Z"
-  },
-  {
-    "id": "activity_1769589834742_skz4qpgwq",
-    "type": "task_created",
-    "taskId": "task_20260128_SFb0-u",
-    "taskTitle": "US-1152: Add error boundaries to Settings dialog",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T08:43:54.742Z"
-  },
-  {
-    "id": "activity_1769589827001_9gfz0vpqx",
-    "type": "task_created",
-    "taskId": "task_20260128_Q78_6y",
-    "taskTitle": "US-1151: Extract Settings tab components from monolith",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T08:43:47.001Z"
-  },
-  {
-    "id": "activity_1769589376876_l09szmsnu",
-    "type": "comment_added",
-    "taskId": "task_20260128_njhuR8",
-    "taskTitle": "US-1110: Settings import/export & reset",
-    "details": {
-      "author": "Veritas",
-      "preview": "Settings import/export & reset complete: export to..."
-    },
-    "timestamp": "2026-01-28T08:36:16.876Z"
-  },
-  {
-    "id": "activity_1769589376846_5f3t59f1k",
-    "type": "status_changed",
-    "taskId": "task_20260128_njhuR8",
-    "taskTitle": "US-1110: Settings import/export & reset",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:36:16.846Z"
-  },
-  {
-    "id": "activity_1769589334140_qw71wwjrf",
-    "type": "status_changed",
-    "taskId": "task_20260128_njhuR8",
-    "taskTitle": "US-1110: Settings import/export & reset",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:35:34.140Z"
-  },
-  {
-    "id": "activity_1769589320546_cy8qlf98x",
-    "type": "comment_added",
-    "taskId": "task_20260128_Kbjd3t",
-    "taskTitle": "US-1108: Auto-archive settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Auto-archive settings complete: auto-archive toggl..."
-    },
-    "timestamp": "2026-01-28T08:35:20.546Z"
-  },
-  {
-    "id": "activity_1769589320537_qxwtl297n",
-    "type": "comment_added",
-    "taskId": "task_20260128_itHuxN",
-    "taskTitle": "US-1107: Notification settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Notification settings tab complete: master toggle,..."
-    },
-    "timestamp": "2026-01-28T08:35:20.537Z"
-  },
-  {
-    "id": "activity_1769589320524_bmt32f2uc",
-    "type": "comment_added",
-    "taskId": "task_20260128_ndyIRl",
-    "taskTitle": "US-1106: Telemetry & activity settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Telemetry & activity settings wired server-side: e..."
-    },
-    "timestamp": "2026-01-28T08:35:20.524Z"
-  },
-  {
-    "id": "activity_1769589320510_zs326om90",
-    "type": "comment_added",
-    "taskId": "task_20260128_HaNM-g",
-    "taskTitle": "US-1105: Agent & git settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Agent & git settings tab complete: timeout, auto-c..."
-    },
-    "timestamp": "2026-01-28T08:35:20.510Z"
-  },
-  {
-    "id": "activity_1769589312604_8nhvt8qs7",
-    "type": "status_changed",
-    "taskId": "task_20260128_Kbjd3t",
-    "taskTitle": "US-1108: Auto-archive settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:35:12.604Z"
-  },
-  {
-    "id": "activity_1769589312589_i4j1dr456",
-    "type": "status_changed",
-    "taskId": "task_20260128_itHuxN",
-    "taskTitle": "US-1107: Notification settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:35:12.589Z"
-  },
-  {
-    "id": "activity_1769589312571_sp30si9h8",
-    "type": "status_changed",
-    "taskId": "task_20260128_ndyIRl",
-    "taskTitle": "US-1106: Telemetry & activity settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:35:12.571Z"
-  },
-  {
-    "id": "activity_1769589312540_ii0ufqkn4",
-    "type": "status_changed",
-    "taskId": "task_20260128_HaNM-g",
-    "taskTitle": "US-1105: Agent & git settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:35:12.540Z"
-  },
-  {
-    "id": "activity_1769589172887_jp4y9jj7c",
-    "type": "comment_added",
-    "taskId": "task_20260128_vYzfwx",
-    "taskTitle": "US-1104: Task behavior settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Task behavior settings wired in TaskDetailPanel: d..."
-    },
-    "timestamp": "2026-01-28T08:32:52.887Z"
-  },
-  {
-    "id": "activity_1769589172877_npxiqczo8",
-    "type": "comment_added",
-    "taskId": "task_20260128_DUyAbh",
-    "taskTitle": "US-1103: Board & display settings",
-    "details": {
-      "author": "Veritas",
-      "preview": "Board & display settings complete: sprint badges o..."
-    },
-    "timestamp": "2026-01-28T08:32:52.877Z"
-  },
-  {
-    "id": "activity_1769589167537_tukrzq1ly",
-    "type": "status_changed",
-    "taskId": "task_20260128_vYzfwx",
-    "taskTitle": "US-1104: Task behavior settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:32:47.537Z"
-  },
-  {
-    "id": "activity_1769589167510_sgfq2w68c",
-    "type": "status_changed",
-    "taskId": "task_20260128_DUyAbh",
-    "taskTitle": "US-1103: Board & display settings",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:32:47.510Z"
-  },
-  {
-    "id": "activity_1769588643293_d36yhzq9l",
-    "type": "status_changed",
-    "taskId": "task_20260128_iG-ISb",
-    "taskTitle": "Review the ByteRover Skill",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:24:03.293Z"
-  },
-  {
-    "id": "activity_1769588641597_qrbvyuw82",
-    "type": "comment_added",
-    "taskId": "task_20260128_iG-ISb",
-    "taskTitle": "Review the ByteRover Skill",
-    "details": {
-      "author": "Veritas",
-      "preview": "Passing on ByteRover. Too much overlap with our ex..."
-    },
-    "timestamp": "2026-01-28T08:24:01.597Z"
-  },
-  {
-    "id": "activity_1769588405585_vcuxykrps",
-    "type": "status_changed",
-    "taskId": "task_20260128_Kbjd3t",
-    "taskTitle": "US-1108: Auto-archive settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.585Z"
-  },
-  {
-    "id": "activity_1769588405575_9q54r5fma",
-    "type": "status_changed",
-    "taskId": "task_20260128_itHuxN",
-    "taskTitle": "US-1107: Notification settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.575Z"
-  },
-  {
-    "id": "activity_1769588405563_rn41vcwvx",
-    "type": "status_changed",
-    "taskId": "task_20260128_ndyIRl",
-    "taskTitle": "US-1106: Telemetry & activity settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.563Z"
-  },
-  {
-    "id": "activity_1769588405544_7kws5xknl",
-    "type": "status_changed",
-    "taskId": "task_20260128_HaNM-g",
-    "taskTitle": "US-1105: Agent & git settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.544Z"
-  },
-  {
-    "id": "activity_1769588405528_m9t3fqms0",
-    "type": "status_changed",
-    "taskId": "task_20260128_vYzfwx",
-    "taskTitle": "US-1104: Task behavior settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.528Z"
-  },
-  {
-    "id": "activity_1769588405497_lz2cy9e52",
-    "type": "status_changed",
-    "taskId": "task_20260128_DUyAbh",
-    "taskTitle": "US-1103: Board & display settings",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T08:20:05.497Z"
-  },
-  {
-    "id": "activity_1769588391537_1sdwjfyig",
-    "type": "comment_added",
-    "taskId": "task_20260128_KbDn0E",
-    "taskTitle": "US-1109: Settings UI — Tabbed panel redesign",
-    "details": {
-      "author": "Veritas",
-      "preview": "Complete tabbed settings panel with 7 tabs, toggle..."
-    },
-    "timestamp": "2026-01-28T08:19:51.537Z"
-  },
-  {
-    "id": "activity_1769588391508_njfkv8ncv",
-    "type": "status_changed",
-    "taskId": "task_20260128_KbDn0E",
-    "taskTitle": "US-1109: Settings UI — Tabbed panel redesign",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T08:19:51.508Z"
-  },
-  {
-    "id": "activity_1769588199653_whhfki2dz",
-    "type": "task_created",
-    "taskId": "task_20260128_8KRThU",
-    "taskTitle": "FEATURE REQUEST: Change Review Column to Blocked",
-    "details": {
-      "type": "feature-request-n30mhV",
+      "type": "refactor-saXoty",
       "priority": "medium",
       "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:39.653Z"
+    "timestamp": "2026-01-28T10:44:54.309Z"
   },
   {
-    "id": "activity_1769588192436_i9tzea6mk",
-    "type": "status_changed",
-    "taskId": "task_20260128_KbDn0E",
-    "taskTitle": "US-1109: Settings UI — Tabbed panel redesign",
+    "id": "activity_1769597094307_i222jnzay",
+    "type": "task_created",
+    "taskId": "task_20260128_ksQUvs",
+    "taskTitle": "RF-20: Frontend Performance Optimization",
     "details": {
-      "from": "todo",
-      "status": "in-progress"
+      "type": "refactor-saXoty",
+      "priority": "medium",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:32.436Z"
+    "timestamp": "2026-01-28T10:44:54.307Z"
   },
   {
-    "id": "activity_1769588192387_wjoormah7",
-    "type": "comment_added",
-    "taskId": "task_20260128_gUHeIV",
-    "taskTitle": "US-1102: Feature toggle React context & hooks",
+    "id": "activity_1769597094304_fp0p28nrr",
+    "type": "task_created",
+    "taskId": "task_20260128_lePtYQ",
+    "taskTitle": "RF-19: Create Shared API Client Library",
     "details": {
-      "author": "Veritas",
-      "preview": "useFeatureSettings, useFeatureSetting, useUpdateFe..."
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:32.387Z"
+    "timestamp": "2026-01-28T10:44:54.304Z"
   },
   {
-    "id": "activity_1769588192375_z068olrt4",
-    "type": "status_changed",
-    "taskId": "task_20260128_gUHeIV",
-    "taskTitle": "US-1102: Feature toggle React context & hooks",
+    "id": "activity_1769597094302_da0avgdrb",
+    "type": "task_created",
+    "taskId": "task_20260128_OFkc0Z",
+    "taskTitle": "RF-18: Modularize MCP Server (843 lines)",
     "details": {
-      "from": "todo",
-      "status": "done"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:32.375Z"
+    "timestamp": "2026-01-28T10:44:54.302Z"
   },
   {
-    "id": "activity_1769588192354_kmcif9395",
-    "type": "comment_added",
-    "taskId": "task_20260128_X6nifI",
-    "taskTitle": "US-1101: Settings infrastructure & config schema expansion",
+    "id": "activity_1769597094300_yxqyiipse",
+    "type": "task_created",
+    "taskId": "task_20260128_q-NnH4",
+    "taskTitle": "RF-17: Modularize CLI (899 lines)",
     "details": {
-      "author": "Veritas",
-      "preview": "FeatureSettings types + defaults, deep merge in Co..."
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:32.354Z"
+    "timestamp": "2026-01-28T10:44:54.300Z"
   },
   {
-    "id": "activity_1769588192286_615p4w08r",
-    "type": "status_changed",
-    "taskId": "task_20260128_X6nifI",
-    "taskTitle": "US-1101: Settings infrastructure & config schema expansion",
+    "id": "activity_1769597094297_dm9cpivlf",
+    "type": "task_created",
+    "taskId": "task_20260128_9ljJmb",
+    "taskTitle": "RF-16: Frontend Accessibility Improvements",
     "details": {
-      "from": "in-progress",
-      "status": "done"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:16:32.286Z"
+    "timestamp": "2026-01-28T10:44:54.297Z"
   },
   {
-    "id": "activity_1769588154981_unig8oz3f",
-    "type": "comment_added",
-    "taskId": "task_20260128_XvmMga",
-    "taskTitle": "Research Kimi K2.5",
+    "id": "activity_1769597094295_q836y1gtk",
+    "type": "task_created",
+    "taskId": "task_20260128_1yHkWF",
+    "taskTitle": "RF-15: Split God Components — Board & Settings",
     "details": {
-      "author": "Veritas",
-      "preview": "Research complete. Files saved to research/kimi-k2..."
+      "type": "refactor-saXoty",
+      "priority": "medium",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:15:54.981Z"
+    "timestamp": "2026-01-28T10:44:54.295Z"
   },
   {
-    "id": "activity_1769588154947_mp9tdjkky",
-    "type": "status_changed",
-    "taskId": "task_20260128_XvmMga",
-    "taskTitle": "Research Kimi K2.5",
+    "id": "activity_1769597094293_pa6hc9jq9",
+    "type": "task_created",
+    "taskId": "task_20260128_bIPwKK",
+    "taskTitle": "RF-14: Split God Components — Task Layer",
     "details": {
-      "from": "in-progress",
-      "status": "done"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:15:54.947Z"
+    "timestamp": "2026-01-28T10:44:54.293Z"
   },
   {
-    "id": "activity_1769588034705_calq30nad",
-    "type": "status_changed",
-    "taskId": "task_20260128_X6nifI",
-    "taskTitle": "US-1101: Settings infrastructure & config schema expansion",
+    "id": "activity_1769597094290_ow86dbqzy",
+    "type": "task_created",
+    "taskId": "task_20260128_fylTjw",
+    "taskTitle": "RF-13: Create TaskConfigContext — Fix Prop Drilling",
     "details": {
-      "from": "todo",
-      "status": "in-progress"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:13:54.705Z"
+    "timestamp": "2026-01-28T10:44:54.290Z"
   },
   {
-    "id": "activity_1769588024542_4bcp6khaz",
-    "type": "comment_added",
-    "taskId": "task_20260128_iG-ISb",
-    "taskTitle": "Review the ByteRover Skill",
+    "id": "activity_1769597094287_j0p1vcl2p",
+    "type": "task_created",
+    "taskId": "task_20260128_VnO-L8",
+    "taskTitle": "RF-12: Extract Shared WebSocket Hook",
     "details": {
-      "author": "Veritas",
-      "preview": "Reviewed ByteRover skill and sent analysis to Brad..."
+      "type": "refactor-saXoty",
+      "priority": "medium",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:13:44.542Z"
+    "timestamp": "2026-01-28T10:44:54.287Z"
   },
   {
-    "id": "activity_1769588020507_qw0jiamvq",
-    "type": "status_changed",
-    "taskId": "task_20260128_iG-ISb",
-    "taskTitle": "Review the ByteRover Skill",
+    "id": "activity_1769597094285_kt7owyz1x",
+    "type": "task_created",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
     "details": {
-      "from": "todo",
-      "status": "in-progress"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:13:40.508Z"
+    "timestamp": "2026-01-28T10:44:54.285Z"
   },
   {
-    "id": "activity_1769587980296_eqnkbfpqk",
-    "type": "status_changed",
-    "taskId": "task_20260128_XvmMga",
-    "taskTitle": "Research Kimi K2.5",
+    "id": "activity_1769597094281_8ki7ujdil",
+    "type": "task_created",
+    "taskId": "task_20260128_IWTxzN",
+    "taskTitle": "RF-10: Split Shared types.ts (591 lines)",
     "details": {
-      "from": "todo",
-      "status": "in-progress"
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
     },
-    "timestamp": "2026-01-28T08:13:00.296Z"
+    "timestamp": "2026-01-28T10:44:54.281Z"
   },
   {
-    "id": "activity_1769587926555_hnhvh3cvw",
-    "type": "task_archived",
-    "taskId": "task_20260128_eyx3Mw",
-    "taskTitle": "FEATURE REQUEST: Working indicator",
-    "timestamp": "2026-01-28T08:12:06.555Z"
+    "id": "activity_1769597094277_grthpt3kk",
+    "type": "task_created",
+    "taskId": "task_20260128_wgJpvX",
+    "taskTitle": "RF-09: Move Business Logic from Routes to Services",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.277Z"
+  },
+  {
+    "id": "activity_1769597094273_6u3ggb0ye",
+    "type": "task_created",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.273Z"
+  },
+  {
+    "id": "activity_1769597094270_8eg8ptglt",
+    "type": "task_created",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.270Z"
+  },
+  {
+    "id": "activity_1769597094267_nngq85s49",
+    "type": "task_created",
+    "taskId": "task_20260128_80Bww2",
+    "taskTitle": "RF-06: Server Error Handling Middleware",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.267Z"
+  },
+  {
+    "id": "activity_1769597094263_j2bunhxkj",
+    "type": "task_created",
+    "taskId": "task_20260128_HtCf-y",
+    "taskTitle": "RF-05: Add React Error Boundaries",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.263Z"
+  },
+  {
+    "id": "activity_1769597094260_88pk1fi27",
+    "type": "task_created",
+    "taskId": "task_20260128_eib_Vw",
+    "taskTitle": "RF-04: Add Comprehensive Test Suite",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.260Z"
+  },
+  {
+    "id": "activity_1769597094257_ly84nzryw",
+    "type": "task_created",
+    "taskId": "task_20260128_XIY4cW",
+    "taskTitle": "RF-03: Server Security Hardening",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.257Z"
+  },
+  {
+    "id": "activity_1769597094252_02b6pxwjq",
+    "type": "task_created",
+    "taskId": "task_20260128_jS7k9o",
+    "taskTitle": "RF-02: Fix Dependency Security Vulnerabilities",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.252Z"
+  },
+  {
+    "id": "activity_1769597094237_9y2vlux8u",
+    "type": "task_created",
+    "taskId": "task_20260128_v5QxzF",
+    "taskTitle": "RF-01: Server Authentication & Authorization",
+    "details": {
+      "type": "refactor-saXoty",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T10:44:54.237Z"
   }
 ]

@@ -49,6 +49,7 @@ import {
 } from 'lucide-react';
 import type { Task, AgentType, AttemptStatus } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
+import FeatureErrorBoundary from '@/components/shared/FeatureErrorBoundary';
 
 interface AgentPanelProps {
   task: Task;
@@ -151,12 +152,13 @@ export function AgentPanel({ task }: AgentPanelProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label className="text-muted-foreground flex items-center gap-2">
-          <Bot className="h-4 w-4" />
-          AI Agent
-        </Label>
+    <FeatureErrorBoundary fallbackTitle="Agent panel failed to load">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-muted-foreground flex items-center gap-2">
+            <Bot className="h-4 w-4" />
+            AI Agent
+          </Label>
         <div className="flex items-center gap-2">
           {isConnected ? (
             <Wifi className="h-3 w-3 text-green-500" />
@@ -391,6 +393,7 @@ export function AgentPanel({ task }: AgentPanelProps) {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </FeatureErrorBoundary>
   );
 }

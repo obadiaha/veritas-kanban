@@ -3,7 +3,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { cn } from '@/lib/utils';
 import { TaskCard } from '@/components/task/TaskCard';
 import { isTaskBlocked, getTaskBlockers } from '@/hooks/useTasks';
-import type { Task, TaskStatus, TaskTypeConfig, ProjectConfig, SprintConfig } from '@veritas-kanban/shared';
+import type { Task, TaskStatus } from '@veritas-kanban/shared';
 
 interface KanbanColumnProps {
   id: TaskStatus;
@@ -12,9 +12,6 @@ interface KanbanColumnProps {
   allTasks: Task[];
   onTaskClick?: (task: Task) => void;
   selectedTaskId?: string | null;
-  taskTypes?: TaskTypeConfig[];
-  projects?: ProjectConfig[];
-  sprints?: SprintConfig[];
 }
 
 const columnColors: Record<TaskStatus, string> = {
@@ -24,12 +21,14 @@ const columnColors: Record<TaskStatus, string> = {
   'done': 'border-t-green-500',
 };
 
-export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selectedTaskId, taskTypes = [], projects = [], sprints = [] }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selectedTaskId }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
     <div
       ref={setNodeRef}
+      role="region"
+      aria-label={`${title} column, ${tasks.length} tasks`}
       className={cn(
         'flex flex-col rounded-lg bg-muted/50 border-t-2 transition-all',
         columnColors[id],
@@ -40,7 +39,7 @@ export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selected
         <h2 className="text-sm font-medium text-muted-foreground">
           {title}
         </h2>
-        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full" aria-live="polite">
           {tasks.length}
         </span>
       </div>
@@ -63,9 +62,6 @@ export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selected
                   key={task.id} 
                   task={task} 
                   onClick={() => onTaskClick?.(task)}
-                  taskTypes={taskTypes}
-                  projects={projects}
-                  sprints={sprints}
                   isSelected={task.id === selectedTaskId}
                   isBlocked={blocked}
                   blockerTitles={blockers.map(b => b.title)}

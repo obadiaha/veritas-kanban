@@ -3,9 +3,6 @@ import { KanbanColumn } from './KanbanColumn';
 import { TaskDetailPanel } from '@/components/task/TaskDetailPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
-import { useTaskTypes } from '@/hooks/useTaskTypes';
-import { useProjects } from '@/hooks/useProjects';
-import { useSprints } from '@/hooks/useSprints';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import {
   DndContext,
@@ -32,6 +29,7 @@ import {
 import { BulkActionsBar } from './BulkActionsBar';
 import { ArchiveSuggestionBanner } from './ArchiveSuggestionBanner';
 import { DashboardSection } from '@/components/dashboard/DashboardSection';
+import FeatureErrorBoundary from '@/components/shared/FeatureErrorBoundary';
 
 const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'todo', title: 'To Do' },
@@ -77,9 +75,6 @@ function LoadingSkeleton() {
 
 export function KanbanBoard() {
   const { data: tasks, isLoading, error } = useTasks();
-  const { data: taskTypes = [] } = useTaskTypes();
-  const { data: projects = [] } = useProjects();
-  const { data: sprints = [] } = useSprints();
   const { settings: featureSettings } = useFeatureSettings();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -276,14 +271,36 @@ export function KanbanBoard() {
       
       {featureSettings.board.showArchiveSuggestions && <ArchiveSuggestionBanner />}
       
-      {featureSettings.board.enableDragAndDrop ? (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCorners}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-        >
+      <FeatureErrorBoundary fallbackTitle="Board failed to render">
+        {featureSettings.board.enableDragAndDrop ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="grid grid-cols-4 gap-4">
+              {COLUMNS.map(column => (
+                <KanbanColumn
+                  key={column.id}
+                  id={column.id}
+                  title={column.title}
+                  tasks={tasksByStatus[column.id]}
+                  allTasks={filteredTasks}
+                  onTaskClick={handleTaskClick}
+                  selectedTaskId={selectedTaskId}
+                />
+              ))}
+            </div>
+            
+            <DragOverlay>
+              {activeTask ? (
+                <TaskCard task={activeTask} isDragging />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        ) : (
           <div className="grid grid-cols-4 gap-4">
             {COLUMNS.map(column => (
               <KanbanColumn
@@ -294,39 +311,13 @@ export function KanbanBoard() {
                 allTasks={filteredTasks}
                 onTaskClick={handleTaskClick}
                 selectedTaskId={selectedTaskId}
-                taskTypes={taskTypes}
-                projects={projects}
-                sprints={sprints}
               />
             ))}
           </div>
-          
-          <DragOverlay>
-            {activeTask ? (
-              <TaskCard task={activeTask} isDragging taskTypes={taskTypes} projects={projects} sprints={sprints} />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-      ) : (
-        <div className="grid grid-cols-4 gap-4">
-          {COLUMNS.map(column => (
-            <KanbanColumn
-              key={column.id}
-              id={column.id}
-              title={column.title}
-              tasks={tasksByStatus[column.id]}
-              allTasks={filteredTasks}
-              onTaskClick={handleTaskClick}
-              selectedTaskId={selectedTaskId}
-              taskTypes={taskTypes}
-              projects={projects}
-              sprints={sprints}
-            />
-          ))}
-        </div>
-      )}
+        )}
 
-      {featureSettings.board.showDashboard && <DashboardSection />}
+        {featureSettings.board.showDashboard && <DashboardSection />}
+      </FeatureErrorBoundary>
 
       <TaskDetailPanel
         task={currentSelectedTask}

@@ -25,5 +25,10 @@
     "prettier": "^3.4.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
+  },
+  "pnpm": {
+    "overrides": {
+      "hono": ">=4.11.7"
+    }
   }
 }

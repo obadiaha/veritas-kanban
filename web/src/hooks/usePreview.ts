@@ -1,18 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api, type PreviewServer } from '../lib/api';
 
-const API_BASE = '/api';
-
-export interface PreviewServer {
-  taskId: string;
-  repoName: string;
-  pid: number;
-  port: number;
-  url: string;
-  status: 'starting' | 'running' | 'stopped' | 'error';
-  startedAt: string;
-  output: string[];
-  error?: string;
-}
+export type { PreviewServer };
 
 /**
  * Get preview status for a task
@@ -22,11 +11,7 @@ export function usePreviewStatus(taskId: string | undefined) {
     queryKey: ['preview', taskId],
     queryFn: async () => {
       if (!taskId) return { status: 'stopped' as const };
-      const response = await fetch(`${API_BASE}/preview/${taskId}`);
-      if (!response.ok) {
-        throw new Error('Failed to get preview status');
-      }
-      return response.json();
+      return api.preview.getStatus(taskId);
     },
     enabled: !!taskId,
     refetchInterval: (data) => {
@@ -51,11 +36,7 @@ export function usePreviewOutput(taskId: string | undefined, lines: number = 50)
     queryKey: ['preview', taskId, 'output', lines],
     queryFn: async () => {
       if (!taskId) return { output: [] };
-      const response = await fetch(`${API_BASE}/preview/${taskId}/output?lines=${lines}`);
-      if (!response.ok) {
-        throw new Error('Failed to get preview output');
-      }
-      return response.json();
+      return api.preview.getOutput(taskId, lines);
     },
     enabled: !!taskId,
     refetchInterval: 2000, // Poll every 2s for output
@@ -69,18 +50,7 @@ export function useStartPreview() {
   const queryClient = useQueryClient();
 
   return useMutation<PreviewServer, Error, string>({
-    mutationFn: async (taskId) => {
-      const response = await fetch(`${API_BASE}/preview/${taskId}/start`, {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to start preview');
-      }
-      
-      return response.json();
-    },
+    mutationFn: (taskId) => api.preview.start(taskId),
     onSuccess: (_data, taskId) => {
       queryClient.invalidateQueries({ queryKey: ['preview', taskId] });
     },
@@ -94,16 +64,7 @@ export function useStopPreview() {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, string>({
-    mutationFn: async (taskId) => {
-      const response = await fetch(`${API_BASE}/preview/${taskId}/stop`, {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to stop preview');
-      }
-    },
+    mutationFn: (taskId) => api.preview.stop(taskId),
     onSuccess: (_data, taskId) => {
       queryClient.invalidateQueries({ queryKey: ['preview', taskId] });
     },

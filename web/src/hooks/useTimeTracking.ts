@@ -1,12 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Task } from '@veritas-kanban/shared';
+import { api, type TimeSummary } from '../lib/api';
 
-const API_BASE = '/api';
-
-export interface TimeSummary {
-  byProject: { project: string; totalSeconds: number; taskCount: number }[];
-  total: number;
-}
+export type { TimeSummary };
 
 /**
  * Get time summary by project
@@ -14,13 +10,7 @@ export interface TimeSummary {
 export function useTimeSummary() {
   return useQuery<TimeSummary>({
     queryKey: ['time', 'summary'],
-    queryFn: async () => {
-      const response = await fetch(`${API_BASE}/tasks/time/summary`);
-      if (!response.ok) {
-        throw new Error('Failed to get time summary');
-      }
-      return response.json();
-    },
+    queryFn: () => api.time.getSummary(),
   });
 }
 
@@ -31,18 +21,7 @@ export function useStartTimer() {
   const queryClient = useQueryClient();
 
   return useMutation<Task, Error, string>({
-    mutationFn: async (taskId) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/start`, {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to start timer');
-      }
-      
-      return response.json();
-    },
+    mutationFn: (taskId) => api.time.start(taskId),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);
@@ -58,18 +37,7 @@ export function useStopTimer() {
   const queryClient = useQueryClient();
 
   return useMutation<Task, Error, string>({
-    mutationFn: async (taskId) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/stop`, {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to stop timer');
-      }
-      
-      return response.json();
-    },
+    mutationFn: (taskId) => api.time.stop(taskId),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);
@@ -85,20 +53,7 @@ export function useAddTimeEntry() {
   const queryClient = useQueryClient();
 
   return useMutation<Task, Error, { taskId: string; duration: number; description?: string }>({
-    mutationFn: async ({ taskId, duration, description }) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ duration, description }),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to add time entry');
-      }
-      
-      return response.json();
-    },
+    mutationFn: ({ taskId, duration, description }) => api.time.addEntry(taskId, duration, description),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);
@@ -114,18 +69,7 @@ export function useDeleteTimeEntry() {
   const queryClient = useQueryClient();
 
   return useMutation<Task, Error, { taskId: string; entryId: string }>({
-    mutationFn: async ({ taskId, entryId }) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry/${entryId}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to delete time entry');
-      }
-      
-      return response.json();
-    },
+    mutationFn: ({ taskId, entryId }) => api.time.deleteEntry(taskId, entryId),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);

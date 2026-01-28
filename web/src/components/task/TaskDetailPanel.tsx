@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -11,47 +11,23 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
-import { Trash2, Calendar, Clock, GitBranch, Bot, FileDiff, ClipboardCheck, Monitor, FileCode, Paperclip, Archive, RotateCcw } from 'lucide-react';
-import type { Task, TaskStatus, TaskPriority, ReviewComment, ReviewState } from '@veritas-kanban/shared';
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
-import { useProjects } from '@/hooks/useProjects';
-import { useSprints } from '@/hooks/useSprints';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
+import { useDebouncedSave } from '@/hooks/useDebouncedSave';
+import { TaskDetailsTab } from './detail/TaskDetailsTab';
 import { GitSection } from './GitSection';
 import { AgentPanel } from './AgentPanel';
 import { DiffViewer } from './DiffViewer';
 import { ReviewPanel } from './ReviewPanel';
-import { SubtasksSection } from './SubtasksSection';
-import { DependenciesSection } from './DependenciesSection';
 import { PreviewPanel } from './PreviewPanel';
-import { TimeTrackingSection } from './TimeTrackingSection';
-import { CommentsSection } from './CommentsSection';
 import { AttachmentsSection } from './AttachmentsSection';
 import { ApplyTemplateDialog } from './ApplyTemplateDialog';
+import FeatureErrorBoundary from '@/components/shared/FeatureErrorBoundary';
+import { GitBranch, Bot, FileDiff, ClipboardCheck, Monitor, FileCode, Paperclip, Archive } from 'lucide-react';
+import type { Task, ReviewComment, ReviewState } from '@veritas-kanban/shared';
 
 interface TaskDetailPanelProps {
   task: Task | null;
@@ -61,75 +37,15 @@ interface TaskDetailPanelProps {
   onRestore?: (taskId: string) => void;
 }
 
-const statusLabels: Record<TaskStatus, string> = {
-  'todo': 'To Do',
-  'in-progress': 'In Progress',
-  'review': 'Review',
-  'done': 'Done',
-};
-
-const priorityLabels: Record<TaskPriority, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-};
-
-function useDebouncedSave(task: Task | null, updateTask: ReturnType<typeof useUpdateTask>) {
-  const [localTask, setLocalTask] = useState<Task | null>(task);
-  const [changedFields, setChangedFields] = useState<Set<keyof Task>>(new Set());
-
-  // Sync from server when task prop changes (e.g., refetch)
-  useEffect(() => {
-    setLocalTask(task);
-    setChangedFields(new Set());
-  }, [task]);
-
-  // Debounced save - only send fields that were actually changed
-  useEffect(() => {
-    if (changedFields.size === 0 || !localTask) return;
-
-    const timeout = setTimeout(() => {
-      // Build input with only changed fields
-      const input: Record<string, unknown> = {};
-      changedFields.forEach(field => {
-        input[field] = localTask[field];
-      });
-
-      updateTask.mutate({
-        id: localTask.id,
-        input,
-      });
-      setChangedFields(new Set());
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [localTask, changedFields, updateTask]);
-
-  const updateField = useCallback(<K extends keyof Task>(field: K, value: Task[K]) => {
-    setLocalTask(prev => prev ? { ...prev, [field]: value } : null);
-    setChangedFields(prev => new Set(prev).add(field));
-  }, []);
-
-  const isDirty = changedFields.size > 0;
-
-  return { localTask, updateField, isDirty };
-}
-
 export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, onRestore }: TaskDetailPanelProps) {
-  const updateTask = useUpdateTask();
-  const deleteTask = useDeleteTask();
   const { data: taskTypes = [] } = useTaskTypes();
-  const { data: projects = [] } = useProjects();
-  const { data: sprints = [] } = useSprints();
   const { settings: featureSettings } = useFeatureSettings();
   const taskSettings = featureSettings.tasks;
   const agentSettings = featureSettings.agents;
-  const { localTask, updateField, isDirty } = useDebouncedSave(task, updateTask);
+  const { localTask, updateField, isDirty } = useDebouncedSave(task);
   const [activeTab, setActiveTab] = useState('details');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
-  const [showNewProject, setShowNewProject] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -141,23 +57,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, onOpenChange]);
 
-  const handleDelete = async () => {
-    if (!task) return;
-    await deleteTask.mutateAsync(task.id);
-    onOpenChange(false);
-  };
-
   if (!localTask) return null;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
 
   const isCodeTask = localTask.type === 'code';
   const hasWorktree = !!localTask.git?.worktreePath;
@@ -255,346 +155,77 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
 
           <div className="flex-1 overflow-y-auto mt-4">
             {/* Details Tab */}
-            <TabsContent value="details" className="mt-0 space-y-6">
-              <div className="space-y-2">
-                <Label className="text-muted-foreground">Description</Label>
-                {readOnly ? (
-                  <div className="text-sm whitespace-pre-wrap text-foreground/80 bg-muted/30 rounded-md p-3 min-h-[60px]">
-                    {localTask.description || 'No description'}
-                  </div>
-                ) : (
-                  <Textarea
-                    value={localTask.description}
-                    onChange={(e) => updateField('description', e.target.value)}
-                    placeholder="Add a description..."
-                    rows={4}
-                    className="resize-none"
-                  />
-                )}
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground">Status</Label>
-                  {readOnly ? (
-                    <div className="text-sm font-medium px-3 py-2 bg-muted/30 rounded-md">
-                      {statusLabels[localTask.status]}
-                    </div>
-                  ) : (
-                    <Select
-                      value={localTask.status}
-                      onValueChange={(v) => updateField('status', v as TaskStatus)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(statusLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground">Type</Label>
-                  {readOnly ? (
-                    <div className="text-sm font-medium px-3 py-2 bg-muted/30 rounded-md">
-                      {typeLabel}
-                    </div>
-                  ) : (
-                    <Select
-                      value={localTask.type}
-                      onValueChange={(v) => updateField('type', v)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {taskTypes.map((type) => {
-                          const IconComponent = getTypeIcon(type.icon);
-                          return (
-                            <SelectItem key={type.id} value={type.id}>
-                              <div className="flex items-center gap-2">
-                                {IconComponent && <IconComponent className="h-4 w-4" />}
-                                {type.label}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground">Priority</Label>
-                  {readOnly ? (
-                    <div className="text-sm font-medium px-3 py-2 bg-muted/30 rounded-md capitalize">
-                      {localTask.priority}
-                    </div>
-                  ) : (
-                    <Select
-                      value={localTask.priority}
-                      onValueChange={(v) => updateField('priority', v as TaskPriority)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(priorityLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-muted-foreground">Project</Label>
-                {readOnly ? (
-                  <div className="text-sm font-medium px-3 py-2 bg-muted/30 rounded-md">
-                    {(projects.find(p => p.id === localTask.project)?.label) || localTask.project || 'No project'}
-                  </div>
-                ) : !showNewProject ? (
-                  <Select 
-                    value={localTask.project || '__none__'} 
-                    onValueChange={(value) => {
-                      if (value === '__new__') {
-                        setShowNewProject(true);
-                        setNewProjectName('');
-                      } else if (value === '__none__') {
-                        updateField('project', undefined);
-                      } else {
-                        updateField('project', value);
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select project..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">No project</SelectItem>
-                      {projects.map((proj) => (
-                        <SelectItem key={proj.id} value={proj.id}>
-                          {proj.label}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="__new__" className="text-primary">
-                        + New Project
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="flex gap-2">
-                    <Input
-                      value={newProjectName}
-                      onChange={(e) => setNewProjectName(e.target.value)}
-                      placeholder="Enter project name..."
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && newProjectName.trim()) {
-                          e.preventDefault();
-                          updateField('project', newProjectName.trim());
-                          setShowNewProject(false);
-                        }
-                        if (e.key === 'Escape') {
-                          setShowNewProject(false);
-                          setNewProjectName('');
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        if (newProjectName.trim()) {
-                          updateField('project', newProjectName.trim());
-                          setShowNewProject(false);
-                        }
-                      }}
-                    >
-                      Add
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setShowNewProject(false);
-                        setNewProjectName('');
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-muted-foreground">Sprint</Label>
-                {readOnly ? (
-                  <div className="text-sm font-medium px-3 py-2 bg-muted/30 rounded-md">
-                    {(sprints.find(s => s.id === localTask.sprint)?.label) || localTask.sprint || 'No sprint'}
-                  </div>
-                ) : (
-                  <Select
-                    value={localTask.sprint || '__none__'}
-                    onValueChange={(value) => updateField('sprint', value === '__none__' ? undefined : value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="No sprint" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">No Sprint</SelectItem>
-                      {sprints.map(s => (
-                        <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-
-              {/* Subtasks */}
-              <div className="border-t pt-4">
-                <SubtasksSection
-                  task={localTask}
-                  onAutoCompleteChange={(value) => updateField('autoCompleteOnSubtasks', value || undefined)}
-                />
-              </div>
-
-              {/* Dependencies */}
-              {taskSettings.enableDependencies && (
-                <div className="border-t pt-4">
-                  <DependenciesSection
-                    task={localTask}
-                    onBlockedByChange={(blockedBy) => updateField('blockedBy', blockedBy)}
-                  />
-                </div>
-              )}
-
-              {/* Time Tracking */}
-              {taskSettings.enableTimeTracking && (
-                <div className="border-t pt-4">
-                  <TimeTrackingSection task={localTask} />
-                </div>
-              )}
-
-              {/* Comments */}
-              {taskSettings.enableComments && (
-                <div className="border-t pt-4">
-                  <CommentsSection task={localTask} />
-                </div>
-              )}
-
-              <div className="border-t pt-4 space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Created: {formatDate(localTask.created)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>Updated: {formatDate(localTask.updated)}</span>
-                </div>
-                <div className="text-xs font-mono opacity-50">ID: {localTask.id}</div>
-              </div>
-
-              <div className="border-t pt-4">
-                {readOnly && onRestore ? (
-                  <Button
-                    variant="default"
-                    className="w-full"
-                    onClick={() => onRestore(localTask.id)}
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Restore to Board
-                  </Button>
-                ) : !readOnly && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="w-full">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Task
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete this task?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete "{localTask.title}".
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={handleDelete}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
+            <TabsContent value="details" className="mt-0">
+              <TaskDetailsTab
+                task={localTask}
+                onUpdate={updateField}
+                onClose={() => onOpenChange(false)}
+                readOnly={readOnly}
+                onRestore={onRestore}
+              />
             </TabsContent>
 
             {/* Attachments Tab */}
             {taskSettings.enableAttachments && (
               <TabsContent value="attachments" className="mt-0">
-                <AttachmentsSection task={localTask} />
+                <FeatureErrorBoundary fallbackTitle="Attachments section failed to load">
+                  <AttachmentsSection task={localTask} />
+                </FeatureErrorBoundary>
               </TabsContent>
             )}
 
             {/* Git Tab */}
             {isCodeTask && (
               <TabsContent value="git" className="mt-0">
-                <GitSection
-                  task={localTask}
-                  onGitChange={(git) => updateField('git', git as Task['git'])}
-                />
+                <FeatureErrorBoundary fallbackTitle="Git section failed to load">
+                  <GitSection
+                    task={localTask}
+                    onGitChange={(git) => updateField('git', git as Task['git'])}
+                  />
+                </FeatureErrorBoundary>
               </TabsContent>
             )}
 
             {/* Agent Tab */}
             {isCodeTask && (
               <TabsContent value="agent" className="mt-0">
-                <AgentPanel task={localTask} />
+                <FeatureErrorBoundary fallbackTitle="Agent panel failed to load">
+                  <AgentPanel task={localTask} />
+                </FeatureErrorBoundary>
               </TabsContent>
             )}
 
             {/* Changes Tab */}
             {isCodeTask && hasWorktree && (
               <TabsContent value="changes" className="mt-0">
-                <DiffViewer
-                  task={localTask}
-                  onAddComment={(comment: ReviewComment) => {
-                    const newComments = [...(localTask.reviewComments || []), comment];
-                    updateField('reviewComments', newComments);
-                  }}
-                  onRemoveComment={(commentId: string) => {
-                    const newComments = (localTask.reviewComments || []).filter(c => c.id !== commentId);
-                    updateField('reviewComments', newComments.length > 0 ? newComments : undefined);
-                  }}
-                />
+                <FeatureErrorBoundary fallbackTitle="Changes viewer failed to load">
+                  <DiffViewer
+                    task={localTask}
+                    onAddComment={(comment: ReviewComment) => {
+                      const newComments = [...(localTask.reviewComments || []), comment];
+                      updateField('reviewComments', newComments);
+                    }}
+                    onRemoveComment={(commentId: string) => {
+                      const newComments = (localTask.reviewComments || []).filter(c => c.id !== commentId);
+                      updateField('reviewComments', newComments.length > 0 ? newComments : undefined);
+                    }}
+                  />
+                </FeatureErrorBoundary>
               </TabsContent>
             )}
 
             {/* Review Tab */}
             {isCodeTask && (
               <TabsContent value="review" className="mt-0">
-                <ReviewPanel
-                  task={localTask}
-                  onReview={(review: ReviewState) => {
-                    updateField('review', Object.keys(review).length > 0 ? review : undefined);
-                  }}
-                  onMergeComplete={() => {
-                    // Close the panel after successful merge
-                    onOpenChange(false);
-                  }}
-                />
+                <FeatureErrorBoundary fallbackTitle="Review panel failed to load">
+                  <ReviewPanel
+                    task={localTask}
+                    onReview={(review: ReviewState) => {
+                      updateField('review', Object.keys(review).length > 0 ? review : undefined);
+                    }}
+                    onMergeComplete={() => onOpenChange(false)}
+                  />
+                </FeatureErrorBoundary>
               </TabsContent>
             )}
           </div>

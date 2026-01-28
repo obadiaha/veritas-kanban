@@ -35,6 +35,8 @@ export class TelemetryService {
   private config: TelemetryConfig;
   private initialized: boolean = false;
   private writeQueue: Promise<void> = Promise.resolve();
+  private pendingWrites: Array<TelemetryEvent> = [];
+  private readonly MAX_QUEUE_SIZE = 10000;
 
   constructor(options: TelemetryServiceOptions = {}) {
     this.telemetryDir = options.telemetryDir || TELEMETRY_DIR;
@@ -99,9 +101,21 @@ export class TelemetryService {
       timestamp: new Date().toISOString(),
     } as T;
 
+    // Add to queue with size limit - drop oldest if exceeded
+    this.pendingWrites.push(fullEvent);
+    if (this.pendingWrites.length > this.MAX_QUEUE_SIZE) {
+      const dropped = this.pendingWrites.shift();
+      console.warn(`[Telemetry] Queue size exceeded (${this.MAX_QUEUE_SIZE}), dropped event:`, dropped?.type);
+    }
+
     // Queue the write to prevent concurrent file access issues
     const writePromise = this.writeQueue
-      .then(() => this.writeEvent(fullEvent))
+      .then(() => {
+        const eventToWrite = this.pendingWrites.shift();
+        if (eventToWrite) {
+          return this.writeEvent(eventToWrite);
+        }
+      })
       .catch((err) => {
         console.error('[Telemetry] Failed to write event:', err);
       });
