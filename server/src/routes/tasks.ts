@@ -5,6 +5,8 @@ import { WorktreeService } from '../services/worktree-service.js';
 import { activityService } from '../services/activity-service.js';
 import type { CreateTaskInput, UpdateTaskInput } from '@veritas-kanban/shared';
 import { broadcastTaskChange } from '../services/broadcast-service.js';
+import { asyncHandler } from '../middleware/async-handler.js';
+import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
 
 const router: RouterType = Router();
 const taskService = new TaskService();
@@ -83,292 +85,231 @@ const updateTaskSchema = z.object({
 });
 
 // GET /api/tasks - List all tasks
-router.get('/', async (_req, res) => {
-  try {
-    const tasks = await taskService.listTasks();
-    res.json(tasks);
-  } catch (error) {
-    console.error('Error listing tasks:', error);
-    res.status(500).json({ error: 'Failed to list tasks' });
-  }
-});
+router.get('/', asyncHandler(async (_req, res) => {
+  const tasks = await taskService.listTasks();
+  res.json(tasks);
+}));
 
 // GET /api/tasks/archived - List archived tasks
-router.get('/archived', async (_req, res) => {
-  try {
-    const tasks = await taskService.listArchivedTasks();
-    res.json(tasks);
-  } catch (error) {
-    console.error('Error listing archived tasks:', error);
-    res.status(500).json({ error: 'Failed to list archived tasks' });
-  }
-});
+router.get('/archived', asyncHandler(async (_req, res) => {
+  const tasks = await taskService.listArchivedTasks();
+  res.json(tasks);
+}));
 
 // GET /api/tasks/archive/suggestions - Get sprints ready to archive
-router.get('/archive/suggestions', async (_req, res) => {
-  try {
-    const suggestions = await taskService.getArchiveSuggestions();
-    res.json(suggestions);
-  } catch (error) {
-    console.error('Error getting archive suggestions:', error);
-    res.status(500).json({ error: 'Failed to get archive suggestions' });
-  }
-});
+router.get('/archive/suggestions', asyncHandler(async (_req, res) => {
+  const suggestions = await taskService.getArchiveSuggestions();
+  res.json(suggestions);
+}));
 
 // POST /api/tasks/archive/sprint/:sprint - Archive all tasks in a sprint
-router.post('/archive/sprint/:sprint', async (req, res) => {
-  try {
-    const result = await taskService.archiveSprint(req.params.sprint);
-    
-    // Log activity
-    await activityService.logActivity('sprint_archived', req.params.sprint, req.params.sprint, {
-      taskCount: result.archived,
-    });
-    
-    res.json(result);
-  } catch (error: any) {
-    console.error('Error archiving sprint:', error);
-    res.status(400).json({ error: error.message || 'Failed to archive sprint' });
-  }
-});
+router.post('/archive/sprint/:sprint', asyncHandler(async (req, res) => {
+  const result = await taskService.archiveSprint(req.params.sprint as string);
+  
+  // Log activity
+  await activityService.logActivity('sprint_archived', (req.params.sprint as string), (req.params.sprint as string), {
+    taskCount: result.archived,
+  });
+  
+  res.json(result);
+}));
 
 // POST /api/tasks/reorder - Reorder tasks within a column
-router.post('/reorder', async (req, res) => {
-  try {
-    const { orderedIds } = req.body as { orderedIds: string[] };
-    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
-      return res.status(400).json({ error: 'orderedIds must be a non-empty array of task IDs' });
-    }
-    const updated = await taskService.reorderTasks(orderedIds);
-    broadcastTaskChange('reordered');
-    res.json({ updated: updated.length });
-  } catch (error) {
-    console.error('Error reordering tasks:', error);
-    res.status(500).json({ error: 'Failed to reorder tasks' });
+router.post('/reorder', asyncHandler(async (req, res) => {
+  const { orderedIds } = req.body as { orderedIds: string[] };
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+    throw new ValidationError('orderedIds must be a non-empty array of task IDs');
   }
-});
+  const updated = await taskService.reorderTasks(orderedIds);
+  broadcastTaskChange('reordered');
+  res.json({ updated: updated.length });
+}));
 
 // GET /api/tasks/time/summary - Get time summary by project (must be before /:id)
-router.get('/time/summary', async (_req, res) => {
-  try {
-    const summary = await taskService.getTimeSummary();
-    res.json(summary);
-  } catch (error) {
-    console.error('Error getting time summary:', error);
-    res.status(500).json({ error: 'Failed to get time summary' });
-  }
-});
+router.get('/time/summary', asyncHandler(async (_req, res) => {
+  const summary = await taskService.getTimeSummary();
+  res.json(summary);
+}));
 
 // GET /api/tasks/:id - Get single task
-router.get('/:id', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    res.json(task);
-  } catch (error) {
-    console.error('Error getting task:', error);
-    res.status(500).json({ error: 'Failed to get task' });
+router.get('/:id', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
   }
-});
+  res.json(task);
+}));
 
 // GET /api/tasks/:id/blocking-status - Get task blocking status
-router.get('/:id/blocking-status', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    if (!task.blockedBy?.length) {
-      return res.json({ isBlocked: false, blockers: [] });
-    }
-
-    const allTasks = await taskService.listTasks();
-    const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
-    const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
-    
-    res.json({
-      isBlocked: incompleteBlockers.length > 0,
-      blockers: incompleteBlockers.map(t => ({ id: t.id, title: t.title, status: t.status })),
-      completedBlockers: blockingTasks.filter(t => t.status === 'done').map(t => ({ id: t.id, title: t.title })),
-    });
-  } catch (error) {
-    console.error('Error getting blocking status:', error);
-    res.status(500).json({ error: 'Failed to get blocking status' });
+router.get('/:id/blocking-status', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
   }
-});
+
+  if (!task.blockedBy?.length) {
+    return res.json({ isBlocked: false, blockers: [] });
+  }
+
+  const allTasks = await taskService.listTasks();
+  const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
+  const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+  
+  res.json({
+    isBlocked: incompleteBlockers.length > 0,
+    blockers: incompleteBlockers.map(t => ({ id: t.id, title: t.title, status: t.status })),
+    completedBlockers: blockingTasks.filter(t => t.status === 'done').map(t => ({ id: t.id, title: t.title })),
+  });
+}));
 
 // POST /api/tasks - Create task
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   try {
-    const input = createTaskSchema.parse(req.body) as CreateTaskInput;
-    const task = await taskService.createTask(input);
-    broadcastTaskChange('created', task.id);
-    
-    // Log activity
-    await activityService.logActivity('task_created', task.id, task.title, {
-      type: task.type,
-      priority: task.priority,
-      project: task.project,
-    });
-    
-    res.status(201).json(task);
+    var input = createTaskSchema.parse(req.body) as CreateTaskInput;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error creating task:', error);
-    res.status(500).json({ error: 'Failed to create task' });
+    throw error;
   }
-});
+  const task = await taskService.createTask(input);
+  broadcastTaskChange('created', task.id);
+  
+  // Log activity
+  await activityService.logActivity('task_created', task.id, task.title, {
+    type: task.type,
+    priority: task.priority,
+    project: task.project,
+  });
+  
+  res.status(201).json(task);
+}));
 
 // PATCH /api/tasks/:id - Update task
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', asyncHandler(async (req, res) => {
+  let input: UpdateTaskInput;
   try {
-    const input = updateTaskSchema.parse(req.body) as UpdateTaskInput;
-    const oldTask = await taskService.getTask(req.params.id);
-    if (!oldTask) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    // Check if trying to move blocked task to in-progress
-    if (input.status === 'in-progress' && oldTask.status === 'todo' && oldTask.blockedBy?.length) {
-      const allTasks = await taskService.listTasks();
-      const blockingTasks = allTasks.filter(t => oldTask.blockedBy?.includes(t.id));
-      const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
-      
-      if (incompleteBlockers.length > 0) {
-        return res.status(400).json({ 
-          error: 'Task is blocked',
-          blockedBy: incompleteBlockers.map(t => ({ id: t.id, title: t.title })),
-        });
-      }
-    }
-
-    const task = await taskService.updateTask(req.params.id, input);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    broadcastTaskChange('updated', task.id);
-    
-    // Log activity for status changes
-    if (input.status && oldTask.status !== input.status) {
-      await activityService.logActivity('status_changed', task.id, task.title, {
-        from: oldTask.status,
-        status: input.status,
-      });
-    } else {
-      await activityService.logActivity('task_updated', task.id, task.title);
-    }
-    
-    res.json(task);
+    input = updateTaskSchema.parse(req.body) as UpdateTaskInput;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error updating task:', error);
-    res.status(500).json({ error: 'Failed to update task' });
+    throw error;
   }
-});
+  
+  const oldTask = await taskService.getTask(req.params.id as string);
+  if (!oldTask) {
+    throw new NotFoundError('Task not found');
+  }
+
+  // Check if trying to move blocked task to in-progress
+  if (input.status === 'in-progress' && oldTask.status === 'todo' && oldTask.blockedBy?.length) {
+    const allTasks = await taskService.listTasks();
+    const blockingTasks = allTasks.filter(t => oldTask.blockedBy?.includes(t.id));
+    const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+    
+    if (incompleteBlockers.length > 0) {
+      throw new ValidationError('Task is blocked', {
+        blockedBy: incompleteBlockers.map(t => ({ id: t.id, title: t.title })),
+      });
+    }
+  }
+
+  const task = await taskService.updateTask((req.params.id as string), input);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+  broadcastTaskChange('updated', task.id);
+  
+  // Log activity for status changes
+  if (input.status && oldTask.status !== input.status) {
+    await activityService.logActivity('status_changed', task.id, task.title, {
+      from: oldTask.status,
+      status: input.status,
+    });
+  } else {
+    await activityService.logActivity('task_updated', task.id, task.title);
+  }
+  
+  res.json(task);
+}));
 
 // DELETE /api/tasks/:id - Delete task (move to archive)
-router.delete('/:id', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    const success = await taskService.deleteTask(req.params.id);
-    if (!success) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    broadcastTaskChange('deleted', req.params.id);
-    
-    // Log activity
-    if (task) {
-      await activityService.logActivity('task_deleted', task.id, task.title);
-    }
-    
-    res.status(204).send();
-  } catch (error) {
-    console.error('Error deleting task:', error);
-    res.status(500).json({ error: 'Failed to delete task' });
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  const success = await taskService.deleteTask(req.params.id as string);
+  if (!success) {
+    throw new NotFoundError('Task not found');
   }
-});
+  broadcastTaskChange('deleted', (req.params.id as string));
+  
+  // Log activity
+  if (task) {
+    await activityService.logActivity('task_deleted', task.id, task.title);
+  }
+  
+  res.status(204).send();
+}));
 
 // POST /api/tasks/:id/archive - Archive task
-router.post('/:id/archive', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    const success = await taskService.archiveTask(req.params.id);
-    if (!success) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    broadcastTaskChange('archived', req.params.id);
-    
-    // Log activity
-    if (task) {
-      await activityService.logActivity('task_archived', task.id, task.title);
-    }
-    
-    res.json({ archived: true });
-  } catch (error) {
-    console.error('Error archiving task:', error);
-    res.status(500).json({ error: 'Failed to archive task' });
+router.post('/:id/archive', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  const success = await taskService.archiveTask(req.params.id as string);
+  if (!success) {
+    throw new NotFoundError('Task not found');
   }
-});
+  broadcastTaskChange('archived', (req.params.id as string));
+  
+  // Log activity
+  if (task) {
+    await activityService.logActivity('task_archived', task.id, task.title);
+  }
+  
+  res.json({ archived: true });
+}));
 
 // POST /api/tasks/bulk-archive - Archive multiple tasks by sprint
-router.post('/bulk-archive', async (req, res) => {
-  try {
-    const { sprint } = req.body as { sprint: string };
-    if (!sprint) {
-      return res.status(400).json({ error: 'Sprint is required' });
-    }
-
-    const tasks = await taskService.listTasks();
-    const sprintTasks = tasks.filter(t => t.sprint === sprint && t.status === 'done');
-    
-    if (sprintTasks.length === 0) {
-      return res.status(400).json({ error: 'No completed tasks found for this sprint' });
-    }
-
-    const archived: string[] = [];
-    for (const task of sprintTasks) {
-      const success = await taskService.archiveTask(task.id);
-      if (success) {
-        archived.push(task.id);
-        await activityService.logActivity('task_archived', task.id, task.title);
-      }
-    }
-
-    res.json({ archived, count: archived.length });
-  } catch (error) {
-    console.error('Error bulk archiving tasks:', error);
-    res.status(500).json({ error: 'Failed to archive tasks' });
+router.post('/bulk-archive', asyncHandler(async (req, res) => {
+  const { sprint } = req.body as { sprint: string };
+  if (!sprint) {
+    throw new ValidationError('Sprint is required');
   }
-});
+
+  const tasks = await taskService.listTasks();
+  const sprintTasks = tasks.filter(t => t.sprint === sprint && t.status === 'done');
+  
+  if (sprintTasks.length === 0) {
+    throw new ValidationError('No completed tasks found for this sprint');
+  }
+
+  const archived: string[] = [];
+  for (const task of sprintTasks) {
+    const success = await taskService.archiveTask(task.id);
+    if (success) {
+      archived.push(task.id);
+      await activityService.logActivity('task_archived', task.id, task.title);
+    }
+  }
+
+  res.json({ archived, count: archived.length });
+}));
 
 // POST /api/tasks/:id/restore - Restore task from archive
-router.post('/:id/restore', async (req, res) => {
-  try {
-    const task = await taskService.restoreTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Archived task not found' });
-    }
-    broadcastTaskChange('restored', task.id);
-    
-    // Log activity
-    await activityService.logActivity('status_changed', task.id, task.title, {
-      from: 'archived',
-      status: 'done',
-    });
-    
-    res.json(task);
-  } catch (error) {
-    console.error('Error restoring task:', error);
-    res.status(500).json({ error: 'Failed to restore task' });
+router.post('/:id/restore', asyncHandler(async (req, res) => {
+  const task = await taskService.restoreTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Archived task not found');
   }
-});
+  broadcastTaskChange('restored', task.id);
+  
+  // Log activity
+  await activityService.logActivity('status_changed', task.id, task.title, {
+    from: 'archived',
+    status: 'done',
+  });
+  
+  res.json(task);
+}));
 
 // === Subtask Routes ===
 
@@ -387,391 +328,325 @@ const addCommentSchema = z.object({
 });
 
 // POST /api/tasks/:id/subtasks - Add subtask
-router.post('/:id/subtasks', async (req, res) => {
+router.post('/:id/subtasks', asyncHandler(async (req, res) => {
+  let title: string;
   try {
-    const { title } = addSubtaskSchema.parse(req.body);
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const subtask = {
-      id: `subtask_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      title,
-      completed: false,
-      created: new Date().toISOString(),
-    };
-
-    const subtasks = [...(task.subtasks || []), subtask];
-    const updatedTask = await taskService.updateTask(req.params.id, { subtasks });
-    
-    res.status(201).json(updatedTask);
+    ({ title } = addSubtaskSchema.parse(req.body));
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error adding subtask:', error);
-    res.status(500).json({ error: 'Failed to add subtask' });
+    throw error;
   }
-});
+  
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+
+  const subtask = {
+    id: `subtask_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    title,
+    completed: false,
+    created: new Date().toISOString(),
+  };
+
+  const subtasks = [...(task.subtasks || []), subtask];
+  const updatedTask = await taskService.updateTask((req.params.id as string), { subtasks });
+  
+  res.status(201).json(updatedTask);
+}));
 
 // PATCH /api/tasks/:id/subtasks/:subtaskId - Update subtask
-router.patch('/:id/subtasks/:subtaskId', async (req, res) => {
+router.patch('/:id/subtasks/:subtaskId', asyncHandler(async (req, res) => {
+  let updates;
   try {
-    const updates = updateSubtaskSchema.parse(req.body);
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const subtasks = task.subtasks || [];
-    const subtaskIndex = subtasks.findIndex(s => s.id === req.params.subtaskId);
-    if (subtaskIndex === -1) {
-      return res.status(404).json({ error: 'Subtask not found' });
-    }
-
-    subtasks[subtaskIndex] = { ...subtasks[subtaskIndex], ...updates };
-
-    // Check if we should auto-complete the parent task
-    let taskUpdates: any = { subtasks };
-    if (task.autoCompleteOnSubtasks && subtasks.every(s => s.completed)) {
-      taskUpdates.status = 'done';
-    }
-
-    const updatedTask = await taskService.updateTask(req.params.id, taskUpdates);
-    
-    res.json(updatedTask);
+    updates = updateSubtaskSchema.parse(req.body);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error updating subtask:', error);
-    res.status(500).json({ error: 'Failed to update subtask' });
+    throw error;
   }
-});
+  
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+
+  const subtasks = task.subtasks || [];
+  const subtaskIndex = subtasks.findIndex(s => s.id === (req.params.subtaskId as string));
+  if (subtaskIndex === -1) {
+    throw new NotFoundError('Subtask not found');
+  }
+
+  subtasks[subtaskIndex] = { ...subtasks[subtaskIndex], ...updates };
+
+  // Check if we should auto-complete the parent task
+  let taskUpdates: any = { subtasks };
+  if (task.autoCompleteOnSubtasks && subtasks.every(s => s.completed)) {
+    taskUpdates.status = 'done';
+  }
+
+  const updatedTask = await taskService.updateTask((req.params.id as string), taskUpdates);
+  
+  res.json(updatedTask);
+}));
 
 // DELETE /api/tasks/:id/subtasks/:subtaskId - Delete subtask
-router.delete('/:id/subtasks/:subtaskId', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const subtasks = (task.subtasks || []).filter(s => s.id !== req.params.subtaskId);
-    const updatedTask = await taskService.updateTask(req.params.id, { subtasks });
-    
-    res.json(updatedTask);
-  } catch (error) {
-    console.error('Error deleting subtask:', error);
-    res.status(500).json({ error: 'Failed to delete subtask' });
+router.delete('/:id/subtasks/:subtaskId', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
   }
-});
+
+  const subtasks = (task.subtasks || []).filter(s => s.id !== (req.params.subtaskId as string));
+  const updatedTask = await taskService.updateTask((req.params.id as string), { subtasks });
+  
+  res.json(updatedTask);
+}));
 
 // === Comment Routes ===
 
 // POST /api/tasks/:id/comments - Add comment
-router.post('/:id/comments', async (req, res) => {
+router.post('/:id/comments', asyncHandler(async (req, res) => {
+  let author: string, text: string;
   try {
-    const { author, text } = addCommentSchema.parse(req.body);
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const comment = {
-      id: `comment_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      author,
-      text,
-      timestamp: new Date().toISOString(),
-    };
-
-    const comments = [...(task.comments || []), comment];
-    const updatedTask = await taskService.updateTask(req.params.id, { comments });
-    
-    // Log activity
-    await activityService.logActivity('comment_added', task.id, task.title, {
-      author,
-      preview: text.slice(0, 50) + (text.length > 50 ? '...' : ''),
-    });
-    
-    res.status(201).json(updatedTask);
+    ({ author, text } = addCommentSchema.parse(req.body));
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error adding comment:', error);
-    res.status(500).json({ error: 'Failed to add comment' });
+    throw error;
   }
-});
+  
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+
+  const comment = {
+    id: `comment_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    author,
+    text,
+    timestamp: new Date().toISOString(),
+  };
+
+  const comments = [...(task.comments || []), comment];
+  const updatedTask = await taskService.updateTask((req.params.id as string), { comments });
+  
+  // Log activity
+  await activityService.logActivity('comment_added', task.id, task.title, {
+    author,
+    preview: text.slice(0, 50) + (text.length > 50 ? '...' : ''),
+  });
+  
+  res.status(201).json(updatedTask);
+}));
 
 // PATCH /api/tasks/:id/comments/:commentId - Edit comment
-router.patch('/:id/comments/:commentId', async (req, res) => {
+router.patch('/:id/comments/:commentId', asyncHandler(async (req, res) => {
+  let text: string;
   try {
-    const { text } = z.object({ text: z.string().min(1) }).parse(req.body);
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const comments = task.comments || [];
-    const commentIndex = comments.findIndex(c => c.id === req.params.commentId);
-    if (commentIndex === -1) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
-
-    comments[commentIndex] = {
-      ...comments[commentIndex],
-      text,
-      timestamp: comments[commentIndex].timestamp, // preserve original timestamp
-    };
-
-    const updatedTask = await taskService.updateTask(req.params.id, { comments });
-    res.json(updatedTask);
+    ({ text } = z.object({ text: z.string().min(1) }).parse(req.body));
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error editing comment:', error);
-    res.status(500).json({ error: 'Failed to edit comment' });
+    throw error;
   }
-});
+  
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+
+  const comments = task.comments || [];
+  const commentIndex = comments.findIndex(c => c.id === (req.params.commentId as string));
+  if (commentIndex === -1) {
+    throw new NotFoundError('Comment not found');
+  }
+
+  comments[commentIndex] = {
+    ...comments[commentIndex],
+    text,
+    timestamp: comments[commentIndex].timestamp, // preserve original timestamp
+  };
+
+  const updatedTask = await taskService.updateTask((req.params.id as string), { comments });
+  res.json(updatedTask);
+}));
 
 // DELETE /api/tasks/:id/comments/:commentId - Delete comment
-router.delete('/:id/comments/:commentId', async (req, res) => {
-  try {
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    const comments = task.comments || [];
-    const filtered = comments.filter(c => c.id !== req.params.commentId);
-    if (filtered.length === comments.length) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
-
-    const updatedTask = await taskService.updateTask(req.params.id, { comments: filtered });
-
-    await activityService.logActivity('comment_deleted', task.id, task.title, {
-      commentId: req.params.commentId,
-    });
-
-    res.json(updatedTask);
-  } catch (error) {
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ error: 'Failed to delete comment' });
+router.delete('/:id/comments/:commentId', asyncHandler(async (req, res) => {
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
   }
-});
+
+  const comments = task.comments || [];
+  const filtered = comments.filter(c => c.id !== (req.params.commentId as string));
+  if (filtered.length === comments.length) {
+    throw new NotFoundError('Comment not found');
+  }
+
+  const updatedTask = await taskService.updateTask((req.params.id as string), { comments: filtered });
+
+  await activityService.logActivity('comment_deleted', task.id, task.title, {
+    commentId: (req.params.commentId as string),
+  });
+
+  res.json(updatedTask);
+}));
 
 // === Worktree Routes ===
 
 // POST /api/tasks/:id/worktree - Create worktree
-router.post('/:id/worktree', async (req, res) => {
-  try {
-    const worktree = await worktreeService.createWorktree(req.params.id);
-    res.status(201).json(worktree);
-  } catch (error: any) {
-    console.error('Error creating worktree:', error);
-    res.status(400).json({ error: error.message || 'Failed to create worktree' });
-  }
-});
+router.post('/:id/worktree', asyncHandler(async (req, res) => {
+  const worktree = await worktreeService.createWorktree(req.params.id as string);
+  res.status(201).json(worktree);
+}));
 
 // GET /api/tasks/:id/worktree - Get worktree status
-router.get('/:id/worktree', async (req, res) => {
-  try {
-    const status = await worktreeService.getWorktreeStatus(req.params.id);
-    res.json(status);
-  } catch (error: any) {
-    console.error('Error getting worktree status:', error);
-    res.status(400).json({ error: error.message || 'Failed to get worktree status' });
-  }
-});
+router.get('/:id/worktree', asyncHandler(async (req, res) => {
+  const status = await worktreeService.getWorktreeStatus(req.params.id as string);
+  res.json(status);
+}));
 
 // DELETE /api/tasks/:id/worktree - Delete worktree
-router.delete('/:id/worktree', async (req, res) => {
-  try {
-    const force = req.query.force === 'true';
-    await worktreeService.deleteWorktree(req.params.id, force);
-    res.status(204).send();
-  } catch (error: any) {
-    console.error('Error deleting worktree:', error);
-    res.status(400).json({ error: error.message || 'Failed to delete worktree' });
-  }
-});
+router.delete('/:id/worktree', asyncHandler(async (req, res) => {
+  const force = req.query.force === 'true';
+  await worktreeService.deleteWorktree((req.params.id as string), force);
+  res.status(204).send();
+}));
 
 // POST /api/tasks/:id/worktree/rebase - Rebase worktree
-router.post('/:id/worktree/rebase', async (req, res) => {
-  try {
-    const status = await worktreeService.rebaseWorktree(req.params.id);
-    res.json(status);
-  } catch (error: any) {
-    console.error('Error rebasing worktree:', error);
-    res.status(400).json({ error: error.message || 'Failed to rebase worktree' });
-  }
-});
+router.post('/:id/worktree/rebase', asyncHandler(async (req, res) => {
+  const status = await worktreeService.rebaseWorktree(req.params.id as string);
+  res.json(status);
+}));
 
 // POST /api/tasks/:id/worktree/merge - Merge worktree to base branch
-router.post('/:id/worktree/merge', async (req, res) => {
-  try {
-    await worktreeService.mergeWorktree(req.params.id);
-    res.json({ merged: true });
-  } catch (error: any) {
-    console.error('Error merging worktree:', error);
-    res.status(400).json({ error: error.message || 'Failed to merge worktree' });
-  }
-});
+router.post('/:id/worktree/merge', asyncHandler(async (req, res) => {
+  await worktreeService.mergeWorktree(req.params.id as string);
+  res.json({ merged: true });
+}));
 
 // GET /api/tasks/:id/worktree/open - Get VS Code open command
-router.get('/:id/worktree/open', async (req, res) => {
-  try {
-    const command = await worktreeService.openInVSCode(req.params.id);
-    res.json({ command });
-  } catch (error: any) {
-    console.error('Error getting open command:', error);
-    res.status(400).json({ error: error.message || 'Failed to get open command' });
-  }
-});
+router.get('/:id/worktree/open', asyncHandler(async (req, res) => {
+  const command = await worktreeService.openInVSCode(req.params.id as string);
+  res.json({ command });
+}));
 
 // === Template Application Routes ===
 
 // POST /api/tasks/:id/apply-template - Apply template to existing task
-router.post('/:id/apply-template', async (req, res) => {
-  try {
-    const { templateId, templateName, fieldsChanged } = req.body;
-    
-    if (!templateId) {
-      return res.status(400).json({ error: 'Template ID is required' });
-    }
-
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    // Log activity for template application
-    await activityService.logActivity('template_applied', task.id, task.title, {
-      templateId,
-      templateName: templateName || 'Unknown',
-      fieldsChanged: fieldsChanged || [],
-    });
-
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error('Error logging template application:', error);
-    res.status(500).json({ error: error.message || 'Failed to log template application' });
+router.post('/:id/apply-template', asyncHandler(async (req, res) => {
+  const { templateId, templateName, fieldsChanged } = req.body;
+  
+  if (!templateId) {
+    throw new ValidationError('Template ID is required');
   }
-});
+
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
+  }
+
+  // Log activity for template application
+  await activityService.logActivity('template_applied', task.id, task.title, {
+    templateId,
+    templateName: templateName || 'Unknown',
+    fieldsChanged: fieldsChanged || [],
+  });
+
+  res.json({ success: true });
+}));
 
 // === Time Tracking Routes ===
 
 // POST /api/tasks/:id/time/start - Start timer for a task
-router.post('/:id/time/start', async (req, res) => {
-  try {
-    const task = await taskService.startTimer(req.params.id);
-    res.json(task);
-  } catch (error: any) {
-    console.error('Error starting timer:', error);
-    res.status(400).json({ error: error.message || 'Failed to start timer' });
-  }
-});
+router.post('/:id/time/start', asyncHandler(async (req, res) => {
+  const task = await taskService.startTimer(req.params.id as string);
+  res.json(task);
+}));
 
 // POST /api/tasks/:id/time/stop - Stop timer for a task
-router.post('/:id/time/stop', async (req, res) => {
-  try {
-    const task = await taskService.stopTimer(req.params.id);
-    res.json(task);
-  } catch (error: any) {
-    console.error('Error stopping timer:', error);
-    res.status(400).json({ error: error.message || 'Failed to stop timer' });
-  }
-});
+router.post('/:id/time/stop', asyncHandler(async (req, res) => {
+  const task = await taskService.stopTimer(req.params.id as string);
+  res.json(task);
+}));
 
 // POST /api/tasks/:id/time/entry - Add manual time entry
-router.post('/:id/time/entry', async (req, res) => {
-  try {
-    const { duration, description } = req.body;
-    if (typeof duration !== 'number' || duration <= 0) {
-      return res.status(400).json({ error: 'Duration must be a positive number (in seconds)' });
-    }
-    const task = await taskService.addTimeEntry(req.params.id, duration, description);
-    res.json(task);
-  } catch (error: any) {
-    console.error('Error adding time entry:', error);
-    res.status(400).json({ error: error.message || 'Failed to add time entry' });
+router.post('/:id/time/entry', asyncHandler(async (req, res) => {
+  const { duration, description } = req.body;
+  if (typeof duration !== 'number' || duration <= 0) {
+    throw new ValidationError('Duration must be a positive number (in seconds)');
   }
-});
+  const task = await taskService.addTimeEntry((req.params.id as string), duration, description);
+  res.json(task);
+}));
 
 // DELETE /api/tasks/:id/time/entry/:entryId - Delete a time entry
-router.delete('/:id/time/entry/:entryId', async (req, res) => {
-  try {
-    const task = await taskService.deleteTimeEntry(req.params.id, req.params.entryId);
-    res.json(task);
-  } catch (error: any) {
-    console.error('Error deleting time entry:', error);
-    res.status(400).json({ error: error.message || 'Failed to delete time entry' });
-  }
-});
+router.delete('/:id/time/entry/:entryId', asyncHandler(async (req, res) => {
+  const task = await taskService.deleteTimeEntry((req.params.id as string), (req.params.entryId as string));
+  res.json(task);
+}));
 
 // === Attachment Context Route ===
 
 // GET /api/tasks/:id/context - Get full task context for agent consumption
-router.get('/:id/context', async (req, res) => {
-  try {
-    const { getAttachmentService } = await import('../services/attachment-service.js');
-    const attachmentService = getAttachmentService();
-    
-    const task = await taskService.getTask(req.params.id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    // Collect all extracted text and image paths
-    const attachments = task.attachments || [];
-    const extractedTexts: { filename: string; text: string }[] = [];
-    const imagePaths: string[] = [];
-
-    for (const attachment of attachments) {
-      // Get extracted text if available
-      const text = await attachmentService.getExtractedText(task.id, attachment.id);
-      if (text) {
-        extractedTexts.push({
-          filename: attachment.originalName,
-          text,
-        });
-      }
-
-      // Collect image paths
-      if (attachment.mimeType.startsWith('image/')) {
-        const filepath = attachmentService.getAttachmentPath(task.id, attachment.filename);
-        imagePaths.push(filepath);
-      }
-    }
-
-    // Build context object
-    const context = {
-      taskId: task.id,
-      title: task.title,
-      description: task.description,
-      type: task.type,
-      status: task.status,
-      priority: task.priority,
-      project: task.project,
-      sprint: task.sprint,
-      attachments: {
-        count: attachments.length,
-        documents: extractedTexts,
-        images: imagePaths,
-      },
-      created: task.created,
-      updated: task.updated,
-    };
-
-    res.json(context);
-  } catch (error: any) {
-    console.error('Error getting task context:', error);
-    res.status(500).json({ error: error.message || 'Failed to get task context' });
+router.get('/:id/context', asyncHandler(async (req, res) => {
+  const { getAttachmentService } = await import('../services/attachment-service.js');
+  const attachmentService = getAttachmentService();
+  
+  const task = await taskService.getTask(req.params.id as string);
+  if (!task) {
+    throw new NotFoundError('Task not found');
   }
-});
+
+  // Collect all extracted text and image paths
+  const attachments = task.attachments || [];
+  const extractedTexts: { filename: string; text: string }[] = [];
+  const imagePaths: string[] = [];
+
+  for (const attachment of attachments) {
+    // Get extracted text if available
+    const text = await attachmentService.getExtractedText(task.id, attachment.id);
+    if (text) {
+      extractedTexts.push({
+        filename: attachment.originalName,
+        text,
+      });
+    }
+
+    // Collect image paths
+    if (attachment.mimeType.startsWith('image/')) {
+      const filepath = attachmentService.getAttachmentPath(task.id, attachment.filename);
+      imagePaths.push(filepath);
+    }
+  }
+
+  // Build context object
+  const context = {
+    taskId: task.id,
+    title: task.title,
+    description: task.description,
+    type: task.type,
+    status: task.status,
+    priority: task.priority,
+    project: task.project,
+    sprint: task.sprint,
+    attachments: {
+      count: attachments.length,
+      documents: extractedTexts,
+      images: imagePaths,
+    },
+    created: task.created,
+    updated: task.updated,
+  };
+
+  res.json(context);
+}));
 
 export { router as taskRoutes };

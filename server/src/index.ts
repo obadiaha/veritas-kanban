@@ -25,6 +25,7 @@ import { settingsRoutes, syncSettingsToServices } from './routes/settings.js';
 import { getTelemetryService } from './services/telemetry-service.js';
 import { ConfigService } from './services/config-service.js';
 import { initBroadcast } from './services/broadcast-service.js';
+import { errorHandler } from './middleware/error-handler.js';
 import type { AgentOutput } from './services/agent-service.js';
 
 const app = express();
@@ -60,6 +61,9 @@ app.use('/api/telemetry', telemetryRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/traces', tracesRoutes);
 app.use('/api/settings', settingsRoutes);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Initialize telemetry service and sync with feature settings
 (async () => {
@@ -194,6 +198,33 @@ wss.on('connection', (ws) => {
 
 // Export for use in other modules
 export { wss };
+
+// Graceful shutdown handler
+function gracefulShutdown(signal: string) {
+  console.log(`\n${signal} received. Shutting down gracefully...`);
+  
+  // Close WebSocket connections
+  console.log('Closing WebSocket connections...');
+  wss.clients.forEach((client) => {
+    client.close(1000, 'Server shutting down');
+  });
+  
+  // Close HTTP server
+  server.close(() => {
+    console.log('HTTP server closed.');
+    process.exit(0);
+  });
+  
+  // Force exit after 10 seconds
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout.');
+    process.exit(1);
+  }, 10000);
+}
+
+// Register shutdown handlers
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Start server
 server.listen(PORT, () => {

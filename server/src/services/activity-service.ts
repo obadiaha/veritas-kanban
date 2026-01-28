@@ -30,7 +30,7 @@ export interface Activity {
 
 export class ActivityService {
   private activityFile: string;
-  private maxActivities: number = 100;
+  private readonly MAX_ACTIVITIES = 1000; // Limit to prevent unbounded memory growth
 
   constructor() {
     this.activityFile = join(process.cwd(), '.veritas-kanban', 'activity.json');
@@ -88,8 +88,12 @@ export class ActivityService {
       }
     }
 
-    // Prepend new activity and limit to maxActivities
-    activities = [activity, ...activities].slice(0, this.maxActivities);
+    // Prepend new activity and limit to MAX_ACTIVITIES
+    activities = [activity, ...activities].slice(0, this.MAX_ACTIVITIES);
+    
+    if (activities.length >= this.MAX_ACTIVITIES) {
+      console.warn(`[Activity] Activity limit reached (${this.MAX_ACTIVITIES}), trimming oldest entries`);
+    }
     
     await writeFile(this.activityFile, JSON.stringify(activities, null, 2), 'utf-8');
     

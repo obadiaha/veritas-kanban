@@ -74,5 +74,14 @@
     "order": 7,
     "created": "2026-01-28T08:31:13.845Z",
     "updated": "2026-01-28T08:31:41.818Z"
+  },
+  {
+    "label": "Refactor",
+    "icon": "Package",
+    "color": "border-l-yellow-400",
+    "id": "refactor-saXoty",
+    "order": 8,
+    "created": "2026-01-28T10:27:13.983Z",
+    "updated": "2026-01-28T10:27:33.257Z"
   }
 ]

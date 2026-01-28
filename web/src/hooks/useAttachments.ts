@@ -1,31 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Attachment } from '@veritas-kanban/shared';
-
-const API_BASE = 'http://localhost:3001/api';
-
-interface UploadResponse {
-  success: boolean;
-  attachments: Attachment[];
-  task: unknown;
-}
-
-interface TaskContext {
-  taskId: string;
-  title: string;
-  description: string;
-  type: string;
-  status: string;
-  priority: string;
-  project?: string;
-  tags?: string[];
-  attachments: {
-    count: number;
-    documents: { filename: string; text: string }[];
-    images: string[];
-  };
-  created: string;
-  updated: string;
-}
+import { api, type TaskContext } from '../lib/api';
 
 /**
  * Fetch attachments for a task
@@ -33,13 +8,7 @@ interface TaskContext {
 export function useAttachments(taskId: string) {
   return useQuery<Attachment[]>({
     queryKey: ['attachments', taskId],
-    queryFn: async () => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch attachments');
-      }
-      return response.json();
-    },
+    queryFn: () => api.attachments.list(taskId),
     enabled: !!taskId,
   });
 }
@@ -52,17 +21,7 @@ export function useUploadAttachment() {
 
   return useMutation({
     mutationFn: async ({ taskId, formData }: { taskId: string; formData: FormData }) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to upload attachment');
-      }
-
-      return response.json() as Promise<UploadResponse>;
+      return api.attachments.upload(taskId, formData);
     },
     onSuccess: (_, { taskId }) => {
       // Invalidate both attachments and task queries
@@ -81,16 +40,7 @@ export function useDeleteAttachment() {
 
   return useMutation({
     mutationFn: async ({ taskId, attachmentId }: { taskId: string; attachmentId: string }) => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments/${attachmentId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to delete attachment');
-      }
-
-      return response.json();
+      return api.attachments.delete(taskId, attachmentId);
     },
     onSuccess: (_, { taskId }) => {
       // Invalidate both attachments and task queries
@@ -107,13 +57,7 @@ export function useDeleteAttachment() {
 export function useTaskContext(taskId: string) {
   return useQuery<TaskContext>({
     queryKey: ['task-context', taskId],
-    queryFn: async () => {
-      const response = await fetch(`${API_BASE}/tasks/${taskId}/context`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch task context');
-      }
-      return response.json();
-    },
+    queryFn: () => api.attachments.getTaskContext(taskId),
     enabled: !!taskId,
   });
 }

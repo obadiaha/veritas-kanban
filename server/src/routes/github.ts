@@ -1,6 +1,8 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { GitHubService } from '../services/github-service.js';
+import { asyncHandler } from '../middleware/async-handler.js';
+import { ValidationError } from '../middleware/error-handler.js';
 
 const router: RouterType = Router();
 const githubService = new GitHubService();
@@ -15,40 +17,30 @@ const createPRSchema = z.object({
 });
 
 // GET /api/github/status - Check gh CLI status
-router.get('/status', async (_req, res) => {
-  try {
-    const status = await githubService.checkGhCli();
-    res.json(status);
-  } catch (error) {
-    console.error('Error checking GitHub CLI status:', error);
-    res.status(500).json({ error: 'Failed to check GitHub CLI status' });
-  }
-});
+router.get('/status', asyncHandler(async (_req, res) => {
+  const status = await githubService.checkGhCli();
+  res.json(status);
+}));
 
 // POST /api/github/pr - Create a PR for a task
-router.post('/pr', async (req, res) => {
+router.post('/pr', asyncHandler(async (req, res) => {
+  let input;
   try {
-    const input = createPRSchema.parse(req.body);
-    const pr = await githubService.createPR(input);
-    res.status(201).json(pr);
-  } catch (error: any) {
+    input = createPRSchema.parse(req.body);
+  } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+      throw new ValidationError('Validation failed', error.errors);
     }
-    console.error('Error creating PR:', error);
-    res.status(500).json({ error: error.message || 'Failed to create PR' });
+    throw error;
   }
-});
+  const pr = await githubService.createPR(input);
+  res.status(201).json(pr);
+}));
 
 // POST /api/github/pr/:taskId/open - Open PR in browser
-router.post('/pr/:taskId/open', async (req, res) => {
-  try {
-    await githubService.openPRInBrowser(req.params.taskId);
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error('Error opening PR:', error);
-    res.status(500).json({ error: error.message || 'Failed to open PR' });
-  }
-});
+router.post('/pr/:taskId/open', asyncHandler(async (req, res) => {
+  await githubService.openPRInBrowser(req.params.taskId as string);
+  res.json({ success: true });
+}));
 
 export default router;
