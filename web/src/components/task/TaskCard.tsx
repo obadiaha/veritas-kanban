@@ -6,12 +6,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig } from '@veritas-kanban/shared';
+import { Badge } from '@/components/ui/badge';
+import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig, TagConfig } from '@veritas-kanban/shared';
 import { Check, Ban, Clock, Timer, Loader2, Paperclip } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
 import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
 import { getProjectColor, getProjectLabel } from '@/hooks/useProjects';
+import { getTagColor } from '@/hooks/useTags';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -30,6 +32,7 @@ interface TaskCardProps {
   blockerTitles?: string[];
   taskTypes?: TaskTypeConfig[];
   projects?: ProjectConfig[];
+  tags?: TagConfig[];
 }
 
 const priorityColors: Record<TaskPriority, string> = {
@@ -38,7 +41,7 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [] }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [], tags = [] }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging: isCurrentlyDragging } = useDraggable({
     id: task.id,
   });
@@ -176,9 +179,26 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                 {task.priority}
               </span>
               {task.tags && task.tags.length > 0 && (
-                <span className="text-xs text-muted-foreground">
-                  +{task.tags.length} tags
-                </span>
+                <>
+                  {task.tags.slice(0, 2).map((tagId) => {
+                    const tagColor = getTagColor(tags, tagId);
+                    const tagLabel = tags.find(t => t.id === tagId)?.label || tagId;
+                    return (
+                      <Badge
+                        key={tagId}
+                        variant="secondary"
+                        className={cn('text-xs px-1.5 py-0.5', tagColor)}
+                      >
+                        {tagLabel}
+                      </Badge>
+                    );
+                  })}
+                  {task.tags.length > 2 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{task.tags.length - 2}
+                    </span>
+                  )}
+                </>
               )}
               {/* Attachment indicator */}
               {task.attachments && task.attachments.length > 0 && (

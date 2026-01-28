@@ -1,5 +1,49 @@
 [
   {
+    "id": "activity_1769573955781_lnmdfp7ew",
+    "type": "comment_added",
+    "taskId": "task_20260128_gVorh6",
+    "taskTitle": "US-916: Tag management with managed list",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented managed tag list with TagPicker multi-..."
+    },
+    "timestamp": "2026-01-28T04:19:15.781Z"
+  },
+  {
+    "id": "activity_1769573955771_depc5glg7",
+    "type": "comment_added",
+    "taskId": "task_20260128_UWrGIB",
+    "taskTitle": "US-914: Project management with dropdown selection",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented managed project list with dropdown sel..."
+    },
+    "timestamp": "2026-01-28T04:19:15.771Z"
+  },
+  {
+    "id": "activity_1769573949892_9ln8h9ith",
+    "type": "status_changed",
+    "taskId": "task_20260128_gVorh6",
+    "taskTitle": "US-916: Tag management with managed list",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T04:19:09.892Z"
+  },
+  {
+    "id": "activity_1769573947630_ca5kw4p1h",
+    "type": "status_changed",
+    "taskId": "task_20260128_UWrGIB",
+    "taskTitle": "US-914: Project management with dropdown selection",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T04:19:07.630Z"
+  },
+  {
     "id": "activity_1769573548430_xn6wrwl6r",
     "type": "comment_added",
     "taskId": "task_20260128_nfa0sK",
@@ -944,49 +988,5 @@
       "status": "review"
     },
     "timestamp": "2026-01-26T21:27:09.946Z"
-  },
-  {
-    "id": "activity_1769462827210_31os5t2fr",
-    "type": "status_changed",
-    "taskId": "task_20260126_desyd5",
-    "taskTitle": "US-801: Telemetry Service",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T21:27:07.210Z"
-  },
-  {
-    "id": "activity_1769462826175_txd5tmllb",
-    "type": "status_changed",
-    "taskId": "task_20260126_aBQTa1",
-    "taskTitle": "US-803: Emit Run Events",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T21:27:06.175Z"
-  },
-  {
-    "id": "activity_1769462825488_vz1oupv5t",
-    "type": "status_changed",
-    "taskId": "task_20260126_HCSqiT",
-    "taskTitle": "US-805: Metrics API",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T21:27:05.488Z"
-  },
-  {
-    "id": "activity_1769462824591_8sy9p9ko4",
-    "type": "status_changed",
-    "taskId": "task_20260126_pSMY_Y",
-    "taskTitle": "US-807: Dashboard Placement",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T21:27:04.591Z"
   }
 ]
