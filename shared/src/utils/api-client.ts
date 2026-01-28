@@ -35,8 +35,9 @@ export function createApiClient(baseUrl = DEFAULT_BASE) {
 
 /**
  * Default API client using environment variable or localhost
+ * Uses typeof check to avoid ReferenceError in browser environments
  */
-export const API_BASE = process.env.VK_API_URL || DEFAULT_BASE;
+export const API_BASE = (typeof process !== 'undefined' && process.env?.VK_API_URL) || DEFAULT_BASE;
 export const api = createApiClient(API_BASE);
 
 /**
