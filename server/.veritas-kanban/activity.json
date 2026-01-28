@@ -1,5 +1,93 @@
 [
   {
+    "id": "activity_1769608581121_ujw4262bu",
+    "type": "comment_added",
+    "taskId": "task_20260128_hdcQAe",
+    "taskTitle": "US-1304: Veritas status reporting integration",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created scripts/update-status.sh with support for ..."
+    },
+    "timestamp": "2026-01-28T13:56:21.121Z"
+  },
+  {
+    "id": "activity_1769608581106_6m8xn709e",
+    "type": "status_changed",
+    "taskId": "task_20260128_hdcQAe",
+    "taskTitle": "US-1304: Veritas status reporting integration",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:56:21.106Z"
+  },
+  {
+    "id": "activity_1769608563569_om3ptc6cq",
+    "type": "status_changed",
+    "taskId": "task_20260128_hdcQAe",
+    "taskTitle": "US-1304: Veritas status reporting integration",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:56:03.569Z"
+  },
+  {
+    "id": "activity_1769608558562_kjuwi9y5q",
+    "type": "comment_added",
+    "taskId": "task_20260128_jpuZZy",
+    "taskTitle": "US-1002: Task metrics panel",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added Task Metrics Panel to TaskDetailPanel. New M..."
+    },
+    "timestamp": "2026-01-28T13:55:58.562Z"
+  },
+  {
+    "id": "activity_1769608558539_ola8jqmyv",
+    "type": "status_changed",
+    "taskId": "task_20260128_jpuZZy",
+    "taskTitle": "US-1002: Task metrics panel",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:55:58.539Z"
+  },
+  {
+    "id": "activity_1769608551314_0deh1lqd6",
+    "type": "comment_added",
+    "taskId": "task_20260128_eib_Vw",
+    "taskTitle": "RF-04: Add Comprehensive Test Suite",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added comprehensive integration tests for critical..."
+    },
+    "timestamp": "2026-01-28T13:55:51.314Z"
+  },
+  {
+    "id": "activity_1769608551294_epq3nwhkp",
+    "type": "status_changed",
+    "taskId": "task_20260128_eib_Vw",
+    "taskTitle": "RF-04: Add Comprehensive Test Suite",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:55:51.294Z"
+  },
+  {
+    "id": "activity_1769608542757_7tyo9v50s",
+    "type": "comment_added",
+    "taskId": "task_20260128_bDBHgJ",
+    "taskTitle": "US-1004: Token & cost tracking integration",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created scripts/get-session-tokens.sh - extracts t..."
+    },
+    "timestamp": "2026-01-28T13:55:42.757Z"
+  },
+  {
     "id": "activity_1769608536904_avd2nslq0",
     "type": "status_changed",
     "taskId": "task_20260128_bDBHgJ",
