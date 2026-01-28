@@ -37,6 +37,38 @@ import { agentRoutes } from './routes/agents.js';
 
 const log = createLogger('server');
 
+// ============================================
+// Process Error Handlers (register early)
+// ============================================
+// In Node.js 22+, unhandled promise rejections terminate the process.
+// Catch both unhandledRejection and uncaughtException to ensure structured
+// logging before exit. uncaughtException triggers graceful shutdown;
+// unhandledRejection logs a fatal error and exits.
+
+process.on('unhandledRejection', (reason: unknown) => {
+  log.fatal({ err: reason }, 'Unhandled promise rejection — terminating');
+  // Exit with failure; the gracefulShutdown function may not be available
+  // this early, but we must not swallow the error.
+  process.exitCode = 1;
+  // Attempt graceful shutdown if the server is already running
+  if (typeof gracefulShutdown === 'function') {
+    gracefulShutdown('unhandledRejection').catch(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
+});
+
+process.on('uncaughtException', (err: Error) => {
+  log.fatal({ err }, 'Uncaught exception — terminating');
+  // uncaughtException leaves the process in an undefined state;
+  // attempt graceful shutdown then force-exit.
+  if (typeof gracefulShutdown === 'function') {
+    gracefulShutdown('uncaughtException').catch(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
+});
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
