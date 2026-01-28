@@ -1,0 +1,314 @@
+import { useState } from 'react';
+import type { ManagedListItem } from '@veritas-kanban/shared';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../ui/alert-dialog';
+import { Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+export interface ManagedListManagerProps<T extends ManagedListItem> {
+  title: string;
+  items: T[];
+  isLoading: boolean;
+  onCreate: (input: any) => Promise<void>;
+  onUpdate: (id: string, patch: any) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  onReorder: (ids: string[]) => Promise<void>;
+  renderExtraFields?: (item: T, onChange: (patch: Partial<T>) => void) => React.ReactNode;
+  newItemDefaults?: Partial<T>;
+  canDeleteCheck?: (id: string) => Promise<{ allowed: boolean; referenceCount: number; isDefault: boolean }>;
+}
+
+interface SortableItemProps<T extends ManagedListItem> {
+  item: T;
+  onUpdate: (id: string, patch: any) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  renderExtraFields?: (item: T, onChange: (patch: Partial<T>) => void) => React.ReactNode;
+  canDeleteCheck?: (id: string) => Promise<{ allowed: boolean; referenceCount: number; isDefault: boolean }>;
+}
+
+function SortableItem<T extends ManagedListItem>({
+  item,
+  onUpdate,
+  onDelete,
+  renderExtraFields,
+  canDeleteCheck,
+}: SortableItemProps<T>) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [label, setLabel] = useState(item.label);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState<{ allowed: boolean; referenceCount: number; isDefault: boolean } | null>(null);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const handleLabelSave = async () => {
+    if (label.trim() && label !== item.label) {
+      await onUpdate(item.id, { label });
+    }
+    setIsEditing(false);
+  };
+
+  const handleDeleteClick = async () => {
+    if (canDeleteCheck) {
+      const info = await canDeleteCheck(item.id);
+      setDeleteInfo(info);
+      if (!info.allowed) {
+        setDeleteDialogOpen(true);
+        return;
+      }
+    }
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    await onDelete(item.id);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleToggleHidden = async () => {
+    await onUpdate(item.id, { isHidden: !item.isHidden });
+  };
+
+  const handleExtraFieldChange = (patch: Partial<T>) => {
+    onUpdate(item.id, patch);
+  };
+
+  return (
+    <>
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 border rounded-lg mb-2"
+      >
+        <button
+          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+
+        <div className="flex-1 flex flex-col gap-2">
+          {isEditing ? (
+            <Input
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              onBlur={handleLabelSave}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleLabelSave();
+                if (e.key === 'Escape') {
+                  setLabel(item.label);
+                  setIsEditing(false);
+                }
+              }}
+              autoFocus
+              className="h-8"
+            />
+          ) : (
+            <div
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 px-2 py-1 rounded"
+              onClick={() => setIsEditing(true)}
+            >
+              {item.label}
+              {item.isDefault && (
+                <span className="ml-2 text-xs text-gray-500">(default)</span>
+              )}
+              {item.isHidden && (
+                <span className="ml-2 text-xs text-gray-500">(hidden)</span>
+              )}
+            </div>
+          )}
+
+          {renderExtraFields && renderExtraFields(item, handleExtraFieldChange)}
+        </div>
+
+        <div className="flex items-center gap-1">
+          {item.isDefault && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleToggleHidden}
+              title={item.isHidden ? 'Show' : 'Hide'}
+            >
+              {item.isHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Button>
+          )}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDeleteClick}
+            disabled={item.isDefault}
+            title={item.isDefault ? 'Cannot delete default item' : 'Delete'}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {deleteInfo && !deleteInfo.allowed ? 'Cannot Delete' : 'Confirm Delete'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteInfo && deleteInfo.isDefault && (
+                <p>This is a default item and cannot be deleted.</p>
+              )}
+              {deleteInfo && deleteInfo.referenceCount > 0 && (
+                <p>This item is referenced by {deleteInfo.referenceCount} task(s) and cannot be deleted.</p>
+              )}
+              {deleteInfo && deleteInfo.allowed && (
+                <p>Are you sure you want to delete "{item.label}"? This action cannot be undone.</p>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {deleteInfo && deleteInfo.allowed && (
+              <AlertDialogAction onClick={handleDeleteConfirm}>
+                Delete
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+export function ManagedListManager<T extends ManagedListItem>({
+  title,
+  items,
+  isLoading,
+  onCreate,
+  onUpdate,
+  onDelete,
+  onReorder,
+  renderExtraFields,
+  newItemDefaults,
+  canDeleteCheck,
+}: ManagedListManagerProps<T>) {
+  const [newItemLabel, setNewItemLabel] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+
+      const reordered = arrayMove(items, oldIndex, newIndex);
+      const orderedIds = reordered.map((item) => item.id);
+
+      await onReorder(orderedIds);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!newItemLabel.trim()) return;
+
+    setIsCreating(true);
+    try {
+      await onCreate({
+        label: newItemLabel.trim(),
+        ...newItemDefaults,
+      });
+      setNewItemLabel('');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="text-sm text-gray-500">Loading {title.toLowerCase()}...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">{title}</h3>
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={items.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((item) => (
+            <SortableItem
+              key={item.id}
+              item={item}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              renderExtraFields={renderExtraFields}
+              canDeleteCheck={canDeleteCheck}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+
+      <div className="flex gap-2">
+        <Input
+          placeholder="New item name..."
+          value={newItemLabel}
+          onChange={(e) => setNewItemLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleCreate();
+          }}
+          disabled={isCreating}
+        />
+        <Button onClick={handleCreate} disabled={!newItemLabel.trim() || isCreating}>
+          Add
+        </Button>
+      </div>
+    </div>
+  );
+}

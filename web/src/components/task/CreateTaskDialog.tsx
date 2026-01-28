@@ -20,8 +20,9 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCreateTask } from '@/hooks/useTasks';
 import { useTemplates, type TaskTemplate } from '@/hooks/useTemplates';
-import type { TaskType, TaskPriority, Subtask } from '@veritas-kanban/shared';
+import type { TaskPriority, Subtask } from '@veritas-kanban/shared';
 import { FileText, X, Check, AlertCircle, HelpCircle, Info } from 'lucide-react';
+import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
 import { nanoid } from 'nanoid';
 import { 
   interpolateVariables, 
@@ -38,7 +39,7 @@ interface CreateTaskDialogProps {
 export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<TaskType>('code');
+  const [type, setType] = useState('code');
   const [priority, setPriority] = useState<TaskPriority>('medium');
   const [project, setProject] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -50,6 +51,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 
   const createTask = useCreateTask();
   const { data: templates } = useTemplates();
+  const { data: taskTypes = [] } = useTaskTypes();
 
   // Filter templates by selected category
   const filteredTemplates = useMemo(() => {
@@ -403,15 +405,22 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="type">Type</Label>
-                <Select value={type} onValueChange={(v) => setType(v as TaskType)}>
+                <Select value={type} onValueChange={setType}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="code">Code</SelectItem>
-                    <SelectItem value="research">Research</SelectItem>
-                    <SelectItem value="content">Content</SelectItem>
-                    <SelectItem value="automation">Automation</SelectItem>
+                    {taskTypes.map((taskType) => {
+                      const IconComponent = getTypeIcon(taskType.icon);
+                      return (
+                        <SelectItem key={taskType.id} value={taskType.id}>
+                          <div className="flex items-center gap-2">
+                            {IconComponent && <IconComponent className="h-4 w-4" />}
+                            {taskType.label}
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

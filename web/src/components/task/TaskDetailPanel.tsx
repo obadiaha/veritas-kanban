@@ -34,8 +34,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
-import { Trash2, Code, Search, FileText, Zap, Calendar, Clock, GitBranch, Bot, FileDiff, ClipboardCheck, Monitor, FileCode, Paperclip } from 'lucide-react';
-import type { Task, TaskType, TaskStatus, TaskPriority, ReviewComment, ReviewState } from '@veritas-kanban/shared';
+import { Trash2, Calendar, Clock, GitBranch, Bot, FileDiff, ClipboardCheck, Monitor, FileCode, Paperclip } from 'lucide-react';
+import type { Task, TaskStatus, TaskPriority, ReviewComment, ReviewState } from '@veritas-kanban/shared';
+import { useTaskTypes, getTypeIcon, getTypeLabel } from '@/hooks/useTaskTypes';
 import { GitSection } from './GitSection';
 import { AgentPanel } from './AgentPanel';
 import { DiffViewer } from './DiffViewer';
@@ -53,20 +54,6 @@ interface TaskDetailPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const typeIcons: Record<TaskType, React.ReactNode> = {
-  code: <Code className="h-4 w-4" />,
-  research: <Search className="h-4 w-4" />,
-  content: <FileText className="h-4 w-4" />,
-  automation: <Zap className="h-4 w-4" />,
-};
-
-const typeLabels: Record<TaskType, string> = {
-  code: 'Code',
-  research: 'Research',
-  content: 'Content',
-  automation: 'Automation',
-};
 
 const statusLabels: Record<TaskStatus, string> = {
   'todo': 'To Do',
@@ -125,6 +112,7 @@ function useDebouncedSave(task: Task | null, updateTask: ReturnType<typeof useUp
 export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelProps) {
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
+  const { data: taskTypes = [] } = useTaskTypes();
   const { localTask, updateField, isDirty } = useDebouncedSave(task, updateTask);
   const [activeTab, setActiveTab] = useState('details');
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -161,13 +149,18 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
   const isCodeTask = localTask.type === 'code';
   const hasWorktree = !!localTask.git?.worktreePath;
 
+  // Get current type info
+  const currentType = taskTypes.find(t => t.id === localTask.type);
+  const TypeIconComponent = currentType ? getTypeIcon(currentType.icon) : null;
+  const typeLabel = currentType ? currentType.label : localTask.type;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[700px] sm:max-w-[700px] overflow-hidden flex flex-col">
         <SheetHeader className="space-y-1 flex-shrink-0">
           <div className="flex items-center gap-2 text-muted-foreground">
-            {typeIcons[localTask.type]}
-            <span className="text-xs uppercase tracking-wide">{typeLabels[localTask.type]} Task</span>
+            {TypeIconComponent && <TypeIconComponent className="h-4 w-4" />}
+            <span className="text-xs uppercase tracking-wide">{typeLabel} Task</span>
             {isDirty && (
               <span className="text-xs text-amber-500 ml-auto">Saving...</span>
             )}
@@ -269,20 +262,23 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
                   <Label className="text-muted-foreground">Type</Label>
                   <Select
                     value={localTask.type}
-                    onValueChange={(v) => updateField('type', v as TaskType)}
+                    onValueChange={(v) => updateField('type', v)}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(typeLabels).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          <div className="flex items-center gap-2">
-                            {typeIcons[value as TaskType]}
-                            {label}
-                          </div>
-                        </SelectItem>
-                      ))}
+                      {taskTypes.map((type) => {
+                        const IconComponent = getTypeIcon(type.icon);
+                        return (
+                          <SelectItem key={type.id} value={type.id}>
+                            <div className="flex items-center gap-2">
+                              {IconComponent && <IconComponent className="h-4 w-4" />}
+                              {type.label}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>

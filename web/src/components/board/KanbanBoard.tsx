@@ -3,6 +3,7 @@ import { KanbanColumn } from './KanbanColumn';
 import { TaskDetailPanel } from '@/components/task/TaskDetailPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
+import { useTaskTypes } from '@/hooks/useTaskTypes';
 import {
   DndContext,
   DragEndEvent,
@@ -71,6 +72,7 @@ function LoadingSkeleton() {
 
 export function KanbanBoard() {
   const { data: tasks, isLoading, error } = useTasks();
+  const { data: taskTypes = [] } = useTaskTypes();
   const updateTask = useUpdateTask();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -221,13 +223,14 @@ export function KanbanBoard() {
               allTasks={filteredTasks}
               onTaskClick={handleTaskClick}
               selectedTaskId={selectedTaskId}
+              taskTypes={taskTypes}
             />
           ))}
         </div>
         
         <DragOverlay>
           {activeTask ? (
-            <TaskCard task={activeTask} isDragging />
+            <TaskCard task={activeTask} isDragging taskTypes={taskTypes} />
           ) : null}
         </DragOverlay>
       </DndContext>

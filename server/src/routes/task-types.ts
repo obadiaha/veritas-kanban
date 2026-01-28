@@ -1,0 +1,37 @@
+import { Router } from 'express';
+import { z } from 'zod';
+import { TaskTypeService } from '../services/task-type-service.js';
+import { TaskService } from '../services/task-service.js';
+import { createManagedListRouter } from './managed-list-routes.js';
+
+// Validation schemas
+const createTaskTypeSchema = z.object({
+  label: z.string().min(1),
+  icon: z.string().min(1),
+  color: z.string().optional(),
+});
+
+const updateTaskTypeSchema = z.object({
+  label: z.string().min(1).optional(),
+  icon: z.string().min(1).optional(),
+  color: z.string().optional(),
+  isHidden: z.boolean().optional(),
+});
+
+// Create service instances
+const taskService = new TaskService();
+const taskTypeService = new TaskTypeService(taskService);
+
+// Initialize service
+taskTypeService.init().catch(err => {
+  console.error('Failed to initialize TaskTypeService:', err);
+});
+
+// Create router using the generic factory
+const router = createManagedListRouter(
+  taskTypeService,
+  createTaskTypeSchema,
+  updateTaskTypeSchema
+);
+
+export default router;

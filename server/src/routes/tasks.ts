@@ -13,7 +13,7 @@ const worktreeService = new WorktreeService();
 const createTaskSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().optional().default(''),
-  type: z.enum(['code', 'research', 'content', 'automation']).optional().default('code'),
+  type: z.string().optional().default('code'),
   priority: z.enum(['low', 'medium', 'high']).optional().default('medium'),
   project: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -65,7 +65,7 @@ const subtaskSchema = z.object({
 const updateTaskSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
-  type: z.enum(['code', 'research', 'content', 'automation']).optional(),
+  type: z.string().optional(),
   status: z.enum(['todo', 'in-progress', 'review', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
   project: z.string().optional(),
