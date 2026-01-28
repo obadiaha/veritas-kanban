@@ -727,6 +727,82 @@ export class MetricsService {
   }
 }
 
+export interface FailedRunDetails {
+  timestamp: string;
+  taskId?: string;
+  taskTitle?: string;
+  project?: string;
+  agent: string;
+  success: boolean;
+  errorMessage?: string;
+  durationMs?: number;
+}
+
+export class MetricsService {
+  // ... existing methods ...
+
+  /**
+   * Get list of failed runs with details
+   */
+  async getFailedRuns(period: MetricsPeriod, project?: string, limit = 50): Promise<FailedRunDetails[]> {
+    const since = this.getPeriodStart(period);
+    const files = await this.getEventFiles(since);
+
+    const failedRuns: FailedRunDetails[] = [];
+
+    for (const filePath of files) {
+      try {
+        const fileStream = createReadStream(filePath, { encoding: 'utf-8' });
+        const rl = readline.createInterface({
+          input: fileStream,
+          crlfDelay: Infinity,
+        });
+
+        for await (const line of rl) {
+          if (!line.trim()) continue;
+
+          try {
+            const event = JSON.parse(line) as AnyTelemetryEvent;
+
+            // Filter by type and time
+            if (event.type !== 'run.completed' && event.type !== 'run.error') continue;
+            if (event.timestamp < since) continue;
+            if (project && event.project !== project) continue;
+
+            const runEvent = event as RunTelemetryEvent;
+            
+            // Only include failed runs
+            if (event.type === 'run.error' || (event.type === 'run.completed' && !runEvent.success)) {
+              failedRuns.push({
+                timestamp: event.timestamp,
+                taskId: runEvent.taskId,
+                taskTitle: runEvent.taskTitle,
+                project: runEvent.project,
+                agent: runEvent.agent || 'veritas',
+                success: false,
+                errorMessage: runEvent.error,
+                durationMs: runEvent.durationMs,
+              });
+            }
+          } catch {
+            // Skip malformed lines
+            continue;
+          }
+        }
+      } catch (error: any) {
+        if (error.code !== 'ENOENT') {
+          console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        }
+      }
+    }
+
+    // Sort by timestamp descending (most recent first) and limit
+    return failedRuns
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+  }
+}
+
 // Singleton instance
 let instance: MetricsService | null = null;
 

@@ -193,6 +193,50 @@ export class TelemetryService {
   }
 
   /**
+   * Get events for multiple tasks at once (batch query)
+   * Returns a map of taskId -> events[]
+   */
+  async getBulkTaskEvents(taskIds: string[]): Promise<Map<string, AnyTelemetryEvent[]>> {
+    if (taskIds.length === 0) {
+      return new Map();
+    }
+
+    await this.init();
+    
+    // Get all recent event files (last 90 days should cover most use cases)
+    const files = await this.getEventFiles();
+    
+    // Read all events
+    let allEvents: AnyTelemetryEvent[] = [];
+    for (const file of files) {
+      const fileEvents = await this.readEventFile(file);
+      allEvents.push(...fileEvents);
+    }
+
+    // Create a Set for O(1) lookup
+    const taskIdSet = new Set(taskIds);
+    
+    // Group events by taskId
+    const result = new Map<string, AnyTelemetryEvent[]>();
+    for (const taskId of taskIds) {
+      result.set(taskId, []);
+    }
+    
+    for (const event of allEvents) {
+      if (event.taskId && taskIdSet.has(event.taskId)) {
+        result.get(event.taskId)!.push(event);
+      }
+    }
+
+    // Sort events within each task by timestamp (newest first)
+    for (const [, events] of result) {
+      events.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
+
+    return result;
+  }
+
+  /**
    * Get events within a time period
    */
   async getEventsSince(since: string): Promise<AnyTelemetryEvent[]> {

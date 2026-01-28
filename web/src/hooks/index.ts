@@ -5,6 +5,8 @@
 
 export * from './useActivity';
 export * from './useAgent';
+export * from './useBoardDragDrop';
+export * from './useSortableList';
 export * from './useAttachments';
 export * from './useBulkActions';
 export * from './useConfig';

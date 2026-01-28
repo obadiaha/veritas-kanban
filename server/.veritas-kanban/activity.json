@@ -1,5 +1,93 @@
 [
   {
+    "id": "activity_1769608657699_l9zfko6ei",
+    "type": "status_changed",
+    "taskId": "task_20260128_2-0mLV",
+    "taskTitle": "US-1005: Dashboard drill-down",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:57:37.699Z"
+  },
+  {
+    "id": "activity_1769608649875_vaue7ehn7",
+    "type": "status_changed",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:57:29.875Z"
+  },
+  {
+    "id": "activity_1769608634386_6ohgoj8g5",
+    "type": "comment_added",
+    "taskId": "task_20260128_XGU2QA",
+    "taskTitle": "US-1009: Failure alerts to Teams",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented failure alert service that hooks into ..."
+    },
+    "timestamp": "2026-01-28T13:57:14.386Z"
+  },
+  {
+    "id": "activity_1769608629180_9o9qhys14",
+    "type": "status_changed",
+    "taskId": "task_20260128_XGU2QA",
+    "taskTitle": "US-1009: Failure alerts to Teams",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:57:09.180Z"
+  },
+  {
+    "id": "activity_1769608613916_8awxep8jx",
+    "type": "comment_added",
+    "taskId": "task_20260128_9_qdSV",
+    "taskTitle": "US-1001: Veritas telemetry reporter",
+    "details": {
+      "author": "Veritas",
+      "preview": "Duplicate of US-1402 which was already completed. ..."
+    },
+    "timestamp": "2026-01-28T13:56:53.916Z"
+  },
+  {
+    "id": "activity_1769608613905_814e431ls",
+    "type": "status_changed",
+    "taskId": "task_20260128_9_qdSV",
+    "taskTitle": "US-1001: Veritas telemetry reporter",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:56:53.905Z"
+  },
+  {
+    "id": "activity_1769608611559_y03n1ftmx",
+    "type": "status_changed",
+    "taskId": "task_20260128_1yHkWF",
+    "taskTitle": "RF-15: Split God Components — Board & Settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:56:51.559Z"
+  },
+  {
+    "id": "activity_1769608610576_jo21tpwj6",
+    "type": "status_changed",
+    "taskId": "task_20260128_EIsIv5",
+    "taskTitle": "US-1003: Agent run summary on task card",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:56:50.576Z"
+  },
+  {
     "id": "activity_1769608581121_ujw4262bu",
     "type": "comment_added",
     "taskId": "task_20260128_hdcQAe",

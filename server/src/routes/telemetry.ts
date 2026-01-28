@@ -11,10 +11,12 @@ import {
   TelemetryTaskParamsSchema,
   TelemetryCountQuerySchema,
   TelemetryEventIngestionSchema,
+  TelemetryBulkQuerySchema,
   type TelemetryEventsQuery,
   type TelemetryTaskParams,
   type TelemetryCountQuery,
   type TelemetryEventIngestion,
+  type TelemetryBulkQuery,
 } from '../schemas/telemetry-schemas.js';
 
 const router: RouterType = Router();
@@ -116,6 +118,31 @@ router.get(
     const { taskId } = req.validated.params!;
     const events = await telemetry.getTaskEvents(taskId);
     res.json(events);
+  })
+);
+
+/**
+ * POST /api/telemetry/events/bulk
+ * Get events for multiple tasks in one request (batch query)
+ * 
+ * Returns: { [taskId]: events[] }
+ */
+router.post(
+  '/events/bulk',
+  validate({ body: TelemetryBulkQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, unknown, TelemetryBulkQuery>, res) => {
+    const telemetry = getTelemetryService();
+    const { taskIds } = req.validated.body!;
+    
+    const eventsMap = await telemetry.getBulkTaskEvents(taskIds);
+    
+    // Convert Map to plain object for JSON response
+    const result: Record<string, AnyTelemetryEvent[]> = {};
+    for (const [taskId, events] of eventsMap) {
+      result[taskId] = events;
+    }
+    
+    res.json(result);
   })
 );
 

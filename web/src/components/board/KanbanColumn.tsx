@@ -1,8 +1,11 @@
+import { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { cn } from '@/lib/utils';
 import { TaskCard } from '@/components/task/TaskCard';
 import { isTaskBlocked, getTaskBlockers } from '@/hooks/useTasks';
+import { useBulkTaskMetrics } from '@/hooks/useBulkTaskMetrics';
+import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
 
 interface KanbanColumnProps {
@@ -23,6 +26,17 @@ const columnColors: Record<TaskStatus, string> = {
 
 export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selectedTaskId }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const { settings: featureSettings } = useFeatureSettings();
+  const showDoneMetrics = featureSettings.board.showDoneMetrics;
+
+  // Get task IDs for done column to fetch bulk metrics
+  const doneTaskIds = useMemo(() => {
+    if (id !== 'done' || !showDoneMetrics) return [];
+    return tasks.map(t => t.id);
+  }, [id, tasks, showDoneMetrics]);
+
+  // Fetch bulk metrics only for done column
+  const { data: metricsMap } = useBulkTaskMetrics(doneTaskIds, id === 'done' && showDoneMetrics);
 
   return (
     <div
@@ -57,6 +71,7 @@ export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selected
             tasks.map(task => {
               const blocked = isTaskBlocked(task, allTasks);
               const blockers = blocked ? getTaskBlockers(task, allTasks) : [];
+              const taskMetrics = id === 'done' && showDoneMetrics ? metricsMap?.get(task.id) : undefined;
               return (
                 <TaskCard 
                   key={task.id} 
@@ -65,6 +80,7 @@ export function KanbanColumn({ id, title, tasks, allTasks, onTaskClick, selected
                   isSelected={task.id === selectedTaskId}
                   isBlocked={blocked}
                   blockerTitles={blockers.map(b => b.title)}
+                  cardMetrics={taskMetrics}
                 />
               );
             })

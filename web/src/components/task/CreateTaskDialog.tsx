@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,9 @@ import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
 import { useProjects } from '@/hooks/useProjects';
 import { useSprints } from '@/hooks/useSprints';
 import { useTemplateForm } from '@/hooks/useTemplateForm';
+import { useCreateTaskForm } from '@/hooks/useCreateTaskForm';
 import { BlueprintPreview } from './create/BlueprintPreview';
 import { TemplateVariableInputs } from './create/TemplateVariableInputs';
-import type { TaskPriority } from '@veritas-kanban/shared';
 import { FileText, X, Check, HelpCircle, Info } from 'lucide-react';
 import { getCategoryIcon } from '@/lib/template-categories';
 
@@ -34,16 +34,37 @@ interface CreateTaskDialogProps {
 }
 
 export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState('code');
-  const [priority, setPriority] = useState<TaskPriority>('medium');
-  const [project, setProject] = useState('');
-  const [sprint, setSprint] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [showHelp, setShowHelp] = useState(false);
-  const [showNewProject, setShowNewProject] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
+  // Consolidated form state via useReducer
+  const {
+    state: formState,
+    setTitle,
+    setDescription,
+    setType,
+    setPriority,
+    setProject,
+    setSprint,
+    setCategoryFilter,
+    setNewProjectName,
+    toggleHelp,
+    showNewProject: onShowNewProject,
+    hideNewProject,
+    applyTemplate: applyFormDefaults,
+    reset: resetForm,
+    canSubmit,
+  } = useCreateTaskForm();
+
+  const {
+    title,
+    description,
+    type,
+    priority,
+    project,
+    sprint,
+    categoryFilter,
+    showHelp,
+    showNewProject,
+    newProjectName,
+  } = formState;
 
   const { data: taskTypes = [] } = useTaskTypes();
   const { data: projects = [] } = useProjects();
@@ -80,34 +101,28 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
     if (!template) return;
     
     const defaults = applyTemplate(template);
-    if (defaults.type) setType(defaults.type);
-    if (defaults.priority) setPriority(defaults.priority);
-    if (defaults.project) setProject(defaults.project);
-    if (defaults.description) setDescription(defaults.description);
+    // Apply template defaults to form state atomically
+    applyFormDefaults({
+      type: defaults.type || type,
+      priority: defaults.priority || priority,
+      project: defaults.project || project,
+      description: defaults.description || description,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const template = selectedTemplate ? templates?.find(t => t.id === selectedTemplate) : null;
-    
-    // For blueprints, we don't need a title
-    if (!(template?.blueprint && template.blueprint.length > 0) && !title.trim()) {
+    // Use computed canSubmit instead of inline check
+    if (!canSubmit(isBlueprint)) {
       return;
     }
     
     await createTasks(title, description, project, sprint, type, priority);
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setType('code');
-    setPriority('medium');
-    setProject('');
-    setSprint('');
+    // Reset form state atomically
+    resetForm();
     clearTemplate();
-    setShowNewProject(false);
-    setNewProjectName('');
     onOpenChange(false);
   };
 
@@ -135,7 +150,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                   variant="ghost"
                   size="sm"
                   className="h-6 w-6 p-0"
-                  onClick={() => setShowHelp(!showHelp)}
+                  onClick={toggleHelp}
                   aria-label={showHelp ? 'Hide template help' : 'Show template help'}
                 >
                   <HelpCircle className="h-4 w-4 text-muted-foreground" />
@@ -274,8 +289,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                       value={project} 
                       onValueChange={(value) => {
                         if (value === '__new__') {
-                          setShowNewProject(true);
-                          setNewProjectName('');
+                          onShowNewProject();
                         } else {
                           setProject(value);
                         }

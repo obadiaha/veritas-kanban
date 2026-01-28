@@ -43,6 +43,7 @@ export interface BoardSettings {
   showProjectBadges: boolean;
   showSprintBadges: boolean;
   enableDragAndDrop: boolean;
+  showDoneMetrics: boolean;
 }
 
 /** Task behavior settings */
@@ -110,6 +111,7 @@ export const DEFAULT_FEATURE_SETTINGS: FeatureSettings = {
     showProjectBadges: true,
     showSprintBadges: true,
     enableDragAndDrop: true,
+    showDoneMetrics: true,
   },
   tasks: {
     enableTimeTracking: true,

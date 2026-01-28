@@ -52,9 +52,17 @@ export const TelemetryCountQuerySchema = z.object({
   until: optionalIsoDate,
 });
 
+/**
+ * POST /api/telemetry/events/bulk - request body
+ */
+export const TelemetryBulkQuerySchema = z.object({
+  taskIds: z.array(TaskIdSchema).min(1).max(100),
+});
+
 export type TelemetryEventsQuery = z.infer<typeof TelemetryEventsQuerySchema>;
 export type TelemetryTaskParams = z.infer<typeof TelemetryTaskParamsSchema>;
 export type TelemetryCountQuery = z.infer<typeof TelemetryCountQuerySchema>;
+export type TelemetryBulkQuery = z.infer<typeof TelemetryBulkQuerySchema>;
 
 // ============ POST /api/telemetry/events - Event Ingestion Schemas ============
 
