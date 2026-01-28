@@ -1,5 +1,45 @@
 [
   {
+    "id": "activity_1769604473427_cksmodaid",
+    "type": "task_updated",
+    "taskId": "task_20260128_-WSaw3",
+    "taskTitle": "US-1501: Rename TaskStatus review → blocked in shared types",
+    "timestamp": "2026-01-28T12:47:53.427Z"
+  },
+  {
+    "id": "activity_1769604378174_rn92snfc8",
+    "type": "status_changed",
+    "taskId": "task_20260128_-WSaw3",
+    "taskTitle": "US-1501: Rename TaskStatus review → blocked in shared types",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T12:46:18.174Z"
+  },
+  {
+    "id": "activity_1769604366372_a1qzhag63",
+    "type": "comment_added",
+    "taskId": "task_20260128_ksQUvs",
+    "taskTitle": "RF-20: Frontend Performance Optimization",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added React.memo, useMemo, and useCallback to Diff..."
+    },
+    "timestamp": "2026-01-28T12:46:06.372Z"
+  },
+  {
+    "id": "activity_1769604358772_axplxlwjo",
+    "type": "status_changed",
+    "taskId": "task_20260128_ksQUvs",
+    "taskTitle": "RF-20: Frontend Performance Optimization",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T12:45:58.772Z"
+  },
+  {
     "id": "activity_1769603654345_x6t8uc64f",
     "type": "status_changed",
     "taskId": "task_20260128_ksQUvs",

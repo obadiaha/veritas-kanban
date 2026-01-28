@@ -69,7 +69,7 @@ const updateTaskSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
   type: z.string().optional(),
-  status: z.enum(['todo', 'in-progress', 'review', 'done']).optional(),
+  status: z.enum(['todo', 'in-progress', 'blocked', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
   project: z.string().optional(),
   sprint: z.string().optional(),
