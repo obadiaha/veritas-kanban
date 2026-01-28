@@ -296,6 +296,24 @@ describe('Auth Routes', () => {
       expect(res.status).toBe(400);
       expect(res.body.code).toBe('NO_RECOVERY_KEY');
     });
+
+    it('should use timing-safe comparison for recovery key validation', async () => {
+      const spy = vi.spyOn(crypto, 'timingSafeEqual');
+
+      await request(app)
+        .post('/api/auth/recover')
+        .send({ recoveryKey: 'VALID-RECOVERY-KEY', newPassword: 'newstrongpassword' });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      // Both args should be Buffers of equal length (SHA-256 = 32 bytes)
+      const [a, b] = spy.mock.calls[0];
+      expect(Buffer.isBuffer(a)).toBe(true);
+      expect(Buffer.isBuffer(b)).toBe(true);
+      expect(a.length).toBe(32);
+      expect(b.length).toBe(32);
+
+      spy.mockRestore();
+    });
   });
 
   describe('POST /api/auth/change-password', () => {

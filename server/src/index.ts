@@ -440,8 +440,11 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // Start server
 server.listen(PORT, () => {
   const authStatus = getAuthStatus();
+  const localhostInfo = authStatus.localhostBypass 
+    ? `, localhost bypass [${authStatus.localhostRole}]` 
+    : '';
   const authLine = authStatus.enabled 
-    ? `Auth: ON (${authStatus.configuredKeys} keys${authStatus.localhostBypass ? ', localhost bypass' : ''})`
+    ? `Auth: ON (${authStatus.configuredKeys} keys${localhostInfo})`
     : 'Auth: OFF (dev mode)';
   const corsLine = `CORS: ${ALLOWED_ORIGINS.length} origins`;
   
@@ -460,4 +463,20 @@ server.listen(PORT, () => {
 ║  Body Limit: 1MB                              ║
 ╚═══════════════════════════════════════════════╝
   `);
+  
+  // Security warnings for localhost bypass
+  if (authStatus.localhostBypass) {
+    if (authStatus.localhostRole === 'admin') {
+      console.warn(
+        '⚠️  WARNING: Localhost bypass is active with ADMIN role.\n' +
+        '   Any local process can read, modify, or delete all data without authentication.\n' +
+        '   Set VERITAS_AUTH_LOCALHOST_ROLE=read-only or disable bypass for production.\n'
+      );
+    } else {
+      console.log(
+        `ℹ️  Localhost bypass active (role: ${authStatus.localhostRole}). ` +
+        'Local connections can read data without authentication.'
+      );
+    }
+  }
 });
