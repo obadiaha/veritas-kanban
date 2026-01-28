@@ -468,7 +468,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
                     <SelectValue placeholder="Select project..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No project</SelectItem>
+                    <SelectItem value="__none__">No project</SelectItem>
                     {projects.map((proj) => (
                       <SelectItem key={proj.id} value={proj.id}>
                         {proj.label}

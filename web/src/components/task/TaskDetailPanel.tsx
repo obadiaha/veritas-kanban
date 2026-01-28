@@ -310,13 +310,15 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
                 <Label className="text-muted-foreground">Project</Label>
                 {!showNewProject ? (
                   <Select 
-                    value={localTask.project || ''} 
+                    value={localTask.project || '__none__'} 
                     onValueChange={(value) => {
                       if (value === '__new__') {
                         setShowNewProject(true);
                         setNewProjectName('');
+                      } else if (value === '__none__') {
+                        updateField('project', undefined);
                       } else {
-                        updateField('project', value || undefined);
+                        updateField('project', value);
                       }
                     }}
                   >
@@ -324,7 +326,7 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
                       <SelectValue placeholder="Select project..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No project</SelectItem>
+                      <SelectItem value="__none__">No project</SelectItem>
                       {projects.map((proj) => (
                         <SelectItem key={proj.id} value={proj.id}>
                           {proj.label}
