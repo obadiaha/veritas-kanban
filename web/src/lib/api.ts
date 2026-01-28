@@ -9,6 +9,7 @@ import type {
   TaskTemplate,
   CreateTemplateInput,
   UpdateTemplateInput,
+  TaskTypeConfig,
 } from '@veritas-kanban/shared';
 
 const API_BASE = '/api';
@@ -365,6 +366,60 @@ export const api = {
       return handleResponse<void>(response);
     },
   },
+
+  taskTypes: {
+    list: async (): Promise<TaskTypeConfig[]> => {
+      const response = await fetch(`${API_BASE}/task-types`);
+      return handleResponse<TaskTypeConfig[]>(response);
+    },
+
+    get: async (id: string): Promise<TaskTypeConfig> => {
+      const response = await fetch(`${API_BASE}/task-types/${id}`);
+      return handleResponse<TaskTypeConfig>(response);
+    },
+
+    create: async (input: { label: string; icon: string; color?: string }): Promise<TaskTypeConfig> => {
+      const response = await fetch(`${API_BASE}/task-types`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      return handleResponse<TaskTypeConfig>(response);
+    },
+
+    update: async (id: string, patch: Partial<TaskTypeConfig>): Promise<TaskTypeConfig> => {
+      const response = await fetch(`${API_BASE}/task-types/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      return handleResponse<TaskTypeConfig>(response);
+    },
+
+    delete: async (id: string, force = false): Promise<void> => {
+      const url = force 
+        ? `${API_BASE}/task-types/${id}?force=true`
+        : `${API_BASE}/task-types/${id}`;
+      const response = await fetch(url, {
+        method: 'DELETE',
+      });
+      return handleResponse<void>(response);
+    },
+
+    canDelete: async (id: string): Promise<{ allowed: boolean; referenceCount: number; isDefault: boolean }> => {
+      const response = await fetch(`${API_BASE}/task-types/${id}/can-delete`);
+      return handleResponse(response);
+    },
+
+    reorder: async (orderedIds: string[]): Promise<TaskTypeConfig[]> => {
+      const response = await fetch(`${API_BASE}/task-types/reorder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds }),
+      });
+      return handleResponse<TaskTypeConfig[]>(response);
+    },
+  },
 };
 
 // Types for archive suggestions
@@ -451,3 +506,64 @@ export interface WorktreeInfo {
   hasChanges: boolean;
   changedFiles: number;
 }
+
+// Managed List API helpers
+export const managedList = {
+  /**
+   * Create API helpers for a managed list endpoint
+   */
+  createHelpers: <T>(endpoint: string) => ({
+    list: async (includeHidden = false): Promise<T[]> => {
+      const url = includeHidden 
+        ? `${API_BASE}${endpoint}?includeHidden=true`
+        : `${API_BASE}${endpoint}`;
+      const response = await fetch(url);
+      return handleResponse<T[]>(response);
+    },
+
+    get: async (id: string): Promise<T> => {
+      const response = await fetch(`${API_BASE}${endpoint}/${id}`);
+      return handleResponse<T>(response);
+    },
+
+    create: async (input: any): Promise<T> => {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      return handleResponse<T>(response);
+    },
+
+    update: async (id: string, patch: any): Promise<T> => {
+      const response = await fetch(`${API_BASE}${endpoint}/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      return handleResponse<T>(response);
+    },
+
+    remove: async (id: string, force = false): Promise<void> => {
+      const url = force
+        ? `${API_BASE}${endpoint}/${id}?force=true`
+        : `${API_BASE}${endpoint}/${id}`;
+      const response = await fetch(url, { method: 'DELETE' });
+      return handleResponse<void>(response);
+    },
+
+    canDelete: async (id: string): Promise<{ allowed: boolean; referenceCount: number; isDefault: boolean }> => {
+      const response = await fetch(`${API_BASE}${endpoint}/${id}/can-delete`);
+      return handleResponse(response);
+    },
+
+    reorder: async (orderedIds: string[]): Promise<T[]> => {
+      const response = await fetch(`${API_BASE}${endpoint}/reorder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds }),
+      });
+      return handleResponse<T[]>(response);
+    },
+  }),
+};

@@ -1,6 +1,6 @@
 // Task Types
 
-export type TaskType = 'code' | 'research' | 'content' | 'automation';
+export type TaskType = string;
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
 export type AgentType = 'claude-code' | 'amp' | 'copilot' | 'gemini' | 'veritas';
@@ -351,6 +351,32 @@ export interface TelemetryQueryOptions {
   taskId?: string;
   project?: string;
   limit?: number;
+}
+
+// ============ Managed List Types ============
+
+/** Base interface for managed list items */
+export interface ManagedListItem {
+  id: string;
+  label: string;
+  order: number;
+  isDefault?: boolean;
+  isHidden?: boolean;
+  created: string;
+  updated: string;
+}
+
+/** Configuration options for ManagedListService */
+export interface ManagedListServiceOptions {
+  filename: string;
+  configDir: string;
+  defaults: ManagedListItem[];
+}
+
+/** Task type configuration with icon and color */
+export interface TaskTypeConfig extends ManagedListItem {
+  icon: string;    // Lucide icon name (e.g., "Code", "Search")
+  color?: string;  // Tailwind border color class (e.g., "border-l-violet-500")
 }
 
 // ============ Template Types ============

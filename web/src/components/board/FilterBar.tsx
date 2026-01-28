@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import type { Task, TaskType } from '@veritas-kanban/shared';
+import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
 
 export interface FilterState {
   search: string;
@@ -24,14 +25,9 @@ interface FilterBarProps {
   onFiltersChange: (filters: FilterState) => void;
 }
 
-const typeLabels: Record<TaskType, string> = {
-  code: '💻 Code',
-  research: '🔍 Research',
-  content: '📝 Content',
-  automation: '⚡ Automation',
-};
-
 export function FilterBar({ tasks, filters, onFiltersChange }: FilterBarProps) {
+  const { data: taskTypes = [], isLoading: typesLoading } = useTaskTypes();
+
   // Get unique projects from tasks
   const projects = useMemo(() => {
     const projectSet = new Set<string>();
@@ -105,17 +101,24 @@ export function FilterBar({ tasks, filters, onFiltersChange }: FilterBarProps) {
         onValueChange={(value) =>
           onFiltersChange({ ...filters, type: value === 'all' ? null : (value as TaskType) })
         }
+        disabled={typesLoading}
       >
         <SelectTrigger className="w-[160px]">
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
-          {(Object.entries(typeLabels) as [TaskType, string][]).map(([type, label]) => (
-            <SelectItem key={type} value={type}>
-              {label}
-            </SelectItem>
-          ))}
+          {taskTypes.map((type) => {
+            const IconComponent = getTypeIcon(type.icon);
+            return (
+              <SelectItem key={type.id} value={type.id}>
+                <div className="flex items-center gap-2">
+                  {IconComponent && <IconComponent className="h-4 w-4" />}
+                  {type.label}
+                </div>
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
 

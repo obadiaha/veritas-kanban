@@ -1,5 +1,85 @@
 [
   {
+    "id": "activity_1769573330167_uf55svpjy",
+    "type": "task_updated",
+    "taskId": "task_20260128_XvmMga",
+    "taskTitle": "Research Kimi K2.5",
+    "timestamp": "2026-01-28T04:08:50.167Z"
+  },
+  {
+    "id": "activity_1769573329149_8kqsmm1qi",
+    "type": "task_updated",
+    "taskId": "task_20260128_XvmMga",
+    "taskTitle": "Research Kimi K2.5",
+    "timestamp": "2026-01-28T04:08:49.149Z"
+  },
+  {
+    "id": "activity_1769573327271_w5rxe8596",
+    "type": "task_updated",
+    "taskId": "task_20260128_XvmMga",
+    "taskTitle": "Research Kimi K2.5",
+    "timestamp": "2026-01-28T04:08:47.271Z"
+  },
+  {
+    "id": "activity_1769573325026_hf0ilxbzr",
+    "type": "task_updated",
+    "taskId": "task_20260128_XvmMga",
+    "taskTitle": "Research Kimi K2.5",
+    "timestamp": "2026-01-28T04:08:45.026Z"
+  },
+  {
+    "id": "activity_1769573322546_nz113v7jg",
+    "type": "task_updated",
+    "taskId": "task_20260128_XvmMga",
+    "taskTitle": "Research Kimi K2.5",
+    "timestamp": "2026-01-28T04:08:42.546Z"
+  },
+  {
+    "id": "activity_1769573029935_oc1euui8x",
+    "type": "status_changed",
+    "taskId": "task_20260128_Oq5P-O",
+    "taskTitle": "US-915: ManagedListService — reusable foundation for managed entity lists",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T04:03:49.935Z"
+  },
+  {
+    "id": "activity_1769572463792_4bj64fzux",
+    "type": "comment_added",
+    "taskId": "task_20260128_7_9GhV",
+    "taskTitle": "US-912: Task attachments for agent context",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented full attachment system: attachment-ser..."
+    },
+    "timestamp": "2026-01-28T03:54:23.792Z"
+  },
+  {
+    "id": "activity_1769572463781_y89x9cfzi",
+    "type": "status_changed",
+    "taskId": "task_20260128_7_9GhV",
+    "taskTitle": "US-912: Task attachments for agent context",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T03:54:23.781Z"
+  },
+  {
+    "id": "activity_1769572389365_4nyfg81ej",
+    "type": "task_created",
+    "taskId": "task_20260128_Zk4oV0",
+    "taskTitle": "BUG: Kanban requires refresh to see progress",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T03:53:09.365Z"
+  },
+  {
     "id": "activity_1769572121032_uswxnnxmh",
     "type": "comment_added",
     "taskId": "task_20260128_7_9GhV",
@@ -891,103 +971,5 @@
       "status": "done"
     },
     "timestamp": "2026-01-26T18:43:54.685Z"
-  },
-  {
-    "id": "activity_1769453034603_0shvech9c",
-    "type": "status_changed",
-    "taskId": "task_20260126_UZYsUY",
-    "taskTitle": "Test Task 1: Success Run",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T18:43:54.603Z"
-  },
-  {
-    "id": "activity_1769453000859_ilipd0693",
-    "type": "task_created",
-    "taskId": "task_20260126_Pq8tK0",
-    "taskTitle": "Test Task 4: Quick Success",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "Dashboard Test"
-    },
-    "timestamp": "2026-01-26T18:43:20.859Z"
-  },
-  {
-    "id": "activity_1769453000806_80o8hf9o6",
-    "type": "task_created",
-    "taskId": "task_20260126_ZfmWI8",
-    "taskTitle": "Test Task 3: Failed Run",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "Dashboard Test"
-    },
-    "timestamp": "2026-01-26T18:43:20.806Z"
-  },
-  {
-    "id": "activity_1769453000745_870mzawqx",
-    "type": "task_created",
-    "taskId": "task_20260126_7woED_",
-    "taskTitle": "Test Task 2: Another Success",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "Dashboard Test"
-    },
-    "timestamp": "2026-01-26T18:43:20.745Z"
-  },
-  {
-    "id": "activity_1769453000681_mdmhhzfqz",
-    "type": "task_created",
-    "taskId": "task_20260126_UZYsUY",
-    "taskTitle": "Test Task 1: Success Run",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "Dashboard Test"
-    },
-    "timestamp": "2026-01-26T18:43:20.681Z"
-  },
-  {
-    "id": "activity_1769452924128_3xsfwyoy0",
-    "type": "project_archived",
-    "taskId": "veritas-kanban",
-    "taskTitle": "veritas-kanban",
-    "details": {
-      "taskCount": 11
-    },
-    "timestamp": "2026-01-26T18:42:04.128Z"
-  },
-  {
-    "id": "activity_1769452568125_q7uiuw7zo",
-    "type": "status_changed",
-    "taskId": "task_20260126_vfkPKg",
-    "taskTitle": "US-808: Optional Traces (Stretch)",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T18:36:08.125Z"
-  },
-  {
-    "id": "activity_1769452448722_4r34xzpke",
-    "type": "status_changed",
-    "taskId": "task_20260126_vfkPKg",
-    "taskTitle": "US-808: Optional Traces (Stretch)",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-26T18:34:08.722Z"
-  },
-  {
-    "id": "activity_1769452447669_kczr3pejl",
-    "type": "task_updated",
-    "taskId": "task_20260126_vfkPKg",
-    "taskTitle": "US-808: Optional Traces (Stretch)",
-    "timestamp": "2026-01-26T18:34:07.669Z"
   }
 ]

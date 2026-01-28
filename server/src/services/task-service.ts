@@ -106,6 +106,7 @@ export class TaskService {
       blockedBy: data.blockedBy,
       automation: data.automation,
       timeTracking: data.timeTracking,
+      comments: data.comments,
       attachments: data.attachments,
     };
   }

@@ -42,10 +42,12 @@ import {
   type TaskTemplate,
 } from '@/hooks/useTemplates';
 import { Plus, Trash2, Check, X, Loader2, FolderGit2, Bot, Star, FileText, Download, Upload, HelpCircle, Info } from 'lucide-react';
-import type { RepoConfig, AgentConfig, AgentType, TaskType, TaskPriority } from '@veritas-kanban/shared';
+import type { RepoConfig, AgentConfig, AgentType, TaskPriority, TaskTypeConfig } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
 import { TEMPLATE_CATEGORIES, getCategoryIcon, getCategoryLabel } from '@/lib/template-categories';
 import { exportAllTemplates, parseTemplateFile, checkDuplicateName } from '@/lib/template-io';
+import { useTaskTypesManager, getTypeIcon, getAvailableIcons, AVAILABLE_COLORS } from '@/hooks/useTaskTypes';
+import { ManagedListManager } from './ManagedListManager';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -233,13 +235,14 @@ function AddTemplateForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('');
-  const [type, setType] = useState<TaskType | ''>('');
+  const [type, setType] = useState<string>('');
   const [priority, setPriority] = useState<TaskPriority | ''>('');
   const [project, setProject] = useState('');
   const [agent, setAgent] = useState<AgentType | ''>('');
   const [descriptionTemplate, setDescriptionTemplate] = useState('');
 
   const createTemplate = useCreateTemplate();
+  const { items: taskTypes } = useTaskTypesManager();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -308,15 +311,22 @@ function AddTemplateForm({ onClose }: { onClose: () => void }) {
         <div className="grid grid-cols-2 gap-3">
           <div className="grid gap-2">
             <Label>Default Type</Label>
-            <Select value={type} onValueChange={(v) => setType(v as TaskType)}>
+            <Select value={type} onValueChange={setType}>
               <SelectTrigger>
                 <SelectValue placeholder="Any" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="code">Code</SelectItem>
-                <SelectItem value="research">Research</SelectItem>
-                <SelectItem value="content">Content</SelectItem>
-                <SelectItem value="automation">Automation</SelectItem>
+                {taskTypes.map((taskType) => {
+                  const IconComponent = getTypeIcon(taskType.icon);
+                  return (
+                    <SelectItem key={taskType.id} value={taskType.id}>
+                      <div className="flex items-center gap-2">
+                        {IconComponent && <IconComponent className="h-4 w-4" />}
+                        {taskType.label}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -499,6 +509,7 @@ function AgentItem({
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { data: config, isLoading } = useConfig();
   const { data: templates, isLoading: templatesLoading } = useTemplates();
+  const taskTypesManager = useTaskTypesManager();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddTemplateForm, setShowAddTemplateForm] = useState(false);
   const [showTemplateHelp, setShowTemplateHelp] = useState(false);
@@ -639,6 +650,73 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Task Types Section */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium">Task Types</h3>
+            <div className="border rounded-lg p-4">
+              <ManagedListManager<TaskTypeConfig>
+                title=""
+                items={taskTypesManager.items}
+                isLoading={taskTypesManager.isLoading}
+                onCreate={taskTypesManager.create}
+                onUpdate={taskTypesManager.update}
+                onDelete={taskTypesManager.remove}
+                onReorder={taskTypesManager.reorder}
+                canDeleteCheck={taskTypesManager.canDelete}
+                renderExtraFields={(item, onChange) => (
+                  <div className="flex gap-2 mt-2">
+                    <div className="flex-1">
+                      <Label className="text-xs text-muted-foreground">Icon</Label>
+                      <Select
+                        value={item.icon}
+                        onValueChange={(icon) => onChange({ icon })}
+                      >
+                        <SelectTrigger className="h-8 mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getAvailableIcons().map((iconName) => {
+                            const IconComponent = getTypeIcon(iconName);
+                            return (
+                              <SelectItem key={iconName} value={iconName}>
+                                <div className="flex items-center gap-2">
+                                  {IconComponent && <IconComponent className="h-4 w-4" />}
+                                  {iconName}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex-1">
+                      <Label className="text-xs text-muted-foreground">Color</Label>
+                      <Select
+                        value={item.color || 'border-l-gray-500'}
+                        onValueChange={(color) => onChange({ color })}
+                      >
+                        <SelectTrigger className="h-8 mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AVAILABLE_COLORS.map((color) => (
+                            <SelectItem key={color.value} value={color.value}>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-4 h-4 rounded border-l-4 ${color.value}`}></div>
+                                {color.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                newItemDefaults={{ icon: 'Code', color: 'border-l-gray-500' }}
+              />
+            </div>
           </div>
 
           {/* Templates Section */}

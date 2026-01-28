@@ -6,10 +6,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { Task, TaskType, TaskPriority } from '@veritas-kanban/shared';
-import { Code, Search, FileText, Zap, Check, Ban, Clock, Timer, Loader2, Paperclip } from 'lucide-react';
+import type { Task, TaskPriority, TaskTypeConfig } from '@veritas-kanban/shared';
+import { Check, Ban, Clock, Timer, Loader2, Paperclip } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
+import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -26,21 +27,8 @@ interface TaskCardProps {
   isSelected?: boolean;
   isBlocked?: boolean;
   blockerTitles?: string[];
+  taskTypes?: TaskTypeConfig[];
 }
-
-const typeIcons: Record<TaskType, React.ReactNode> = {
-  code: <Code className="h-3.5 w-3.5" />,
-  research: <Search className="h-3.5 w-3.5" />,
-  content: <FileText className="h-3.5 w-3.5" />,
-  automation: <Zap className="h-3.5 w-3.5" />,
-};
-
-const typeColors: Record<TaskType, string> = {
-  code: 'border-l-violet-500',
-  research: 'border-l-cyan-500',
-  content: 'border-l-orange-500',
-  automation: 'border-l-emerald-500',
-};
 
 const priorityColors: Record<TaskPriority, string> = {
   high: 'bg-red-500/20 text-red-400',
@@ -48,7 +36,7 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [] }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging: isCurrentlyDragging } = useDraggable({
     id: task.id,
   });
@@ -80,6 +68,11 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
   };
 
   const isAgentRunning = task.attempt?.status === 'running';
+  
+  // Get type info dynamically
+  const typeIconName = taskTypes.find(t => t.id === task.type)?.icon || 'Code';
+  const TypeIconComponent = getTypeIcon(typeIconName);
+  const typeColor = getTypeColor(taskTypes, task.type);
 
   return (
     <TooltipProvider>
@@ -95,7 +88,7 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
               'group bg-card border border-border rounded-md p-3 cursor-grab active:cursor-grabbing',
               'hover:border-muted-foreground/50 hover:bg-card/80 transition-all',
               'border-l-2',
-              typeColors[task.type],
+              typeColor,
               isDragging && 'opacity-50 shadow-lg rotate-2 scale-105',
               isCurrentlyDragging && 'opacity-50',
               isSelected && 'ring-2 ring-primary border-primary',
@@ -117,7 +110,7 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                 </button>
               )}
               <span className="text-muted-foreground mt-0.5 flex-shrink-0">
-                {typeIcons[task.type]}
+                {TypeIconComponent && <TypeIconComponent className="h-3.5 w-3.5" />}
               </span>
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-medium leading-tight truncate">

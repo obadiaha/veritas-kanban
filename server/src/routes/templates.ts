@@ -6,26 +6,56 @@ const router: RouterType = Router();
 const templateService = new TemplateService();
 
 // Validation schemas
+const subtaskTemplateSchema = z.object({
+  title: z.string(),
+  order: z.number(),
+});
+
+const blueprintTaskSchema = z.object({
+  refId: z.string(),
+  title: z.string(),
+  taskDefaults: z.object({
+    type: z.string().optional(),
+    priority: z.enum(['low', 'medium', 'high']).optional(),
+    project: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    descriptionTemplate: z.string().optional(),
+    agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']).optional(),
+  }),
+  subtaskTemplates: z.array(subtaskTemplateSchema).optional(),
+  blockedByRefs: z.array(z.string()).optional(),
+});
+
 const createTemplateSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
+  category: z.string().optional(),
   taskDefaults: z.object({
-    type: z.enum(['code', 'research', 'content', 'automation']).optional(),
+    type: z.string().optional(),
     priority: z.enum(['low', 'medium', 'high']).optional(),
     project: z.string().optional(),
+    tags: z.array(z.string()).optional(),
     descriptionTemplate: z.string().optional(),
+    agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']).optional(),
   }),
+  subtaskTemplates: z.array(subtaskTemplateSchema).optional(),
+  blueprint: z.array(blueprintTaskSchema).optional(),
 });
 
 const updateTemplateSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
+  category: z.string().optional(),
   taskDefaults: z.object({
-    type: z.enum(['code', 'research', 'content', 'automation']).optional(),
+    type: z.string().optional(),
     priority: z.enum(['low', 'medium', 'high']).optional(),
     project: z.string().optional(),
+    tags: z.array(z.string()).optional(),
     descriptionTemplate: z.string().optional(),
+    agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']).optional(),
   }).optional(),
+  subtaskTemplates: z.array(subtaskTemplateSchema).optional(),
+  blueprint: z.array(blueprintTaskSchema).optional(),
 });
 
 // GET /api/templates - List all templates
