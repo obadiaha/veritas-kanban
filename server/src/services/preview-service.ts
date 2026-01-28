@@ -2,6 +2,7 @@ import { spawn, ChildProcess } from 'child_process';
 import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
 import type { Task } from '@veritas-kanban/shared';
+import { expandPath } from '@veritas-kanban/shared';
 
 export interface PreviewServer {
   taskId: string;
@@ -24,14 +25,11 @@ const runningServers = new Map<string, {
 export class PreviewService {
   private configService: ConfigService;
   private taskService: TaskService;
+  private readonly MAX_OUTPUT_SIZE = 1024 * 1024; // 1MB limit for output
 
   constructor() {
     this.configService = new ConfigService();
     this.taskService = new TaskService();
-  }
-
-  private expandPath(p: string): string {
-    return p.replace(/^~/, process.env.HOME || '');
   }
 
   /**
@@ -110,7 +108,7 @@ export class PreviewService {
     }
 
     // Determine working directory (worktree or main repo)
-    const workDir = task.git.worktreePath || this.expandPath(repoConfig.path);
+    const workDir = task.git.worktreePath || expandPath(repoConfig.path);
 
     // Parse command
     const [cmd, ...args] = repoConfig.devServer.command.split(' ');
@@ -141,7 +139,20 @@ export class PreviewService {
           const text = data.toString();
           info.output.push(text);
           
-          // Keep only last 100 lines
+          // Calculate total output size
+          const totalSize = info.output.reduce((sum, line) => sum + line.length, 0);
+          
+          // Enforce size limit
+          if (totalSize > this.MAX_OUTPUT_SIZE) {
+            // Truncate from the beginning, keep recent output
+            while (info.output.length > 0 && 
+                   info.output.reduce((sum, line) => sum + line.length, 0) > this.MAX_OUTPUT_SIZE * 0.8) {
+              info.output.shift();
+            }
+            info.output.unshift('...[output truncated due to size limit]...\n');
+          }
+          
+          // Keep only last 100 lines as secondary limit
           if (info.output.length > 100) {
             info.output = info.output.slice(-100);
           }

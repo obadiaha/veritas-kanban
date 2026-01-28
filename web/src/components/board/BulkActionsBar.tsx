@@ -109,7 +109,7 @@ export function BulkActionsBar({ allTaskIds }: BulkActionsBarProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 mb-4 p-3 rounded-lg bg-muted/50 border">
+      <div className="flex items-center justify-between gap-4 mb-4 p-3 rounded-lg bg-muted/50 border" role="toolbar" aria-label="Bulk actions">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -123,6 +123,7 @@ export function BulkActionsBar({ allTaskIds }: BulkActionsBarProps) {
             variant="outline"
             size="sm"
             onClick={handleSelectAll}
+            aria-label={allSelected ? 'Deselect all tasks' : 'Select all tasks'}
           >
             {allSelected ? 'Deselect All' : 'Select All'}
           </Button>

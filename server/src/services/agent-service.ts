@@ -8,6 +8,7 @@ import { TaskService } from './task-service.js';
 import { getTelemetryService, type TelemetryService } from './telemetry-service.js';
 import { getTraceService, type TraceService } from './trace-service.js';
 import type { Task, AgentType, TaskAttempt, AttemptStatus, RunTelemetryEvent } from '@veritas-kanban/shared';
+import { expandPath } from '@veritas-kanban/shared';
 
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 const LOGS_DIR = path.join(PROJECT_ROOT, '.veritas-kanban', 'logs');
@@ -60,10 +61,6 @@ export class AgentService {
     await fs.mkdir(this.logsDir, { recursive: true });
   }
 
-  private expandPath(p: string): string {
-    return p.replace(/^~/, process.env.HOME || '');
-  }
-
   async startAgent(taskId: string, agentType?: AgentType): Promise<AgentStatus> {
     // Get task
     const task = await this.taskService.getTask(taskId);
@@ -113,7 +110,7 @@ export class AgentService {
     const emitter = new EventEmitter();
 
     // Spawn agent process
-    const worktreePath = this.expandPath(task.git.worktreePath);
+    const worktreePath = expandPath(task.git.worktreePath);
     const args = [...agentConfig.args];
 
     const childProcess = spawn(agentConfig.command, args, {

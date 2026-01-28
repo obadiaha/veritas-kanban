@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { extractText as unpdfExtract } from 'unpdf';
 import mammoth from 'mammoth';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export interface TextExtractionResult {
   text: string | null;
@@ -115,23 +115,49 @@ export class TextExtractionService {
 
   /**
    * Extract text from Excel files (convert to CSV-like format)
+   * Note: Only supports .xlsx format (Excel 2007+). Legacy .xls format is not supported.
    */
   private async extractXLSX(filepath: string): Promise<string | null> {
     try {
-      const buffer = await fs.readFile(filepath);
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const workbook = new ExcelJS.Workbook();
+      
+      // Read the workbook directly from file
+      await workbook.xlsx.readFile(filepath);
       
       // Extract all sheets
       const sheets: string[] = [];
       
-      for (const sheetName of workbook.SheetNames) {
-        const worksheet = workbook.Sheets[sheetName];
-        const csv = XLSX.utils.sheet_to_csv(worksheet);
+      workbook.eachSheet((worksheet, sheetId) => {
+        const rows: string[] = [];
         
-        if (csv.trim()) {
-          sheets.push(`=== Sheet: ${sheetName} ===\n${csv}`);
+        worksheet.eachRow((row, rowNumber) => {
+          const values: string[] = [];
+          
+          row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            // Get cell value as string
+            const value = cell.value;
+            
+            // Handle different value types
+            if (value === null || value === undefined) {
+              values.push('');
+            } else if (typeof value === 'object' && 'text' in value) {
+              // Rich text
+              values.push(value.text || '');
+            } else if (typeof value === 'object' && 'formula' in value) {
+              // Formula - use result if available
+              values.push(value.result?.toString() || '');
+            } else {
+              values.push(value.toString());
+            }
+          });
+          
+          rows.push(values.join(','));
+        });
+        
+        if (rows.length > 0) {
+          sheets.push(`=== Sheet: ${worksheet.name} ===\n${rows.join('\n')}`);
         }
-      }
+      });
       
       return sheets.length > 0 ? sheets.join('\n\n') : null;
     } catch (error) {
