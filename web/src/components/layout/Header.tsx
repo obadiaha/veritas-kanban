@@ -4,16 +4,23 @@ import { CreateTaskDialog } from '@/components/task/CreateTaskDialog';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ActivitySidebar } from './ActivitySidebar';
 import { ArchiveSidebar } from './ArchiveSidebar';
+import { UserMenu } from './UserMenu';
 import { AgentStatusIndicator } from '@/components/shared/AgentStatusIndicator';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useKeyboard } from '@/hooks/useKeyboard';
 
 export function Header() {
   const [createOpen, setCreateOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<string | undefined>();
   const [activityOpen, setActivityOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const { setOpenCreateDialog, openHelpDialog } = useKeyboard();
+
+  const openSecuritySettings = useCallback(() => {
+    setSettingsTab('security');
+    setSettingsOpen(true);
+  }, []);
 
   // Register the create dialog opener with keyboard context (ref, no useEffect needed)
   setOpenCreateDialog(() => setCreateOpen(true));
@@ -71,12 +78,20 @@ export function Header() {
             >
               <Settings className="h-4 w-4" />
             </Button>
+            <UserMenu onOpenSecuritySettings={openSecuritySettings} />
           </div>
         </div>
       </div>
       
       <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <SettingsDialog 
+        open={settingsOpen} 
+        onOpenChange={(open) => {
+          setSettingsOpen(open);
+          if (!open) setSettingsTab(undefined);
+        }}
+        defaultTab={settingsTab}
+      />
       <ActivitySidebar open={activityOpen} onOpenChange={setActivityOpen} />
       <ArchiveSidebar open={archiveOpen} onOpenChange={setArchiveOpen} />
     </header>

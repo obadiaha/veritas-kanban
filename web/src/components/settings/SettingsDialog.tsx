@@ -32,7 +32,7 @@ import {
 import { useToast } from '@/hooks/useToast';
 import {
   Settings2, Layout, ListTodo, Cpu, Database, Bell, Archive,
-  Download, Upload, RotateCcw,
+  Download, Upload, RotateCcw, Shield,
 } from 'lucide-react';
 import { DEFAULT_FEATURE_SETTINGS } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,7 @@ const LazyAgentsTab = lazy(() => import('./tabs/AgentsTab').then(m => ({ default
 const LazyDataTab = lazy(() => import('./tabs/DataTab').then(m => ({ default: m.DataTab })));
 const LazyNotificationsTab = lazy(() => import('./tabs/NotificationsTab').then(m => ({ default: m.NotificationsTab })));
 const LazyManageTab = lazy(() => import('./tabs/ManageTab').then(m => ({ default: m.ManageTab })));
+const LazySecurityTab = lazy(() => import('./tabs/SecurityTab').then(m => ({ default: m.SecurityTab })));
 
 // ============ Tab Skeleton ============
 
@@ -64,7 +65,7 @@ function TabSkeleton() {
 
 // ============ Tab Configuration ============
 
-type TabId = 'general' | 'board' | 'tasks' | 'agents' | 'data' | 'notifications' | 'manage';
+type TabId = 'general' | 'board' | 'tasks' | 'agents' | 'data' | 'notifications' | 'security' | 'manage';
 
 interface TabDef {
   id: TabId;
@@ -79,6 +80,7 @@ const TABS: TabDef[] = [
   { id: 'agents',        label: 'Agents',        icon: Cpu },
   { id: 'data',          label: 'Data',          icon: Database },
   { id: 'notifications', label: 'Notifications', icon: Bell },
+  { id: 'security',      label: 'Security',      icon: Shield },
   { id: 'manage',        label: 'Manage',        icon: Archive },
 ];
 
@@ -87,12 +89,20 @@ const TABS: TabDef[] = [
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultTab?: string;
 }
 
 // ============ Main Settings Dialog ============
 
-export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
+export function SettingsDialog({ open, onOpenChange, defaultTab }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState<TabId>('general');
+  
+  // Set active tab when defaultTab changes
+  useEffect(() => {
+    if (defaultTab && TABS.some(t => t.id === defaultTab)) {
+      setActiveTab(defaultTab as TabId);
+    }
+  }, [defaultTab]);
   const { settings: currentSettings } = useFeatureSettings();
   const { debouncedUpdate } = useDebouncedFeatureUpdate();
   const settingsFileInputRef = useRef<HTMLInputElement>(null);
@@ -224,6 +234,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         {activeTab === 'notifications' && (
           <SettingsErrorBoundary tabName="Notifications"><LazyNotificationsTab /></SettingsErrorBoundary>
         )}
+        {activeTab === 'security' && (
+          <SettingsErrorBoundary tabName="Security"><LazySecurityTab /></SettingsErrorBoundary>
+        )}
         {activeTab === 'manage' && (
           <SettingsErrorBoundary tabName="Manage"><LazyManageTab /></SettingsErrorBoundary>
         )}
@@ -345,7 +358,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <div 
                 id="settings-tab-content"
                 ref={contentAreaRef}
-                className="max-w-lg px-6 py-4"
+                className="px-6 py-4"
                 role="tabpanel"
                 tabIndex={-1}
                 aria-labelledby={`tab-${activeTab}`}

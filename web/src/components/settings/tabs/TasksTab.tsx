@@ -63,8 +63,10 @@ export function TasksTab() {
               value={Math.round(settings.tasks.attachmentMaxFileSize / (1024 * 1024))}
               onChange={(v) => update('attachmentMaxFileSize', v * 1024 * 1024)}
               min={1}
-              max={100}
+              max={9999}
               unit="MB"
+              hideSpinners
+              maxLength={4}
             />
             <NumberRow
               label="Max Files Per Task"
@@ -72,7 +74,9 @@ export function TasksTab() {
               value={settings.tasks.attachmentMaxPerTask}
               onChange={(v) => update('attachmentMaxPerTask', v)}
               min={1}
-              max={100}
+              max={9999}
+              hideSpinners
+              maxLength={4}
             />
             <NumberRow
               label="Max Total Size"
@@ -80,8 +84,10 @@ export function TasksTab() {
               value={Math.round(settings.tasks.attachmentMaxTotalSize / (1024 * 1024))}
               onChange={(v) => update('attachmentMaxTotalSize', v * 1024 * 1024)}
               min={1}
-              max={500}
+              max={9999}
               unit="MB"
+              hideSpinners
+              maxLength={4}
             />
           </>
         )}

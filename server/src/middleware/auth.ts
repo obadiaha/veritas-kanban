@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
+import jwt from 'jsonwebtoken';
+import { getSecurityConfig } from '../config/security.js';
 
 // === Types ===
 
@@ -149,56 +151,90 @@ function validateApiKey(apiKey: string, config: AuthConfig): { valid: boolean; r
   return { valid: false };
 }
 
+// === JWT Verification ===
+
+function verifyJwtCookie(req: Request): { valid: boolean; error?: string } {
+  const securityConfig = getSecurityConfig();
+  
+  // No JWT secret means no password auth configured
+  if (!securityConfig.jwtSecret) {
+    return { valid: false };
+  }
+  
+  // Get cookie from request
+  const token = req.cookies?.veritas_session;
+  if (!token) {
+    return { valid: false };
+  }
+  
+  try {
+    jwt.verify(token, securityConfig.jwtSecret);
+    return { valid: true };
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return { valid: false, error: 'Session expired' };
+    }
+    return { valid: false, error: 'Invalid session' };
+  }
+}
+
 // === Express Middleware ===
 
 /**
- * Authentication middleware - validates API key and sets auth context
+ * Authentication middleware - validates JWT cookie, API key, or localhost bypass
+ * Priority: JWT cookie > API key > localhost bypass
  */
 export function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const config = getAuthConfig();
+  const securityConfig = getSecurityConfig();
   const isLocalhost = isLocalhostRequest(req);
   
-  // Auth disabled - allow all requests
-  if (!config.enabled) {
+  // If password auth not set up yet, check API key auth
+  const passwordAuthEnabled = securityConfig.authEnabled && securityConfig.passwordHash;
+  
+  // Auth disabled via env var - allow all requests
+  if (!config.enabled && !passwordAuthEnabled) {
     req.auth = { role: 'admin', isLocalhost };
     return next();
   }
   
-  // Localhost bypass
+  // 1. Check JWT cookie (human users)
+  if (passwordAuthEnabled) {
+    const jwtResult = verifyJwtCookie(req);
+    if (jwtResult.valid) {
+      req.auth = { role: 'admin', keyName: 'session', isLocalhost };
+      return next();
+    }
+  }
+  
+  // 2. Check API key (agents/services)
+  const apiKey = extractApiKey(req);
+  if (apiKey) {
+    const validation = validateApiKey(apiKey, config);
+    if (validation.valid) {
+      req.auth = {
+        role: validation.role!,
+        keyName: validation.name,
+        isLocalhost,
+      };
+      return next();
+    }
+  }
+  
+  // 3. Localhost bypass (dev mode)
   if (config.allowLocalhostBypass && isLocalhost) {
     req.auth = { role: 'admin', isLocalhost };
     return next();
   }
   
-  // Extract and validate API key
-  const apiKey = extractApiKey(req);
-  
-  if (!apiKey) {
-    res.status(401).json({
-      error: 'Authentication required',
-      code: 'AUTH_REQUIRED',
-      hint: 'Provide API key via Authorization header (Bearer <key>), X-API-Key header, or api_key query parameter',
-    });
-    return;
-  }
-  
-  const validation = validateApiKey(apiKey, config);
-  
-  if (!validation.valid) {
-    res.status(401).json({
-      error: 'Invalid API key',
-      code: 'INVALID_API_KEY',
-    });
-    return;
-  }
-  
-  req.auth = {
-    role: validation.role!,
-    keyName: validation.name,
-    isLocalhost,
-  };
-  
-  next();
+  // No valid auth found
+  res.status(401).json({
+    error: 'Authentication required',
+    code: 'AUTH_REQUIRED',
+    hint: passwordAuthEnabled 
+      ? 'Please log in or provide an API key'
+      : 'Provide API key via Authorization header (Bearer <key>), X-API-Key header, or api_key query parameter',
+  });
 }
 
 /**
@@ -275,48 +311,74 @@ export interface WebSocketAuthResult {
 }
 
 /**
+ * Extract JWT from WebSocket request cookies
+ */
+function extractJwtFromWebSocket(req: IncomingMessage): string | null {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return null;
+  
+  const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split('=');
+    if (key && value) acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+  
+  return cookies['veritas_session'] || null;
+}
+
+/**
  * Authenticate a WebSocket connection request
  */
 export function authenticateWebSocket(req: IncomingMessage): WebSocketAuthResult {
   const config = getAuthConfig();
+  const securityConfig = getSecurityConfig();
   const isLocalhost = isLocalhostRequest(req);
   
-  // Auth disabled
-  if (!config.enabled) {
+  const passwordAuthEnabled = securityConfig.authEnabled && securityConfig.passwordHash;
+  
+  // Auth disabled via env var
+  if (!config.enabled && !passwordAuthEnabled) {
     return { authenticated: true, role: 'admin', isLocalhost };
   }
   
-  // Localhost bypass
+  // 1. Check JWT cookie
+  if (passwordAuthEnabled && securityConfig.jwtSecret) {
+    const token = extractJwtFromWebSocket(req);
+    if (token) {
+      try {
+        jwt.verify(token, securityConfig.jwtSecret);
+        return { authenticated: true, role: 'admin', keyName: 'session', isLocalhost };
+      } catch {
+        // Token invalid or expired, continue to other auth methods
+      }
+    }
+  }
+  
+  // 2. Check API key
+  const apiKey = extractApiKey(req);
+  if (apiKey) {
+    const validation = validateApiKey(apiKey, config);
+    if (validation.valid) {
+      return {
+        authenticated: true,
+        role: validation.role,
+        keyName: validation.name,
+        isLocalhost,
+      };
+    }
+  }
+  
+  // 3. Localhost bypass
   if (config.allowLocalhostBypass && isLocalhost) {
     return { authenticated: true, role: 'admin', isLocalhost };
   }
   
-  // Extract and validate API key
-  const apiKey = extractApiKey(req);
-  
-  if (!apiKey) {
-    return {
-      authenticated: false,
-      isLocalhost,
-      error: 'Authentication required. Provide api_key query parameter.',
-    };
-  }
-  
-  const validation = validateApiKey(apiKey, config);
-  
-  if (!validation.valid) {
-    return {
-      authenticated: false,
-      isLocalhost,
-      error: 'Invalid API key',
-    };
-  }
-  
   return {
-    authenticated: true,
-    role: validation.role,
-    keyName: validation.name,
+    authenticated: false,
     isLocalhost,
+    error: passwordAuthEnabled 
+      ? 'Authentication required. Please log in.'
+      : 'Authentication required. Provide api_key query parameter.',
   };
 }
 
