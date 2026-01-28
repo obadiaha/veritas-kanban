@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCreateTask } from '@/hooks/useTasks';
 import { useTemplates, type TaskTemplate } from '@/hooks/useTemplates';
 import type { TaskType, TaskPriority, Subtask } from '@veritas-kanban/shared';
-import { FileText, X, Check, AlertCircle } from 'lucide-react';
+import { FileText, X, Check, AlertCircle, HelpCircle, Info } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { 
   interpolateVariables, 
@@ -46,6 +46,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
   const [customVars, setCustomVars] = useState<Record<string, string>>({});
   const [requiredCustomVars, setRequiredCustomVars] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showHelp, setShowHelp] = useState(false);
 
   const createTask = useCreateTask();
   const { data: templates } = useTemplates();
@@ -246,10 +247,39 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
           {/* Template selector */}
           {templates && templates.length > 0 && (
             <div className="border-b pb-2">
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <Label className="text-sm">Template</Label>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <Label className="text-sm">Template</Label>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  onClick={() => setShowHelp(!showHelp)}
+                >
+                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                </Button>
               </div>
+              
+              {/* Help Section */}
+              {showHelp && (
+                <div className="mb-3 p-3 rounded-md bg-muted/50 border border-muted-foreground/20 text-sm space-y-2">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <div className="space-y-1.5">
+                      <p className="font-medium text-sm">Using Templates</p>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li>• <strong>Simple templates</strong> pre-fill task fields and can include subtasks</li>
+                        <li>• <strong>Variables</strong> like <code className="px-1 py-0.5 rounded bg-muted">{'{{date}}'}</code> or <code className="px-1 py-0.5 rounded bg-muted">{'{{author}}'}</code> are replaced when creating the task</li>
+                        <li>• <strong>Custom variables</strong> (e.g., <code className="px-1 py-0.5 rounded bg-muted">{'{{bugId}}'}</code>) prompt you for values</li>
+                        <li>• <strong>Blueprint templates</strong> create multiple linked tasks with dependencies</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
               <Tabs value={categoryFilter} onValueChange={setCategoryFilter}>
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="all" className="text-xs">All</TabsTrigger>

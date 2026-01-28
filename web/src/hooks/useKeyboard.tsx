@@ -1,5 +1,6 @@
 import { createContext, useContext, useCallback, useEffect, useState, useRef, type ReactNode } from 'react';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
+import { toast } from './useToast';
 
 interface KeyboardContextValue {
   // Dialog triggers
@@ -90,7 +91,8 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       }
 
       // Ignore if a dialog is open (except Escape)
-      const dialogOpen = document.querySelector('[role="dialog"]');
+      // Check for visible dialogs only (shadcn uses data-state attribute)
+      const dialogOpen = document.querySelector('[role="dialog"][data-state="open"]');
       if (dialogOpen && e.key !== 'Escape') {
         return;
       }
@@ -152,10 +154,16 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         case '2':
         case '3':
         case '4':
+          e.preventDefault();
           if (selectedTaskId && onMoveTaskRef.current) {
-            e.preventDefault();
             const newStatus = STATUS_MAP[e.key];
             onMoveTaskRef.current(selectedTaskId, newStatus);
+          } else {
+            // Show toast when no task is selected
+            toast({
+              title: 'No task selected',
+              description: 'Use j/k or arrow keys to select a task first',
+            });
           }
           break;
       }

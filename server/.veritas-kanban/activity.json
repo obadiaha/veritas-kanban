@@ -1,5 +1,39 @@
 [
   {
+    "id": "activity_1769568438135_urtvgud9g",
+    "type": "status_changed",
+    "taskId": "task_20260128_2AhuSW",
+    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T02:47:18.135Z"
+  },
+  {
+    "id": "activity_1769568434433_yi6801i5k",
+    "type": "task_created",
+    "taskId": "task_20260128_2AhuSW",
+    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T02:47:14.433Z"
+  },
+  {
+    "id": "activity_1769568080724_pbup1xy0d",
+    "type": "status_changed",
+    "taskId": "task_20260128_qcy3FJ",
+    "taskTitle": "US-907: Apply template to existing task",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T02:41:20.724Z"
+  },
+  {
     "id": "activity_1769568075614_5u6dejgb9",
     "type": "task_updated",
     "taskId": "task_20260128_qcy3FJ",
@@ -942,41 +976,5 @@
       "project": "Sprint 8"
     },
     "timestamp": "2026-01-26T17:57:55.527Z"
-  },
-  {
-    "id": "activity_1769450275474_mprychh2p",
-    "type": "task_created",
-    "taskId": "task_20260126_pSMY_Y",
-    "taskTitle": "US-807: Dashboard Placement",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "Sprint 8"
-    },
-    "timestamp": "2026-01-26T17:57:55.474Z"
-  },
-  {
-    "id": "activity_1769450275420_csokqg065",
-    "type": "task_created",
-    "taskId": "task_20260126_caioxm",
-    "taskTitle": "US-806: Dashboard Component",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "Sprint 8"
-    },
-    "timestamp": "2026-01-26T17:57:55.420Z"
-  },
-  {
-    "id": "activity_1769450275365_4akuovlq5",
-    "type": "task_created",
-    "taskId": "task_20260126_HCSqiT",
-    "taskTitle": "US-805: Metrics API",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "Sprint 8"
-    },
-    "timestamp": "2026-01-26T17:57:55.365Z"
   }
 ]

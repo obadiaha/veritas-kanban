@@ -41,7 +41,7 @@ import {
   useDeleteTemplate,
   type TaskTemplate,
 } from '@/hooks/useTemplates';
-import { Plus, Trash2, Check, X, Loader2, FolderGit2, Bot, Star, FileText, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Check, X, Loader2, FolderGit2, Bot, Star, FileText, Download, Upload, HelpCircle, Info } from 'lucide-react';
 import type { RepoConfig, AgentConfig, AgentType, TaskType, TaskPriority } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
 import { TEMPLATE_CATEGORIES, getCategoryIcon, getCategoryLabel } from '@/lib/template-categories';
@@ -501,6 +501,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { data: templates, isLoading: templatesLoading } = useTemplates();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddTemplateForm, setShowAddTemplateForm] = useState(false);
+  const [showTemplateHelp, setShowTemplateHelp] = useState(false);
   const updateAgents = useUpdateAgents();
   const setDefaultAgent = useSetDefaultAgent();
   const createTemplate = useCreateTemplate();
@@ -643,7 +644,17 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           {/* Templates Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Task Templates</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium">Task Templates</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  onClick={() => setShowTemplateHelp(!showTemplateHelp)}
+                >
+                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -675,6 +686,45 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 )}
               </div>
             </div>
+            
+            {/* Help Section */}
+            {showTemplateHelp && (
+              <div className="p-3 rounded-md bg-muted/50 border border-muted-foreground/20 text-sm space-y-3">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm">Template Guide</p>
+                    
+                    <div className="text-xs text-muted-foreground space-y-1.5">
+                      <div>
+                        <strong className="text-foreground">Simple Templates:</strong>
+                        <p className="mt-0.5">Create templates with predefined task fields (type, priority, project) and description. Add subtask templates that will be created automatically.</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-foreground">Categories:</strong>
+                        <p className="mt-0.5">Organize templates by category (Bug 🐛, Feature ✨, Sprint 🔄, etc.) for easier discovery.</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-foreground">Variables:</strong>
+                        <p className="mt-0.5">Use <code className="px-1 py-0.5 rounded bg-muted">{'{{date}}'}</code>, <code className="px-1 py-0.5 rounded bg-muted">{'{{time}}'}</code>, <code className="px-1 py-0.5 rounded bg-muted">{'{{author}}'}</code>, or <code className="px-1 py-0.5 rounded bg-muted">{'{{project}}'}</code> for automatic values. Custom variables like <code className="px-1 py-0.5 rounded bg-muted">{'{{ticketId}}'}</code> will prompt for input.</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-foreground">Blueprint Templates:</strong>
+                        <p className="mt-0.5">Advanced templates that create multiple tasks with dependencies. Perfect for multi-step workflows like sprint planning or feature launches.</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-foreground">Import/Export:</strong>
+                        <p className="mt-0.5">Share templates as JSON files. Export your templates to back them up or share with others.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Hidden file input for import */}
             <input
