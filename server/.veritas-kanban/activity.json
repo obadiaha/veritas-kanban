@@ -1,1062 +1,394 @@
 [
   {
-    "id": "activity_1769584844268_0af9y7c7k",
-    "type": "task_deleted",
-    "taskId": "task_20260128_MnEoHV",
-    "taskTitle": "TEST: Real-time sync verification",
-    "timestamp": "2026-01-28T07:20:44.269Z"
-  },
-  {
-    "id": "activity_1769584814944_rj5pnt66t",
-    "type": "task_created",
-    "taskId": "task_20260128_MnEoHV",
-    "taskTitle": "TEST: Real-time sync verification",
-    "details": {
-      "type": "code",
-      "priority": "low"
-    },
-    "timestamp": "2026-01-28T07:20:14.944Z"
-  },
-  {
-    "id": "activity_1769584562124_j4txg8me8",
+    "id": "activity_1769587558905_ycvn6yezn",
     "type": "status_changed",
-    "taskId": "task_20260128_Zk4oV0",
-    "taskTitle": "BUG: Kanban requires refresh to see progress",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T07:16:02.124Z"
-  },
-  {
-    "id": "activity_1769584550594_xx8avtepj",
-    "type": "comment_added",
-    "taskId": "task_20260128_tDh8SO",
-    "taskTitle": "BUG: You can't view or restore archived tasks",
-    "details": {
-      "author": "Veritas",
-      "preview": "Added read-only view for archived tasks (click to ..."
-    },
-    "timestamp": "2026-01-28T07:15:50.594Z"
-  },
-  {
-    "id": "activity_1769584545862_qjr4r5px4",
-    "type": "status_changed",
-    "taskId": "task_20260128_tDh8SO",
-    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "taskId": "task_20260128_-RJ73c",
+    "taskTitle": "FEATURE REQUEST: Metrics Refactoring",
     "details": {
       "from": "in-progress",
       "status": "done"
     },
-    "timestamp": "2026-01-28T07:15:45.862Z"
+    "timestamp": "2026-01-28T08:05:58.905Z"
   },
   {
-    "id": "activity_1769584325263_iv5d040ns",
+    "id": "activity_1769587558843_g7kyticb6",
+    "type": "comment_added",
+    "taskId": "task_20260128_-RJ73c",
+    "taskTitle": "FEATURE REQUEST: Metrics Refactoring",
+    "details": {
+      "author": "Veritas",
+      "preview": "Sprint US-1400 planned: 7 stories (US-1401–US-1407..."
+    },
+    "timestamp": "2026-01-28T08:05:58.843Z"
+  },
+  {
+    "id": "activity_1769587558820_401erjjsh",
+    "type": "task_updated",
+    "taskId": "task_20260128_-RJ73c",
+    "taskTitle": "FEATURE REQUEST: Metrics Refactoring",
+    "timestamp": "2026-01-28T08:05:58.820Z"
+  },
+  {
+    "id": "activity_1769587558794_x0s5lueqk",
+    "type": "status_changed",
+    "taskId": "task_20260128_eyx3Mw",
+    "taskTitle": "FEATURE REQUEST: Working indicator",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T08:05:58.794Z"
+  },
+  {
+    "id": "activity_1769587558780_xjykrjk9g",
+    "type": "comment_added",
+    "taskId": "task_20260128_eyx3Mw",
+    "taskTitle": "FEATURE REQUEST: Working indicator",
+    "details": {
+      "author": "Veritas",
+      "preview": "Sprint US-1300 planned: 6 stories (US-1301–US-1306..."
+    },
+    "timestamp": "2026-01-28T08:05:58.780Z"
+  },
+  {
+    "id": "activity_1769587558758_1fqqjjqdd",
+    "type": "task_updated",
+    "taskId": "task_20260128_eyx3Mw",
+    "taskTitle": "FEATURE REQUEST: Working indicator",
+    "timestamp": "2026-01-28T08:05:58.758Z"
+  },
+  {
+    "id": "activity_1769587558747_o5s54v4pj",
+    "type": "status_changed",
+    "taskId": "task_20260128_Nvw1ZN",
+    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T08:05:58.747Z"
+  },
+  {
+    "id": "activity_1769587558736_5xr8a5w8o",
+    "type": "comment_added",
+    "taskId": "task_20260128_Nvw1ZN",
+    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
+    "details": {
+      "author": "Veritas",
+      "preview": "Sprint US-1200 planned: 6 stories (US-1201–US-1206..."
+    },
+    "timestamp": "2026-01-28T08:05:58.736Z"
+  },
+  {
+    "id": "activity_1769587558689_b8cm2ghdw",
+    "type": "task_updated",
+    "taskId": "task_20260128_Nvw1ZN",
+    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
+    "timestamp": "2026-01-28T08:05:58.689Z"
+  },
+  {
+    "id": "activity_1769587543586_1ya6h4x7v",
+    "type": "task_created",
+    "taskId": "task_20260128_vGa5Gh",
+    "taskTitle": "US-1407: Cost tracking and budget monitoring",
+    "details": {
+      "type": "code",
+      "priority": "low",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.586Z"
+  },
+  {
+    "id": "activity_1769587543450_jbb0l1dmq",
+    "type": "task_created",
+    "taskId": "task_20260128_-ndA3j",
+    "taskTitle": "US-1406: Run badges on Done task cards",
+    "details": {
+      "type": "code",
+      "priority": "low",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.450Z"
+  },
+  {
+    "id": "activity_1769587543347_0fd0wfil8",
+    "type": "task_created",
+    "taskId": "task_20260128_V0MVwS",
+    "taskTitle": "US-1405: Dashboard metrics cards refresh",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.347Z"
+  },
+  {
+    "id": "activity_1769587543226_8de3a8ttp",
+    "type": "task_created",
+    "taskId": "task_20260128_2oKAgC",
+    "taskTitle": "US-1404: Task-level metrics panel",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.226Z"
+  },
+  {
+    "id": "activity_1769587543188_4t9qua4w3",
+    "type": "task_created",
+    "taskId": "task_20260128_P2pK3M",
+    "taskTitle": "US-1403: Metrics service refactor — use real telemetry data",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.188Z"
+  },
+  {
+    "id": "activity_1769587543131_tys2qjn93",
+    "type": "task_created",
+    "taskId": "task_20260128_wZ3-Ix",
+    "taskTitle": "US-1402: Veritas telemetry reporter",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.131Z"
+  },
+  {
+    "id": "activity_1769587543086_agdljsb28",
+    "type": "task_created",
+    "taskId": "task_20260128_ntcrK0",
+    "taskTitle": "US-1401: Telemetry event ingestion endpoint",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.086Z"
+  },
+  {
+    "id": "activity_1769587543016_3cfrne0h1",
+    "type": "task_created",
+    "taskId": "task_20260128_W-K6q8",
+    "taskTitle": "US-1306: Header integration and layout",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:43.016Z"
+  },
+  {
+    "id": "activity_1769587542988_79i19qi6j",
+    "type": "task_created",
+    "taskId": "task_20260128_hul7-q",
+    "taskTitle": "US-1305: Status history log",
+    "details": {
+      "type": "code",
+      "priority": "low",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.988Z"
+  },
+  {
+    "id": "activity_1769587542944_nzygmjsjq",
+    "type": "task_created",
+    "taskId": "task_20260128_hdcQAe",
+    "taskTitle": "US-1304: Veritas status reporting integration",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.944Z"
+  },
+  {
+    "id": "activity_1769587542905_2en7blayr",
+    "type": "task_created",
+    "taskId": "task_20260128_o0FPtg",
+    "taskTitle": "US-1303: Real-time status hook (useAgentStatus)",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.905Z"
+  },
+  {
+    "id": "activity_1769587542850_gy75vguuw",
+    "type": "task_created",
+    "taskId": "task_20260128_q38wnR",
+    "taskTitle": "US-1302: Animated status indicator component",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.850Z"
+  },
+  {
+    "id": "activity_1769587542777_dic905x7c",
+    "type": "task_created",
+    "taskId": "task_20260128_tD7fef",
+    "taskTitle": "US-1301: Agent status API endpoint",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.777Z"
+  },
+  {
+    "id": "activity_1769587542708_yfe12x4g4",
+    "type": "task_created",
+    "taskId": "task_20260128_2sIFHb",
+    "taskTitle": "US-1206: Responsive design audit for tablets/phones",
+    "details": {
+      "type": "code",
+      "priority": "low",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.708Z"
+  },
+  {
+    "id": "activity_1769587542665_yp8jpydxy",
+    "type": "task_created",
+    "taskId": "task_20260128_SAHMz6",
+    "taskTitle": "US-1205: Auto-detect and display LAN URL",
+    "details": {
+      "type": "code",
+      "priority": "low",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.665Z"
+  },
+  {
+    "id": "activity_1769587542630_115ehpml5",
+    "type": "task_created",
+    "taskId": "task_20260128_Q8rmjd",
+    "taskTitle": "US-1204: macOS firewall configuration guide",
+    "details": {
+      "type": "code",
+      "priority": "medium",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.630Z"
+  },
+  {
+    "id": "activity_1769587542548_u9f3crqta",
+    "type": "task_created",
+    "taskId": "task_20260128_2jWpyv",
+    "taskTitle": "US-1203: Configure CORS for LAN origins",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.548Z"
+  },
+  {
+    "id": "activity_1769587542478_pkge49u86",
+    "type": "task_created",
+    "taskId": "task_20260128_aTOv4t",
+    "taskTitle": "US-1202: Bind Express API server to LAN",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.478Z"
+  },
+  {
+    "id": "activity_1769587542437_0wq42d3jg",
+    "type": "task_created",
+    "taskId": "task_20260128_Z1vcc9",
+    "taskTitle": "US-1201: Bind Vite dev server to LAN",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:42.437Z"
+  },
+  {
+    "id": "activity_1769587542358_ks2rnizv9",
+    "type": "task_deleted",
+    "taskId": "task_20260128_mkekKZ",
+    "taskTitle": "TEST subtask",
+    "timestamp": "2026-01-28T08:05:42.358Z"
+  },
+  {
+    "id": "activity_1769587523805_pa91ny49s",
+    "type": "task_created",
+    "taskId": "task_20260128_mkekKZ",
+    "taskTitle": "TEST subtask",
+    "details": {
+      "type": "code",
+      "priority": "medium"
+    },
+    "timestamp": "2026-01-28T08:05:23.805Z"
+  },
+  {
+    "id": "activity_1769587512601_ysghlj5om",
+    "type": "task_created",
+    "taskId": "task_20260128_eUf_U7",
+    "taskTitle": "US-1201: Bind Vite dev server to LAN",
+    "details": {
+      "type": "code",
+      "priority": "high",
+      "project": "veritas-kanban"
+    },
+    "timestamp": "2026-01-28T08:05:12.601Z"
+  },
+  {
+    "id": "activity_1769587351650_61f3fsg16",
+    "type": "status_changed",
+    "taskId": "task_20260128_-RJ73c",
+    "taskTitle": "FEATURE REQUEST: Metrics Refactoring",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:02:31.650Z"
+  },
+  {
+    "id": "activity_1769587351628_j43hi6tju",
+    "type": "status_changed",
+    "taskId": "task_20260128_eyx3Mw",
+    "taskTitle": "FEATURE REQUEST: Working indicator",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:02:31.628Z"
+  },
+  {
+    "id": "activity_1769587351580_xfedq4iwn",
+    "type": "status_changed",
+    "taskId": "task_20260128_Nvw1ZN",
+    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:02:31.580Z"
+  },
+  {
+    "id": "activity_1769586801581_flp7unen1",
     "type": "task_archived",
-    "taskId": "task_20260128_cllk71",
-    "taskTitle": "US-707: Time tracking",
-    "timestamp": "2026-01-28T07:12:05.263Z"
+    "taskId": "task_20260128_Foonyv",
+    "taskTitle": "FEATURE REQUEST: Settings Panel with Feaeture Toggles",
+    "timestamp": "2026-01-28T07:53:21.581Z"
   },
   {
-    "id": "activity_1769584322508_px3tuo09s",
-    "type": "status_changed",
-    "taskId": "task_20260128_cllk71",
-    "taskTitle": "US-707: Time tracking",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T07:12:02.508Z"
-  },
-  {
-    "id": "activity_1769584277461_e9y0eazcz",
-    "type": "status_changed",
-    "taskId": "task_20260128_tDh8SO",
-    "taskTitle": "BUG: You can't view or restore archived tasks",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T07:11:17.461Z"
-  },
-  {
-    "id": "activity_1769584213090_cit3ga65j",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:13.090Z"
-  },
-  {
-    "id": "activity_1769584211592_ig4iq0uun",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:11.592Z"
-  },
-  {
-    "id": "activity_1769584208878_oc78clmum",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:08.878Z"
-  },
-  {
-    "id": "activity_1769584207110_x72wjabm3",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:07.110Z"
-  },
-  {
-    "id": "activity_1769584205921_no8yaf2ms",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:05.921Z"
-  },
-  {
-    "id": "activity_1769584202234_119g9gyxm",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:02.234Z"
-  },
-  {
-    "id": "activity_1769584200971_0smrabreo",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:10:00.971Z"
-  },
-  {
-    "id": "activity_1769584199877_z04ane3ev",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:09:59.877Z"
-  },
-  {
-    "id": "activity_1769584197695_tfh2rn1ar",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:09:57.695Z"
-  },
-  {
-    "id": "activity_1769584196082_bzutdyu35",
-    "type": "task_updated",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "timestamp": "2026-01-28T07:09:56.082Z"
-  },
-  {
-    "id": "activity_1769584169548_05y2o0qj4",
-    "type": "task_created",
-    "taskId": "task_20260128_Nvw1ZN",
-    "taskTitle": "FEATURE REQUEST: Make the UI available on LAN",
-    "details": {
-      "type": "feature-request-n30mhV",
-      "priority": "medium",
-      "project": "platform"
-    },
-    "timestamp": "2026-01-28T07:09:29.548Z"
-  },
-  {
-    "id": "activity_1769584109622_zjvycw51p",
-    "type": "comment_added",
-    "taskId": "task_20260128_4qCzGr",
-    "taskTitle": "BUG: Can't re-arrange tasks in the columns",
-    "details": {
-      "author": "Veritas",
-      "preview": "Implemented drag-and-drop reordering within kanban..."
-    },
-    "timestamp": "2026-01-28T07:08:29.622Z"
-  },
-  {
-    "id": "activity_1769584104778_fgd981v20",
-    "type": "status_changed",
-    "taskId": "task_20260128_4qCzGr",
-    "taskTitle": "BUG: Can't re-arrange tasks in the columns",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T07:08:24.778Z"
-  },
-  {
-    "id": "activity_1769583799062_q8zwukzj2",
-    "type": "status_changed",
-    "taskId": "task_20260128_4qCzGr",
-    "taskTitle": "BUG: Can't re-arrange tasks in the columns",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T07:03:19.062Z"
-  },
-  {
-    "id": "activity_1769583656790_sodxngoqt",
-    "type": "comment_added",
+    "id": "activity_1769586801547_x125d5lu7",
+    "type": "task_archived",
     "taskId": "task_20260128_RrQUWH",
     "taskTitle": "BUG: stopTimer() crashes YAML serializer — activeEntryId: undefined",
-    "details": {
-      "author": "Veritas",
-      "preview": "Fixed two instances of activeEntryId: undefined in..."
-    },
-    "timestamp": "2026-01-28T07:00:56.790Z"
-  },
-  {
-    "id": "activity_1769583656780_shx7s6x83",
-    "type": "status_changed",
-    "taskId": "task_20260128_RrQUWH",
-    "taskTitle": "BUG: stopTimer() crashes YAML serializer — activeEntryId: undefined",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T07:00:56.780Z"
-  },
-  {
-    "id": "activity_1769583656758_2lw952zob",
-    "type": "task_deleted",
-    "taskId": "task_20260128_2KlsnC",
-    "taskTitle": "Timer bug test — delete me",
-    "timestamp": "2026-01-28T07:00:56.758Z"
-  },
-  {
-    "id": "activity_1769583644129_fjnytp73o",
-    "type": "task_created",
-    "taskId": "task_20260128_2KlsnC",
-    "taskTitle": "Timer bug test — delete me",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T07:00:44.129Z"
-  },
-  {
-    "id": "activity_1769583580854_iqsvynq0q",
-    "type": "status_changed",
-    "taskId": "task_20260128_RrQUWH",
-    "taskTitle": "BUG: stopTimer() crashes YAML serializer — activeEntryId: undefined",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-28T06:59:40.854Z"
-  },
-  {
-    "id": "activity_1769583548685_rltrbouqp",
-    "type": "sprint_archived",
-    "taskId": "US-700",
-    "taskTitle": "US-700",
-    "details": {
-      "taskCount": 7
-    },
-    "timestamp": "2026-01-28T06:59:08.685Z"
-  },
-  {
-    "id": "activity_1769583546792_futx49kqy",
-    "type": "sprint_archived",
-    "taskId": "US-600",
-    "taskTitle": "US-600",
-    "details": {
-      "taskCount": 5
-    },
-    "timestamp": "2026-01-28T06:59:06.792Z"
-  },
-  {
-    "id": "activity_1769583544842_ocseh6ks2",
-    "type": "sprint_archived",
-    "taskId": "US-500",
-    "taskTitle": "US-500",
-    "details": {
-      "taskCount": 5
-    },
-    "timestamp": "2026-01-28T06:59:04.842Z"
-  },
-  {
-    "id": "activity_1769583542895_ag85x95t2",
-    "type": "sprint_archived",
-    "taskId": "US-400",
-    "taskTitle": "US-400",
-    "details": {
-      "taskCount": 4
-    },
-    "timestamp": "2026-01-28T06:59:02.895Z"
-  },
-  {
-    "id": "activity_1769583540816_ugnltkle1",
-    "type": "sprint_archived",
-    "taskId": "US-300",
-    "taskTitle": "US-300",
-    "details": {
-      "taskCount": 7
-    },
-    "timestamp": "2026-01-28T06:59:00.816Z"
-  },
-  {
-    "id": "activity_1769583538620_hdzofpmov",
-    "type": "sprint_archived",
-    "taskId": "US-200",
-    "taskTitle": "US-200",
-    "details": {
-      "taskCount": 6
-    },
-    "timestamp": "2026-01-28T06:58:58.620Z"
-  },
-  {
-    "id": "activity_1769583536384_nnjj0iyw0",
-    "type": "sprint_archived",
-    "taskId": "US-100",
-    "taskTitle": "US-100",
-    "details": {
-      "taskCount": 9
-    },
-    "timestamp": "2026-01-28T06:58:56.384Z"
-  },
-  {
-    "id": "activity_1769583516370_unxh0zdse",
-    "type": "task_created",
-    "taskId": "task_20260128_RrQUWH",
-    "taskTitle": "BUG: stopTimer() crashes YAML serializer — activeEntryId: undefined",
-    "details": {
-      "type": "bug-GdN5rT",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:58:36.370Z"
-  },
-  {
-    "id": "activity_1769583259031_0wqdcfwzi",
-    "type": "status_changed",
-    "taskId": "task_20260128_rP6NHe",
-    "taskTitle": "Create backlog of sprints, and sprint tasks",
-    "details": {
-      "from": "in-progress",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:19.031Z"
-  },
-  {
-    "id": "activity_1769583259004_7fnkjcuyo",
-    "type": "comment_added",
-    "taskId": "task_20260128_rP6NHe",
-    "taskTitle": "Create backlog of sprints, and sprint tasks",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill complete. Created tasks for al..."
-    },
-    "timestamp": "2026-01-28T06:54:19.004Z"
-  },
-  {
-    "id": "activity_1769583253440_14azl5v7w",
-    "type": "task_updated",
-    "taskId": "task_20260128_rP6NHe",
-    "taskTitle": "Create backlog of sprints, and sprint tasks",
-    "timestamp": "2026-01-28T06:54:13.440Z"
-  },
-  {
-    "id": "activity_1769583241869_kl27rqv5y",
-    "type": "comment_added",
-    "taskId": "task_20260128_cllk71",
-    "taskTitle": "US-707: Time tracking",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.869Z"
-  },
-  {
-    "id": "activity_1769583241858_wmw112cap",
-    "type": "status_changed",
-    "taskId": "task_20260128_cllk71",
-    "taskTitle": "US-707: Time tracking",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.858Z"
-  },
-  {
-    "id": "activity_1769583241843_gsosvlmcj",
-    "type": "comment_added",
-    "taskId": "task_20260128_cWSjNj",
-    "taskTitle": "US-706: Task dependencies",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.843Z"
-  },
-  {
-    "id": "activity_1769583241833_r0yclmu89",
-    "type": "status_changed",
-    "taskId": "task_20260128_cWSjNj",
-    "taskTitle": "US-706: Task dependencies",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.833Z"
-  },
-  {
-    "id": "activity_1769583241821_6or516w3e",
-    "type": "comment_added",
-    "taskId": "task_20260128_9SA4Px",
-    "taskTitle": "US-705: Merge conflict resolution UI",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.821Z"
-  },
-  {
-    "id": "activity_1769583241811_booj0civj",
-    "type": "status_changed",
-    "taskId": "task_20260128_9SA4Px",
-    "taskTitle": "US-705: Merge conflict resolution UI",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.811Z"
-  },
-  {
-    "id": "activity_1769583241801_nm6bv4pzj",
-    "type": "comment_added",
-    "taskId": "task_20260128_bnnJRD",
-    "taskTitle": "US-704: Subtasks",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.801Z"
-  },
-  {
-    "id": "activity_1769583241791_kjiix8aqy",
-    "type": "status_changed",
-    "taskId": "task_20260128_bnnJRD",
-    "taskTitle": "US-704: Subtasks",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.791Z"
-  },
-  {
-    "id": "activity_1769583241782_fbkhxslvh",
-    "type": "comment_added",
-    "taskId": "task_20260128_NdrTGO",
-    "taskTitle": "US-703: Multiple task attempts",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.782Z"
-  },
-  {
-    "id": "activity_1769583241771_6lh22akqw",
-    "type": "status_changed",
-    "taskId": "task_20260128_NdrTGO",
-    "taskTitle": "US-703: Multiple task attempts",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.771Z"
-  },
-  {
-    "id": "activity_1769583241761_snq6kblhg",
-    "type": "comment_added",
-    "taskId": "task_20260128_Hkwm42",
-    "taskTitle": "US-702: GitHub PR creation from UI",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.761Z"
-  },
-  {
-    "id": "activity_1769583241750_ucy62y2au",
-    "type": "status_changed",
-    "taskId": "task_20260128_Hkwm42",
-    "taskTitle": "US-702: GitHub PR creation from UI",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.750Z"
-  },
-  {
-    "id": "activity_1769583241739_yzaq1u8nj",
-    "type": "comment_added",
-    "taskId": "task_20260128_rmWIt4",
-    "taskTitle": "US-701: Preview mode with embedded browser",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:54:01.739Z"
-  },
-  {
-    "id": "activity_1769583241728_rzibg8z95",
-    "type": "status_changed",
-    "taskId": "task_20260128_rmWIt4",
-    "taskTitle": "US-701: Preview mode with embedded browser",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:54:01.728Z"
-  },
-  {
-    "id": "activity_1769583237348_enekbx1z5",
-    "type": "task_created",
-    "taskId": "task_20260128_cllk71",
-    "taskTitle": "US-707: Time tracking",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.348Z"
-  },
-  {
-    "id": "activity_1769583237338_2q8dfhjkj",
-    "type": "task_created",
-    "taskId": "task_20260128_cWSjNj",
-    "taskTitle": "US-706: Task dependencies",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.338Z"
-  },
-  {
-    "id": "activity_1769583237327_fr1ikz62h",
-    "type": "task_created",
-    "taskId": "task_20260128_9SA4Px",
-    "taskTitle": "US-705: Merge conflict resolution UI",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.327Z"
-  },
-  {
-    "id": "activity_1769583237317_c94fb3awf",
-    "type": "task_created",
-    "taskId": "task_20260128_bnnJRD",
-    "taskTitle": "US-704: Subtasks",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.317Z"
-  },
-  {
-    "id": "activity_1769583237306_qglvng5bl",
-    "type": "task_created",
-    "taskId": "task_20260128_NdrTGO",
-    "taskTitle": "US-703: Multiple task attempts",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.306Z"
-  },
-  {
-    "id": "activity_1769583237291_fboq27uqv",
-    "type": "task_created",
-    "taskId": "task_20260128_Hkwm42",
-    "taskTitle": "US-702: GitHub PR creation from UI",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.291Z"
-  },
-  {
-    "id": "activity_1769583237276_66wql6lhy",
-    "type": "task_created",
-    "taskId": "task_20260128_rmWIt4",
-    "taskTitle": "US-701: Preview mode with embedded browser",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:57.276Z"
-  },
-  {
-    "id": "activity_1769583216994_ha8cnfq0m",
-    "type": "comment_added",
-    "taskId": "task_20260128_szX8Xs",
-    "taskTitle": "US-605: Activity log",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:36.994Z"
-  },
-  {
-    "id": "activity_1769583216984_hx6xx9jfi",
-    "type": "status_changed",
-    "taskId": "task_20260128_szX8Xs",
-    "taskTitle": "US-605: Activity log",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:36.984Z"
-  },
-  {
-    "id": "activity_1769583216973_wxo0xg9wp",
-    "type": "comment_added",
-    "taskId": "task_20260128_pX2WxQ",
-    "taskTitle": "US-604: Bulk actions",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:36.973Z"
-  },
-  {
-    "id": "activity_1769583216964_cqhtv2z70",
-    "type": "status_changed",
-    "taskId": "task_20260128_pX2WxQ",
-    "taskTitle": "US-604: Bulk actions",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:36.964Z"
-  },
-  {
-    "id": "activity_1769583216954_rw9j3gar3",
-    "type": "comment_added",
-    "taskId": "task_20260128_loOjca",
-    "taskTitle": "US-603: Task templates",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:36.954Z"
-  },
-  {
-    "id": "activity_1769583216945_niqgoxngt",
-    "type": "status_changed",
-    "taskId": "task_20260128_loOjca",
-    "taskTitle": "US-603: Task templates",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:36.945Z"
-  },
-  {
-    "id": "activity_1769583216935_xldj5j9i1",
-    "type": "comment_added",
-    "taskId": "task_20260128_Akc57o",
-    "taskTitle": "US-602: Filter and search",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:36.935Z"
-  },
-  {
-    "id": "activity_1769583216925_ic7v5vqcj",
-    "type": "status_changed",
-    "taskId": "task_20260128_Akc57o",
-    "taskTitle": "US-602: Filter and search",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:36.925Z"
-  },
-  {
-    "id": "activity_1769583216915_jh393ksw2",
-    "type": "comment_added",
-    "taskId": "task_20260128_E4qd5m",
-    "taskTitle": "US-601: Keyboard shortcuts",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:36.915Z"
-  },
-  {
-    "id": "activity_1769583216904_hjllhcwv8",
-    "type": "status_changed",
-    "taskId": "task_20260128_E4qd5m",
-    "taskTitle": "US-601: Keyboard shortcuts",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:36.904Z"
-  },
-  {
-    "id": "activity_1769583213070_3h0kacb5m",
-    "type": "task_created",
-    "taskId": "task_20260128_szX8Xs",
-    "taskTitle": "US-605: Activity log",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:33.070Z"
-  },
-  {
-    "id": "activity_1769583213043_4pt7ppv9d",
-    "type": "task_created",
-    "taskId": "task_20260128_pX2WxQ",
-    "taskTitle": "US-604: Bulk actions",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:33.043Z"
-  },
-  {
-    "id": "activity_1769583213029_iol57wszp",
-    "type": "task_created",
-    "taskId": "task_20260128_loOjca",
-    "taskTitle": "US-603: Task templates",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:33.029Z"
-  },
-  {
-    "id": "activity_1769583213012_v9iju9df6",
-    "type": "task_created",
-    "taskId": "task_20260128_Akc57o",
-    "taskTitle": "US-602: Filter and search",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:33.012Z"
-  },
-  {
-    "id": "activity_1769583212980_8ib3bzjer",
-    "type": "task_created",
-    "taskId": "task_20260128_E4qd5m",
-    "taskTitle": "US-601: Keyboard shortcuts",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:32.980Z"
-  },
-  {
-    "id": "activity_1769583196795_tu82kbbo1",
-    "type": "comment_added",
-    "taskId": "task_20260128_IAgzJJ",
-    "taskTitle": "US-505: Teams notification integration",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:16.795Z"
-  },
-  {
-    "id": "activity_1769583196786_gzy1nk6f1",
-    "type": "status_changed",
-    "taskId": "task_20260128_IAgzJJ",
-    "taskTitle": "US-505: Teams notification integration",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:16.786Z"
-  },
-  {
-    "id": "activity_1769583196776_3kf8age8j",
-    "type": "comment_added",
-    "taskId": "task_20260128_yjdvru",
-    "taskTitle": "US-504: Memory system sync",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:16.776Z"
-  },
-  {
-    "id": "activity_1769583196767_ebav47qis",
-    "type": "status_changed",
-    "taskId": "task_20260128_yjdvru",
-    "taskTitle": "US-504: Memory system sync",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:16.767Z"
-  },
-  {
-    "id": "activity_1769583196757_vvurw41cj",
-    "type": "comment_added",
-    "taskId": "task_20260128_LLL6FA",
-    "taskTitle": "US-503: Veritas sub-agent integration",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:16.757Z"
-  },
-  {
-    "id": "activity_1769583196747_8bv9on4ox",
-    "type": "status_changed",
-    "taskId": "task_20260128_LLL6FA",
-    "taskTitle": "US-503: Veritas sub-agent integration",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:16.747Z"
-  },
-  {
-    "id": "activity_1769583196738_tbkl9yo39",
-    "type": "comment_added",
-    "taskId": "task_20260128_qZg_GX",
-    "taskTitle": "US-502: MCP server for external clients",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:16.738Z"
-  },
-  {
-    "id": "activity_1769583196727_ejl3lspaf",
-    "type": "status_changed",
-    "taskId": "task_20260128_qZg_GX",
-    "taskTitle": "US-502: MCP server for external clients",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:16.727Z"
-  },
-  {
-    "id": "activity_1769583196717_2erdt70lv",
-    "type": "comment_added",
-    "taskId": "task_20260128_1cxUsJ",
-    "taskTitle": "US-501: CLI for task management",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:53:16.717Z"
-  },
-  {
-    "id": "activity_1769583196706_rvth4149w",
-    "type": "status_changed",
-    "taskId": "task_20260128_1cxUsJ",
-    "taskTitle": "US-501: CLI for task management",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:53:16.706Z"
-  },
-  {
-    "id": "activity_1769583192737_jorfw7nr9",
-    "type": "task_created",
-    "taskId": "task_20260128_IAgzJJ",
-    "taskTitle": "US-505: Teams notification integration",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:12.737Z"
-  },
-  {
-    "id": "activity_1769583192728_a5s5jtirx",
-    "type": "task_created",
-    "taskId": "task_20260128_yjdvru",
-    "taskTitle": "US-504: Memory system sync",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:12.728Z"
-  },
-  {
-    "id": "activity_1769583192717_nd43dtmim",
-    "type": "task_created",
-    "taskId": "task_20260128_LLL6FA",
-    "taskTitle": "US-503: Veritas sub-agent integration",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:12.717Z"
-  },
-  {
-    "id": "activity_1769583192706_k6uru95zm",
-    "type": "task_created",
-    "taskId": "task_20260128_qZg_GX",
-    "taskTitle": "US-502: MCP server for external clients",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:12.706Z"
-  },
-  {
-    "id": "activity_1769583192679_ob9dqlukz",
-    "type": "task_created",
-    "taskId": "task_20260128_1cxUsJ",
-    "taskTitle": "US-501: CLI for task management",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:53:12.679Z"
-  },
-  {
-    "id": "activity_1769583174231_raj43a2c9",
-    "type": "comment_added",
-    "taskId": "task_20260128_1RGdAr",
-    "taskTitle": "US-404: Approve and merge",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:54.231Z"
-  },
-  {
-    "id": "activity_1769583174217_s1ahhuiwe",
-    "type": "status_changed",
-    "taskId": "task_20260128_1RGdAr",
-    "taskTitle": "US-404: Approve and merge",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:54.217Z"
-  },
-  {
-    "id": "activity_1769583174204_5phf6xtks",
-    "type": "comment_added",
-    "taskId": "task_20260128_mLW9tX",
-    "taskTitle": "US-403: Send review to agent",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:54.204Z"
-  },
-  {
-    "id": "activity_1769583174192_22smf98p7",
-    "type": "status_changed",
-    "taskId": "task_20260128_mLW9tX",
-    "taskTitle": "US-403: Send review to agent",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:54.192Z"
-  },
-  {
-    "id": "activity_1769583174181_sfhwlf9an",
-    "type": "comment_added",
-    "taskId": "task_20260128_tKxJX6",
-    "taskTitle": "US-402: Line-level comments",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:54.181Z"
-  },
-  {
-    "id": "activity_1769583174169_vljo7xy8w",
-    "type": "status_changed",
-    "taskId": "task_20260128_tKxJX6",
-    "taskTitle": "US-402: Line-level comments",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:54.169Z"
-  },
-  {
-    "id": "activity_1769583174157_pmrl4j44z",
-    "type": "comment_added",
-    "taskId": "task_20260128_Sujk2d",
-    "taskTitle": "US-401: Diff viewer component",
-    "details": {
-      "author": "Veritas",
-      "preview": "Historical backfill — completed as part of Sprint ..."
-    },
-    "timestamp": "2026-01-28T06:52:54.157Z"
-  },
-  {
-    "id": "activity_1769583174146_qeaset08f",
-    "type": "status_changed",
-    "taskId": "task_20260128_Sujk2d",
-    "taskTitle": "US-401: Diff viewer component",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-28T06:52:54.146Z"
-  },
-  {
-    "id": "activity_1769583170328_xo67ao2y5",
-    "type": "task_created",
-    "taskId": "task_20260128_1RGdAr",
-    "taskTitle": "US-404: Approve and merge",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:52:50.328Z"
-  },
-  {
-    "id": "activity_1769583170315_y7769gqzb",
-    "type": "task_created",
-    "taskId": "task_20260128_mLW9tX",
-    "taskTitle": "US-403: Send review to agent",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:52:50.315Z"
-  },
-  {
-    "id": "activity_1769583170296_86wb3hqv6",
-    "type": "task_created",
-    "taskId": "task_20260128_tKxJX6",
-    "taskTitle": "US-402: Line-level comments",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T06:52:50.296Z"
+    "timestamp": "2026-01-28T07:53:21.547Z"
   }
 ]
