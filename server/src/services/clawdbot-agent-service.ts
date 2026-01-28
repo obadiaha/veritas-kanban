@@ -31,6 +31,12 @@ export interface AgentStatus {
   endedAt?: string;
 }
 
+export interface AgentOutput {
+  type: 'stdout' | 'stderr' | 'stdin' | 'system';
+  content: string;
+  timestamp: string;
+}
+
 // Track pending agent requests
 const pendingAgents = new Map<string, {
   taskId: string;

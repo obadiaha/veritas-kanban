@@ -1,5 +1,16 @@
 [
   {
+    "id": "activity_1769603150649_gbh68ockj",
+    "type": "status_changed",
+    "taskId": "task_20260128_oeprdJ",
+    "taskTitle": "RF-25: Code Cleanup & Organization",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T12:25:50.649Z"
+  },
+  {
     "id": "activity_1769602148289_c072zwzck",
     "type": "comment_added",
     "taskId": "task_20260128_UMDZyh",

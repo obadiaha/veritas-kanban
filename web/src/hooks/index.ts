@@ -1,0 +1,39 @@
+/**
+ * Hooks barrel export
+ * Import hooks from '@/hooks' for cleaner imports
+ */
+
+export * from './useActivity';
+export * from './useAgent';
+export * from './useAttachments';
+export * from './useBulkActions';
+export * from './useConfig';
+export * from './useConflicts';
+export * from './useDebouncedSave';
+export * from './useDiff';
+export * from './useFeatureSettings';
+export * from './useGitHub';
+export * from './useKeyboard';
+export * from './useManagedList';
+export * from './useMetrics';
+export * from './usePreview';
+export * from './useProjects';
+export * from './useSprints';
+export * from './useTaskSync';
+export * from './useTaskTypes';
+export * from './useTasks';
+export * from './useTemplateForm';
+export * from './useTemplates';
+// Note: useTimeTracking also exports formatDuration - import directly to avoid conflict with useMetrics
+export {
+  useTimeSummary,
+  useStartTimer,
+  useStopTimer,
+  useAddTimeEntry,
+  useDeleteTimeEntry,
+  parseDuration,
+  type TimeSummary,
+} from './useTimeTracking';
+// formatDuration from useTimeTracking takes seconds; use useMetrics.formatDuration (takes ms) via barrel
+export * from './useToast';
+export * from './useWorktree';
