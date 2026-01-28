@@ -1,5 +1,49 @@
 [
   {
+    "id": "activity_1769623566772_krbp8jiyv",
+    "type": "status_changed",
+    "taskId": "task_20260128_CN-j0V",
+    "taskTitle": "SECURITY: Implement JWT secret rotation mechanism",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:06:06.772Z"
+  },
+  {
+    "id": "activity_1769623565667_hx7ous8ai",
+    "type": "status_changed",
+    "taskId": "task_20260128_VxOHXP",
+    "taskTitle": "DEPLOYMENT: Create production Dockerfile with multi-stage build",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:06:05.667Z"
+  },
+  {
+    "id": "activity_1769623553696_h6o4xjm98",
+    "type": "comment_added",
+    "taskId": "task_20260128_VVqEG1",
+    "taskTitle": "SECURITY: Add Content Security Policy (CSP) headers with Helmet",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added Helmet middleware with full CSP configuratio..."
+    },
+    "timestamp": "2026-01-28T18:05:53.696Z"
+  },
+  {
+    "id": "activity_1769623553683_9jzllwn3j",
+    "type": "status_changed",
+    "taskId": "task_20260128_VVqEG1",
+    "taskTitle": "SECURITY: Add Content Security Policy (CSP) headers with Helmet",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T18:05:53.683Z"
+  },
+  {
     "id": "activity_1769623529304_9xemufqe7",
     "type": "comment_added",
     "taskId": "task_20260128_u73mT3",

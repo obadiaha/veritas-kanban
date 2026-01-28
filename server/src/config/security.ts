@@ -6,13 +6,29 @@ import crypto from 'crypto';
 const DATA_DIR = process.env.VERITAS_DATA_DIR || path.join(process.cwd(), '.veritas-kanban');
 const SECURITY_CONFIG_PATH = path.join(DATA_DIR, 'security.json');
 
+/** A versioned JWT secret with optional expiry for rotation grace periods */
+export interface JwtSecretEntry {
+  /** The secret value */
+  secret: string;
+  /** Monotonically increasing version number */
+  version: number;
+  /** ISO 8601 timestamp when this secret was created */
+  createdAt: string;
+  /** ISO 8601 timestamp after which this secret is no longer valid for verification */
+  expiresAt?: string;
+}
+
 export interface SecurityConfig {
   /** bcrypt hash of user password */
   passwordHash?: string;
   /** SHA-256 hash of recovery key */
   recoveryKeyHash?: string;
-  /** JWT signing secret */
+  /** JWT signing secret (legacy single-secret field) */
   jwtSecret?: string;
+  /** Current JWT secret version number */
+  jwtSecretVersion?: number;
+  /** Array of JWT secrets for rotation (current + previous with grace periods) */
+  jwtSecrets?: JwtSecretEntry[];
   /** Whether auth is enabled (default: true after setup) */
   authEnabled?: boolean;
   /** Session timeout (e.g., "24h", "7d") */
