@@ -2,7 +2,7 @@
 
 **Goal:** Evolve the basic template system (US-603) into a powerful task scaffolding engine with subtasks, variables, multi-task creation, and agent defaults.
 
-**Status:** Planning
+**Status:** Complete (8/9 stories, US-907 deferred)
 
 ---
 
@@ -30,15 +30,15 @@ Current templates (Sprint 6, US-603) provide:
 
 | ID | Title | Status | Dependencies | Notes |
 |----|-------|--------|--------------|-------|
-| US-901 | Enhanced template schema | ⏳ Todo | None | Extend TaskTemplate type with new fields |
-| US-902 | Subtask templates | ⏳ Todo | US-901 | Templates define pre-built subtask lists |
-| US-903 | Variable interpolation | ⏳ Todo | US-901 | `{{date}}`, `{{project}}`, `{{author}}` in text fields |
-| US-904 | Template categories | ⏳ Todo | US-901 | Group templates by category, filtered UI |
-| US-905 | Multi-task templates (blueprints) | ⏳ Todo | US-901, US-902 | One template creates multiple linked tasks |
-| US-906 | Agent & dependency defaults | ⏳ Todo | US-901 | Templates specify preferred agent and blockedBy |
-| US-907 | Apply template to existing task | ⏳ Todo | US-901 | Merge template fields into an existing task |
-| US-908 | Template import/export | ⏳ Todo | US-901 | JSON export/import for sharing |
-| US-909 | Enhanced template UI | ⏳ Todo | US-901–US-908 | Redesigned template picker + management |
+| US-901 | Enhanced template schema | ✅ Done | None | Extend TaskTemplate type with new fields |
+| US-902 | Subtask templates | ✅ Done | US-901 | Templates define pre-built subtask lists |
+| US-903 | Variable interpolation | ✅ Done | US-901 | `{{date}}`, `{{project}}`, `{{author}}` in text fields |
+| US-904 | Template categories | ✅ Done | US-901 | Group templates by category, filtered UI |
+| US-905 | Multi-task templates (blueprints) | ✅ Done | US-901, US-902 | One template creates multiple linked tasks |
+| US-906 | Agent & dependency defaults | ✅ Done | US-901 | Templates specify preferred agent and blockedBy |
+| US-907 | Apply template to existing task | ⚠️ Deferred | US-901 | Requires TaskDetailPanel refactor - see commit |
+| US-908 | Template import/export | ✅ Done | US-901 | JSON export/import for sharing |
+| US-909 | Enhanced template UI | ✅ Done | US-901–US-908 | Implemented across previous stories |
 
 ---
 
