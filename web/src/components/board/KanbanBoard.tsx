@@ -5,6 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
 import { useTaskTypes } from '@/hooks/useTaskTypes';
 import { useProjects } from '@/hooks/useProjects';
+import { useSprints } from '@/hooks/useSprints';
+import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import {
   DndContext,
   DragEndEvent,
@@ -77,6 +79,8 @@ export function KanbanBoard() {
   const { data: tasks, isLoading, error } = useTasks();
   const { data: taskTypes = [] } = useTaskTypes();
   const { data: projects = [] } = useProjects();
+  const { data: sprints = [] } = useSprints();
+  const { settings: featureSettings } = useFeatureSettings();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -270,15 +274,40 @@ export function KanbanBoard() {
       
       <BulkActionsBar allTaskIds={filteredTasks.map(t => t.id)} />
       
-      <ArchiveSuggestionBanner />
+      {featureSettings.board.showArchiveSuggestions && <ArchiveSuggestionBanner />}
       
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
+      {featureSettings.board.enableDragAndDrop ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-4 gap-4">
+            {COLUMNS.map(column => (
+              <KanbanColumn
+                key={column.id}
+                id={column.id}
+                title={column.title}
+                tasks={tasksByStatus[column.id]}
+                allTasks={filteredTasks}
+                onTaskClick={handleTaskClick}
+                selectedTaskId={selectedTaskId}
+                taskTypes={taskTypes}
+                projects={projects}
+                sprints={sprints}
+              />
+            ))}
+          </div>
+          
+          <DragOverlay>
+            {activeTask ? (
+              <TaskCard task={activeTask} isDragging taskTypes={taskTypes} projects={projects} sprints={sprints} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
         <div className="grid grid-cols-4 gap-4">
           {COLUMNS.map(column => (
             <KanbanColumn
@@ -291,18 +320,13 @@ export function KanbanBoard() {
               selectedTaskId={selectedTaskId}
               taskTypes={taskTypes}
               projects={projects}
+              sprints={sprints}
             />
           ))}
         </div>
-        
-        <DragOverlay>
-          {activeTask ? (
-            <TaskCard task={activeTask} isDragging taskTypes={taskTypes} projects={projects} />
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+      )}
 
-      <DashboardSection />
+      {featureSettings.board.showDashboard && <DashboardSection />}
 
       <TaskDetailPanel
         task={currentSelectedTask}

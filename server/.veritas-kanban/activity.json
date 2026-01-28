@@ -1,5 +1,115 @@
 [
   {
+    "id": "activity_1769588643293_d36yhzq9l",
+    "type": "status_changed",
+    "taskId": "task_20260128_iG-ISb",
+    "taskTitle": "Review the ByteRover Skill",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T08:24:03.293Z"
+  },
+  {
+    "id": "activity_1769588641597_qrbvyuw82",
+    "type": "comment_added",
+    "taskId": "task_20260128_iG-ISb",
+    "taskTitle": "Review the ByteRover Skill",
+    "details": {
+      "author": "Veritas",
+      "preview": "Passing on ByteRover. Too much overlap with our ex..."
+    },
+    "timestamp": "2026-01-28T08:24:01.597Z"
+  },
+  {
+    "id": "activity_1769588405585_vcuxykrps",
+    "type": "status_changed",
+    "taskId": "task_20260128_Kbjd3t",
+    "taskTitle": "US-1108: Auto-archive settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.585Z"
+  },
+  {
+    "id": "activity_1769588405575_9q54r5fma",
+    "type": "status_changed",
+    "taskId": "task_20260128_itHuxN",
+    "taskTitle": "US-1107: Notification settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.575Z"
+  },
+  {
+    "id": "activity_1769588405563_rn41vcwvx",
+    "type": "status_changed",
+    "taskId": "task_20260128_ndyIRl",
+    "taskTitle": "US-1106: Telemetry & activity settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.563Z"
+  },
+  {
+    "id": "activity_1769588405544_7kws5xknl",
+    "type": "status_changed",
+    "taskId": "task_20260128_HaNM-g",
+    "taskTitle": "US-1105: Agent & git settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.544Z"
+  },
+  {
+    "id": "activity_1769588405528_m9t3fqms0",
+    "type": "status_changed",
+    "taskId": "task_20260128_vYzfwx",
+    "taskTitle": "US-1104: Task behavior settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.528Z"
+  },
+  {
+    "id": "activity_1769588405497_lz2cy9e52",
+    "type": "status_changed",
+    "taskId": "task_20260128_DUyAbh",
+    "taskTitle": "US-1103: Board & display settings",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T08:20:05.497Z"
+  },
+  {
+    "id": "activity_1769588391537_1sdwjfyig",
+    "type": "comment_added",
+    "taskId": "task_20260128_KbDn0E",
+    "taskTitle": "US-1109: Settings UI — Tabbed panel redesign",
+    "details": {
+      "author": "Veritas",
+      "preview": "Complete tabbed settings panel with 7 tabs, toggle..."
+    },
+    "timestamp": "2026-01-28T08:19:51.537Z"
+  },
+  {
+    "id": "activity_1769588391508_njfkv8ncv",
+    "type": "status_changed",
+    "taskId": "task_20260128_KbDn0E",
+    "taskTitle": "US-1109: Settings UI — Tabbed panel redesign",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T08:19:51.508Z"
+  },
+  {
     "id": "activity_1769588199653_whhfki2dz",
     "type": "task_created",
     "taskId": "task_20260128_8KRThU",

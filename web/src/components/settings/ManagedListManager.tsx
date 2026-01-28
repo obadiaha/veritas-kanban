@@ -110,17 +110,17 @@ function SortableItem<T extends ManagedListItem>({
       <div
         ref={setNodeRef}
         style={style}
-        className="flex items-center gap-2 p-2 bg-card border rounded-lg mb-2"
+        className="flex items-center gap-1.5 px-2 py-1.5 bg-card border rounded-md mb-1"
       >
         <button
-          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0"
           {...attributes}
           {...listeners}
         >
-          <GripVertical className="h-4 w-4" />
+          <GripVertical className="h-3.5 w-3.5" />
         </button>
 
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 min-w-0">
           {isEditing ? (
             <Input
               value={label}
@@ -134,11 +134,11 @@ function SortableItem<T extends ManagedListItem>({
                 }
               }}
               autoFocus
-              className="h-8"
+              className="h-7 text-sm"
             />
           ) : (
             <div
-              className="cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              className="cursor-pointer hover:bg-muted/50 px-1.5 py-0.5 rounded text-sm"
               onClick={() => setIsEditing(true)}
             >
               {item.label}
@@ -151,16 +151,15 @@ function SortableItem<T extends ManagedListItem>({
           {renderExtraFields && renderExtraFields(item, handleExtraFieldChange)}
         </div>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDeleteClick}
-            title="Delete"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 flex-shrink-0"
+          onClick={handleDeleteClick}
+          title="Delete"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -253,8 +252,8 @@ export function ManagedListManager<T extends ManagedListItem>({
   }
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="space-y-2">
+      {title && <h3 className="text-sm font-semibold">{title}</h3>}
 
       <DndContext
         sensors={sensors}
@@ -287,8 +286,9 @@ export function ManagedListManager<T extends ManagedListItem>({
             if (e.key === 'Enter') handleCreate();
           }}
           disabled={isCreating}
+          className="h-8 text-sm"
         />
-        <Button onClick={handleCreate} disabled={!newItemLabel.trim() || isCreating}>
+        <Button size="sm" onClick={handleCreate} disabled={!newItemLabel.trim() || isCreating}>
           Add
         </Button>
       </div>

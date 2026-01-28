@@ -40,6 +40,7 @@ import type { Task, TaskStatus, TaskPriority, ReviewComment, ReviewState } from 
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
 import { useProjects } from '@/hooks/useProjects';
 import { useSprints } from '@/hooks/useSprints';
+import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 import { GitSection } from './GitSection';
 import { AgentPanel } from './AgentPanel';
 import { DiffViewer } from './DiffViewer';
@@ -120,6 +121,9 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
   const { data: taskTypes = [] } = useTaskTypes();
   const { data: projects = [] } = useProjects();
   const { data: sprints = [] } = useSprints();
+  const { settings: featureSettings } = useFeatureSettings();
+  const taskSettings = featureSettings.tasks;
+  const agentSettings = featureSettings.agents;
   const { localTask, updateField, isDirty } = useDebouncedSave(task, updateTask);
   const [activeTab, setActiveTab] = useState('details');
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -196,12 +200,14 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden mt-4">
           <div className="flex items-center gap-2">
-            <TabsList className={`grid flex-1 ${isCodeTask ? 'grid-cols-6' : 'grid-cols-2'}`}>
+            <TabsList className={`grid flex-1 ${isCodeTask ? (taskSettings.enableAttachments ? 'grid-cols-6' : 'grid-cols-5') : (taskSettings.enableAttachments ? 'grid-cols-2' : 'grid-cols-1')}`}>
               <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="attachments" className="flex items-center gap-1">
-                <Paperclip className="h-3 w-3" />
-                Attachments
-              </TabsTrigger>
+              {taskSettings.enableAttachments && (
+                <TabsTrigger value="attachments" className="flex items-center gap-1">
+                  <Paperclip className="h-3 w-3" />
+                  Attachments
+                </TabsTrigger>
+              )}
               {isCodeTask && (
                 <>
                   <TabsTrigger value="git" className="flex items-center gap-1">
@@ -234,7 +240,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
                 Template
               </Button>
             )}
-            {!readOnly && isCodeTask && localTask.git?.repo && (
+            {!readOnly && isCodeTask && localTask.git?.repo && agentSettings.enablePreview && (
               <Button
                 variant="outline"
                 size="sm"
@@ -460,22 +466,28 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
               </div>
 
               {/* Dependencies */}
-              <div className="border-t pt-4">
-                <DependenciesSection
-                  task={localTask}
-                  onBlockedByChange={(blockedBy) => updateField('blockedBy', blockedBy)}
-                />
-              </div>
+              {taskSettings.enableDependencies && (
+                <div className="border-t pt-4">
+                  <DependenciesSection
+                    task={localTask}
+                    onBlockedByChange={(blockedBy) => updateField('blockedBy', blockedBy)}
+                  />
+                </div>
+              )}
 
               {/* Time Tracking */}
-              <div className="border-t pt-4">
-                <TimeTrackingSection task={localTask} />
-              </div>
+              {taskSettings.enableTimeTracking && (
+                <div className="border-t pt-4">
+                  <TimeTrackingSection task={localTask} />
+                </div>
+              )}
 
               {/* Comments */}
-              <div className="border-t pt-4">
-                <CommentsSection task={localTask} />
-              </div>
+              {taskSettings.enableComments && (
+                <div className="border-t pt-4">
+                  <CommentsSection task={localTask} />
+                </div>
+              )}
 
               <div className="border-t pt-4 space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
@@ -530,9 +542,11 @@ export function TaskDetailPanel({ task, open, onOpenChange, readOnly = false, on
             </TabsContent>
 
             {/* Attachments Tab */}
-            <TabsContent value="attachments" className="mt-0">
-              <AttachmentsSection task={localTask} />
-            </TabsContent>
+            {taskSettings.enableAttachments && (
+              <TabsContent value="attachments" className="mt-0">
+                <AttachmentsSection task={localTask} />
+              </TabsContent>
+            )}
 
             {/* Git Tab */}
             {isCodeTask && (
