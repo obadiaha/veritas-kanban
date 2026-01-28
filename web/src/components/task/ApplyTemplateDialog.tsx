@@ -21,7 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import { useTemplates } from '@/hooks/useTemplates';
 import { useUpdateTask } from '@/hooks/useTasks';
 import type { Task, Subtask } from '@veritas-kanban/shared';
-import { FileCode, AlertCircle, Plus, Minus } from 'lucide-react';
+import { FileCode, AlertCircle, Plus, Minus, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { api } from '@/lib/api';
 import { 
@@ -58,6 +58,7 @@ export function ApplyTemplateDialog({ task, open, onOpenChange, onApplied }: App
   const [customVars, setCustomVars] = useState<Record<string, string>>({});
   const [requiredCustomVars, setRequiredCustomVars] = useState<string[]>([]);
   const [forceOverwrite, setForceOverwrite] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const { data: templates } = useTemplates();
   const updateTask = useUpdateTask();
@@ -301,10 +302,33 @@ export function ApplyTemplateDialog({ task, open, onOpenChange, onApplied }: App
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileCode className="h-5 w-5" />
-            Apply Template to Task
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <FileCode className="h-5 w-5" />
+              Apply Template to Task
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowHelp(!showHelp)}
+              className="h-8 gap-1 text-muted-foreground"
+            >
+              <HelpCircle className="h-4 w-4" />
+              {showHelp ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            </Button>
+          </div>
+          {showHelp && (
+            <div className="mt-2 rounded-md border bg-muted/50 p-3 text-sm space-y-2">
+              <p className="font-medium">How Apply Template works:</p>
+              <ul className="space-y-1 text-muted-foreground text-xs">
+                <li><strong>Default mode:</strong> Only fills in empty fields — your existing data is never overwritten.</li>
+                <li><strong>Force Overwrite:</strong> Toggle this on to replace existing values with template values. A preview shows exactly what will change before you apply.</li>
+                <li><strong>Subtasks:</strong> Template subtasks are <em>added</em> to your existing subtasks, never replaced.</li>
+                <li><strong>Variables:</strong> Templates with <code className="bg-background px-1 rounded">{'{{date}}'}</code> or <code className="bg-background px-1 rounded">{'{{custom:name}}'}</code> will prompt you for values before applying.</li>
+                <li><strong>Preview:</strong> The changes preview shows a before/after diff so you know exactly what will happen.</li>
+              </ul>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
