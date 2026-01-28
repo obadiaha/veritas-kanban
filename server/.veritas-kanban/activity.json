@@ -1,5 +1,27 @@
 [
   {
+    "id": "activity_1769602148289_c072zwzck",
+    "type": "comment_added",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
+    "details": {
+      "author": "Veritas",
+      "preview": "Extended api.ts to cover all endpoints. Updated 6 ..."
+    },
+    "timestamp": "2026-01-28T12:09:08.289Z"
+  },
+  {
+    "id": "activity_1769602148262_qy2on8vrt",
+    "type": "status_changed",
+    "taskId": "task_20260128_UMDZyh",
+    "taskTitle": "RF-11: Consolidate Frontend API Layer",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T12:09:08.262Z"
+  },
+  {
     "id": "activity_1769598455726_9m6dfmawo",
     "type": "comment_added",
     "taskId": "task_20260128_bIPwKK",
