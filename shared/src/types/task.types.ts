@@ -1,7 +1,7 @@
 // Task Types
 
 export type TaskType = string;
-export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done';
+export type TaskStatus = 'todo' | 'in-progress' | 'blocked' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
 export type AgentType = 'claude-code' | 'amp' | 'copilot' | 'gemini' | 'veritas';
 export type AttemptStatus = 'pending' | 'running' | 'complete' | 'failed';
