@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { Task, TaskType } from '@veritas-kanban/shared';
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
+import { useProjects } from '@/hooks/useProjects';
 
 export interface FilterState {
   search: string;
@@ -27,17 +28,7 @@ interface FilterBarProps {
 
 export function FilterBar({ tasks, filters, onFiltersChange }: FilterBarProps) {
   const { data: taskTypes = [], isLoading: typesLoading } = useTaskTypes();
-
-  // Get unique projects from tasks
-  const projects = useMemo(() => {
-    const projectSet = new Set<string>();
-    tasks.forEach(task => {
-      if (task.project) {
-        projectSet.add(task.project);
-      }
-    });
-    return Array.from(projectSet).sort();
-  }, [tasks]);
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
 
   // Count active filters
   const activeFilterCount = [
@@ -81,6 +72,7 @@ export function FilterBar({ tasks, filters, onFiltersChange }: FilterBarProps) {
         onValueChange={(value) =>
           onFiltersChange({ ...filters, project: value === 'all' ? null : value })
         }
+        disabled={projectsLoading}
       >
         <SelectTrigger className="w-[160px]">
           <SelectValue placeholder="All Projects" />
@@ -88,8 +80,8 @@ export function FilterBar({ tasks, filters, onFiltersChange }: FilterBarProps) {
         <SelectContent>
           <SelectItem value="all">All Projects</SelectItem>
           {projects.map((project) => (
-            <SelectItem key={project} value={project}>
-              {project}
+            <SelectItem key={project.id} value={project.id}>
+              {project.label}
             </SelectItem>
           ))}
         </SelectContent>

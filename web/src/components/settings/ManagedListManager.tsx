@@ -114,7 +114,7 @@ function SortableItem<T extends ManagedListItem>({
       <div
         ref={setNodeRef}
         style={style}
-        className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 border rounded-lg mb-2"
+        className="flex items-center gap-2 p-2 bg-card border rounded-lg mb-2"
       >
         <button
           className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
@@ -142,15 +142,15 @@ function SortableItem<T extends ManagedListItem>({
             />
           ) : (
             <div
-              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 px-2 py-1 rounded"
+              className="cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
               onClick={() => setIsEditing(true)}
             >
               {item.label}
               {item.isDefault && (
-                <span className="ml-2 text-xs text-gray-500">(default)</span>
+                <span className="ml-2 text-xs text-muted-foreground">(default)</span>
               )}
               {item.isHidden && (
-                <span className="ml-2 text-xs text-gray-500">(hidden)</span>
+                <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>
               )}
             </div>
           )}
@@ -186,24 +186,30 @@ function SortableItem<T extends ManagedListItem>({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {deleteInfo && !deleteInfo.allowed ? 'Cannot Delete' : 'Confirm Delete'}
+              {deleteInfo && !deleteInfo.allowed ? 'Cannot Delete' : 'Delete Item?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteInfo && deleteInfo.isDefault && (
-                <p>This is a default item and cannot be deleted.</p>
+                <span>This is a default item and cannot be deleted.</span>
               )}
-              {deleteInfo && deleteInfo.referenceCount > 0 && (
-                <p>This item is referenced by {deleteInfo.referenceCount} task(s) and cannot be deleted.</p>
+              {deleteInfo && !deleteInfo.isDefault && deleteInfo.referenceCount > 0 && !deleteInfo.allowed && (
+                <span>This item is referenced by {deleteInfo.referenceCount} task(s) and cannot be deleted.</span>
               )}
               {deleteInfo && deleteInfo.allowed && (
-                <p>Are you sure you want to delete "{item.label}"? This action cannot be undone.</p>
+                <span>Are you sure you want to delete &quot;{item.label}&quot;? This action cannot be undone.</span>
+              )}
+              {!deleteInfo && (
+                <span>Are you sure you want to delete &quot;{item.label}&quot;? This action cannot be undone.</span>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            {deleteInfo && deleteInfo.allowed && (
-              <AlertDialogAction onClick={handleDeleteConfirm}>
+            {(!deleteInfo || deleteInfo.allowed) && (
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
                 Delete
               </AlertDialogAction>
             )}
@@ -266,7 +272,7 @@ export function ManagedListManager<T extends ManagedListItem>({
   };
 
   if (isLoading) {
-    return <div className="text-sm text-gray-500">Loading {title.toLowerCase()}...</div>;
+    return <div className="text-sm text-muted-foreground">Loading {title.toLowerCase()}...</div>;
   }
 
   return (

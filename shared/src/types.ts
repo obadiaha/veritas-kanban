@@ -379,6 +379,17 @@ export interface TaskTypeConfig extends ManagedListItem {
   color?: string;  // Tailwind border color class (e.g., "border-l-violet-500")
 }
 
+/** Project configuration with description and badge color */
+export interface ProjectConfig extends ManagedListItem {
+  description?: string;
+  color?: string;  // Tailwind bg color class for badges (e.g., "bg-blue-500/20")
+}
+
+/** Tag configuration with color badge */
+export interface TagConfig extends ManagedListItem {
+  color: string;  // Badge color class (e.g., "bg-blue-500/20 text-blue-400")
+}
+
 // ============ Template Types ============
 
 /** Subtask template for pre-defined subtask lists */

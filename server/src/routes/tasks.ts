@@ -482,6 +482,65 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
+// PATCH /api/tasks/:id/comments/:commentId - Edit comment
+router.patch('/:id/comments/:commentId', async (req, res) => {
+  try {
+    const { text } = z.object({ text: z.string().min(1) }).parse(req.body);
+    const task = await taskService.getTask(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const comments = task.comments || [];
+    const commentIndex = comments.findIndex(c => c.id === req.params.commentId);
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    comments[commentIndex] = {
+      ...comments[commentIndex],
+      text,
+      timestamp: comments[commentIndex].timestamp, // preserve original timestamp
+    };
+
+    const updatedTask = await taskService.updateTask(req.params.id, { comments });
+    res.json(updatedTask);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Validation failed', details: error.errors });
+    }
+    console.error('Error editing comment:', error);
+    res.status(500).json({ error: 'Failed to edit comment' });
+  }
+});
+
+// DELETE /api/tasks/:id/comments/:commentId - Delete comment
+router.delete('/:id/comments/:commentId', async (req, res) => {
+  try {
+    const task = await taskService.getTask(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const comments = task.comments || [];
+    const filtered = comments.filter(c => c.id !== req.params.commentId);
+    if (filtered.length === comments.length) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    const updatedTask = await taskService.updateTask(req.params.id, { comments: filtered });
+
+    await activityService.logActivity('comment_deleted', task.id, task.title, {
+      commentId: req.params.commentId,
+    });
+
+    res.json(updatedTask);
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ error: 'Failed to delete comment' });
+  }
+});
+
 // === Worktree Routes ===
 
 // POST /api/tasks/:id/worktree - Create worktree

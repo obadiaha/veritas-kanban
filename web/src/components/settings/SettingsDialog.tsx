@@ -47,7 +47,9 @@ import { cn } from '@/lib/utils';
 import { TEMPLATE_CATEGORIES, getCategoryIcon, getCategoryLabel } from '@/lib/template-categories';
 import { exportAllTemplates, parseTemplateFile, checkDuplicateName } from '@/lib/template-io';
 import { useTaskTypesManager, getTypeIcon, getAvailableIcons, AVAILABLE_COLORS } from '@/hooks/useTaskTypes';
+import { useProjectsManager, AVAILABLE_PROJECT_COLORS } from '@/hooks/useProjects';
 import { ManagedListManager } from './ManagedListManager';
+import type { ProjectConfig } from '@veritas-kanban/shared';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -510,6 +512,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { data: config, isLoading } = useConfig();
   const { data: templates, isLoading: templatesLoading } = useTemplates();
   const taskTypesManager = useTaskTypesManager();
+  const projectsManager = useProjectsManager();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddTemplateForm, setShowAddTemplateForm] = useState(false);
   const [showTemplateHelp, setShowTemplateHelp] = useState(false);
@@ -715,6 +718,58 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                   </div>
                 )}
                 newItemDefaults={{ icon: 'Code', color: 'border-l-gray-500' }}
+              />
+            </div>
+          </div>
+
+          {/* Projects Section */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium">Projects</h3>
+            <div className="border rounded-lg p-4">
+              <ManagedListManager<ProjectConfig>
+                title=""
+                items={projectsManager.items}
+                isLoading={projectsManager.isLoading}
+                onCreate={projectsManager.create}
+                onUpdate={projectsManager.update}
+                onDelete={projectsManager.remove}
+                onReorder={projectsManager.reorder}
+                canDeleteCheck={projectsManager.canDelete}
+                renderExtraFields={(item, onChange) => (
+                  <div className="flex gap-2 mt-2">
+                    <div className="flex-1">
+                      <Label className="text-xs text-muted-foreground">Description</Label>
+                      <Input
+                        value={item.description || ''}
+                        onChange={(e) => onChange({ description: e.target.value })}
+                        placeholder="Optional description..."
+                        className="h-8 mt-1"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label className="text-xs text-muted-foreground">Badge Color</Label>
+                      <Select
+                        value={item.color || 'bg-muted'}
+                        onValueChange={(color) => onChange({ color })}
+                      >
+                        <SelectTrigger className="h-8 mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AVAILABLE_PROJECT_COLORS.map((color) => (
+                            <SelectItem key={color.value} value={color.value}>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-4 h-4 rounded ${color.value}`}></div>
+                                {color.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                newItemDefaults={{ description: '', color: 'bg-blue-500/20' }}
               />
             </div>
           </div>

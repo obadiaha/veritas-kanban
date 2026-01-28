@@ -23,6 +23,8 @@ import { useTemplates, type TaskTemplate } from '@/hooks/useTemplates';
 import type { TaskPriority, Subtask } from '@veritas-kanban/shared';
 import { FileText, X, Check, AlertCircle, HelpCircle, Info } from 'lucide-react';
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
+import { useProjects } from '@/hooks/useProjects';
+import { TagPicker } from './TagPicker';
 import { nanoid } from 'nanoid';
 import { 
   interpolateVariables, 
@@ -42,16 +44,20 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
   const [type, setType] = useState('code');
   const [priority, setPriority] = useState<TaskPriority>('medium');
   const [project, setProject] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [customVars, setCustomVars] = useState<Record<string, string>>({});
   const [requiredCustomVars, setRequiredCustomVars] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [showHelp, setShowHelp] = useState(false);
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
 
   const createTask = useCreateTask();
   const { data: templates } = useTemplates();
   const { data: taskTypes = [] } = useTaskTypes();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
 
   // Filter templates by selected category
   const filteredTemplates = useMemo(() => {
@@ -173,6 +179,7 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
         type,
         priority,
         project: project.trim() || undefined,
+        tags: tags.length > 0 ? tags : undefined,
         subtasks: interpolatedSubtasks.length > 0 ? interpolatedSubtasks : undefined,
       });
     }
@@ -183,10 +190,13 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
     setType('code');
     setPriority('medium');
     setProject('');
+    setTags([]);
     setSelectedTemplate(null);
     setSubtasks([]);
     setCustomVars({});
     setRequiredCustomVars([]);
+    setShowNewProject(false);
+    setNewProjectName('');
     onOpenChange(false);
   };
 
@@ -442,11 +452,85 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
             
             <div className="grid gap-2">
               <Label htmlFor="project">Project (optional)</Label>
-              <Input
-                id="project"
-                value={project}
-                onChange={(e) => setProject(e.target.value)}
-                placeholder="e.g., rubicon"
+              {!showNewProject ? (
+                <Select 
+                  value={project} 
+                  onValueChange={(value) => {
+                    if (value === '__new__') {
+                      setShowNewProject(true);
+                      setNewProjectName('');
+                    } else {
+                      setProject(value);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select project..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No project</SelectItem>
+                    {projects.map((proj) => (
+                      <SelectItem key={proj.id} value={proj.id}>
+                        {proj.label}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__new__" className="text-primary">
+                      + New Project
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    value={newProjectName}
+                    onChange={(e) => setNewProjectName(e.target.value)}
+                    placeholder="Enter project name..."
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newProjectName.trim()) {
+                        e.preventDefault();
+                        setProject(newProjectName.trim());
+                        setShowNewProject(false);
+                      }
+                      if (e.key === 'Escape') {
+                        setShowNewProject(false);
+                        setNewProjectName('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      if (newProjectName.trim()) {
+                        setProject(newProjectName.trim());
+                        setShowNewProject(false);
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setShowNewProject(false);
+                      setNewProjectName('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Tags */}
+            <div className="grid gap-2">
+              <Label>Tags (optional)</Label>
+              <TagPicker
+                selectedTags={tags}
+                onChange={setTags}
               />
             </div>
 

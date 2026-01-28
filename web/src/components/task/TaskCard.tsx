@@ -6,11 +6,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { Task, TaskPriority, TaskTypeConfig } from '@veritas-kanban/shared';
+import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig } from '@veritas-kanban/shared';
 import { Check, Ban, Clock, Timer, Loader2, Paperclip } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
 import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
+import { getProjectColor, getProjectLabel } from '@/hooks/useProjects';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -28,6 +29,7 @@ interface TaskCardProps {
   isBlocked?: boolean;
   blockerTitles?: string[];
   taskTypes?: TaskTypeConfig[];
+  projects?: ProjectConfig[];
 }
 
 const priorityColors: Record<TaskPriority, string> = {
@@ -36,7 +38,7 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [] }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [] }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging: isCurrentlyDragging } = useDraggable({
     id: task.id,
   });
@@ -73,6 +75,10 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
   const typeIconName = taskTypes.find(t => t.id === task.type)?.icon || 'Code';
   const TypeIconComponent = getTypeIcon(typeIconName);
   const typeColor = getTypeColor(taskTypes, task.type);
+  
+  // Get project info dynamically
+  const projectColor = task.project ? getProjectColor(projects, task.project) : 'bg-muted';
+  const projectLabel = task.project ? getProjectLabel(projects, task.project) : '';
 
   return (
     <TooltipProvider>
@@ -159,8 +165,8 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                 </Tooltip>
               )}
               {task.project && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                  {task.project}
+                <span className={cn("text-xs px-1.5 py-0.5 rounded", projectColor)}>
+                  {projectLabel}
                 </span>
               )}
               <span className={cn(

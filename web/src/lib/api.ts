@@ -136,6 +136,22 @@ export const api = {
       return handleResponse<Task>(response);
     },
 
+    editComment: async (taskId: string, commentId: string, text: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/comments/${commentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      return handleResponse<Task>(response);
+    },
+
+    deleteComment: async (taskId: string, commentId: string): Promise<Task> => {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/comments/${commentId}`, {
+        method: 'DELETE',
+      });
+      return handleResponse<Task>(response);
+    },
+
     getBlockingStatus: async (taskId: string): Promise<{
       isBlocked: boolean;
       blockers: Array<{ id: string; title: string; status: string }>;

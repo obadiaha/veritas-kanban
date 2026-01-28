@@ -37,6 +37,7 @@ import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
 import { Trash2, Calendar, Clock, GitBranch, Bot, FileDiff, ClipboardCheck, Monitor, FileCode, Paperclip } from 'lucide-react';
 import type { Task, TaskStatus, TaskPriority, ReviewComment, ReviewState } from '@veritas-kanban/shared';
 import { useTaskTypes, getTypeIcon, getTypeLabel } from '@/hooks/useTaskTypes';
+import { useProjects } from '@/hooks/useProjects';
 import { GitSection } from './GitSection';
 import { AgentPanel } from './AgentPanel';
 import { DiffViewer } from './DiffViewer';
@@ -48,6 +49,7 @@ import { TimeTrackingSection } from './TimeTrackingSection';
 import { CommentsSection } from './CommentsSection';
 import { AttachmentsSection } from './AttachmentsSection';
 import { ApplyTemplateDialog } from './ApplyTemplateDialog';
+import { TagPicker } from './TagPicker';
 
 interface TaskDetailPanelProps {
   task: Task | null;
@@ -113,10 +115,13 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const { data: taskTypes = [] } = useTaskTypes();
+  const { data: projects = [] } = useProjects();
   const { localTask, updateField, isDirty } = useDebouncedSave(task, updateTask);
   const [activeTab, setActiveTab] = useState('details');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -303,22 +308,84 @@ export function TaskDetailPanel({ task, open, onOpenChange }: TaskDetailPanelPro
 
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Project</Label>
-                <Input
-                  value={localTask.project || ''}
-                  onChange={(e) => updateField('project', e.target.value || undefined)}
-                  placeholder="Add to a project..."
-                />
+                {!showNewProject ? (
+                  <Select 
+                    value={localTask.project || ''} 
+                    onValueChange={(value) => {
+                      if (value === '__new__') {
+                        setShowNewProject(true);
+                        setNewProjectName('');
+                      } else {
+                        updateField('project', value || undefined);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select project..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No project</SelectItem>
+                      {projects.map((proj) => (
+                        <SelectItem key={proj.id} value={proj.id}>
+                          {proj.label}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="__new__" className="text-primary">
+                        + New Project
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      value={newProjectName}
+                      onChange={(e) => setNewProjectName(e.target.value)}
+                      placeholder="Enter project name..."
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newProjectName.trim()) {
+                          e.preventDefault();
+                          updateField('project', newProjectName.trim());
+                          setShowNewProject(false);
+                        }
+                        if (e.key === 'Escape') {
+                          setShowNewProject(false);
+                          setNewProjectName('');
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        if (newProjectName.trim()) {
+                          updateField('project', newProjectName.trim());
+                          setShowNewProject(false);
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setShowNewProject(false);
+                        setNewProjectName('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Tags</Label>
-                <Input
-                  value={localTask.tags?.join(', ') || ''}
-                  onChange={(e) => {
-                    const tags = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
-                    updateField('tags', tags.length > 0 ? tags : undefined);
-                  }}
-                  placeholder="Add tags (comma-separated)..."
+                <TagPicker
+                  selectedTags={localTask.tags || []}
+                  onChange={(tags) => updateField('tags', tags.length > 0 ? tags : undefined)}
                 />
               </div>
 

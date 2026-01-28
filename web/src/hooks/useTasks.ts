@@ -150,6 +150,32 @@ export function useAddComment() {
   });
 }
 
+export function useEditComment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ taskId, commentId, text }: { taskId: string; commentId: string; text: string }) => 
+      api.tasks.editComment(taskId, commentId, text),
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.setQueryData(['tasks', task.id], task);
+    },
+  });
+}
+
+export function useDeleteComment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ taskId, commentId }: { taskId: string; commentId: string }) => 
+      api.tasks.deleteComment(taskId, commentId),
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.setQueryData(['tasks', task.id], task);
+    },
+  });
+}
+
 export function useTasksByStatus(tasks: Task[] | undefined) {
   if (!tasks) {
     return {

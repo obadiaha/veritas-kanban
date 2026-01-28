@@ -1,5 +1,104 @@
 [
   {
+    "id": "activity_1769573548430_xn6wrwl6r",
+    "type": "comment_added",
+    "taskId": "task_20260128_nfa0sK",
+    "taskTitle": "US-911: Task comments system for agent activity logs",
+    "details": {
+      "author": "Brad Groux",
+      "preview": "You should be able to delete and edit existing com..."
+    },
+    "timestamp": "2026-01-28T04:12:28.430Z"
+  },
+  {
+    "id": "activity_1769573503380_fvovjfr0p",
+    "type": "comment_added",
+    "taskId": "task_20260128_WOCpqE",
+    "taskTitle": "US-913: Custom task type management",
+    "details": {
+      "author": "Brad Groux",
+      "preview": "The color is way off for the task type area. Also,..."
+    },
+    "timestamp": "2026-01-28T04:11:43.380Z"
+  },
+  {
+    "id": "activity_1769573480850_9aaja0u86",
+    "type": "comment_added",
+    "taskId": "task_20260128_WOCpqE",
+    "taskTitle": "US-913: Custom task type management",
+    "details": {
+      "author": "Veritas",
+      "preview": "The color is way off for the task type area. Also,..."
+    },
+    "timestamp": "2026-01-28T04:11:20.850Z"
+  },
+  {
+    "id": "activity_1769573432781_bhl5v1e13",
+    "type": "status_changed",
+    "taskId": "task_20260128_gVorh6",
+    "taskTitle": "US-916: Tag management with managed list",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T04:10:32.781Z"
+  },
+  {
+    "id": "activity_1769573432760_u881qvfsv",
+    "type": "status_changed",
+    "taskId": "task_20260128_UWrGIB",
+    "taskTitle": "US-914: Project management with dropdown selection",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T04:10:32.760Z"
+  },
+  {
+    "id": "activity_1769573371506_1t4acgcpt",
+    "type": "comment_added",
+    "taskId": "task_20260128_WOCpqE",
+    "taskTitle": "US-913: Custom task type management",
+    "details": {
+      "author": "Veritas",
+      "preview": "Replaced hardcoded TaskType enum with dynamic mana..."
+    },
+    "timestamp": "2026-01-28T04:09:31.506Z"
+  },
+  {
+    "id": "activity_1769573371494_be7lxc748",
+    "type": "status_changed",
+    "taskId": "task_20260128_WOCpqE",
+    "taskTitle": "US-913: Custom task type management",
+    "details": {
+      "from": "todo",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T04:09:31.494Z"
+  },
+  {
+    "id": "activity_1769573371482_jgnt68ahx",
+    "type": "comment_added",
+    "taskId": "task_20260128_Oq5P-O",
+    "taskTitle": "US-915: ManagedListService — reusable foundation for managed entity lists",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented ManagedListService base class, createM..."
+    },
+    "timestamp": "2026-01-28T04:09:31.482Z"
+  },
+  {
+    "id": "activity_1769573371467_4lo3f514j",
+    "type": "status_changed",
+    "taskId": "task_20260128_Oq5P-O",
+    "taskTitle": "US-915: ManagedListService — reusable foundation for managed entity lists",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T04:09:31.467Z"
+  },
+  {
     "id": "activity_1769573330167_uf55svpjy",
     "type": "task_updated",
     "taskId": "task_20260128_XvmMga",
@@ -889,87 +988,5 @@
       "status": "done"
     },
     "timestamp": "2026-01-26T21:27:04.591Z"
-  },
-  {
-    "id": "activity_1769462823350_fvi6f16qa",
-    "type": "status_changed",
-    "taskId": "task_20260126_vfkPKg",
-    "taskTitle": "US-808: Optional Traces (Stretch)",
-    "details": {
-      "from": "archived",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T21:27:03.350Z"
-  },
-  {
-    "id": "activity_1769454004283_akggyhs9w",
-    "type": "task_deleted",
-    "taskId": "task_20260126_UZYsUY",
-    "taskTitle": "Test Task 1: Success Run",
-    "timestamp": "2026-01-26T19:00:04.283Z"
-  },
-  {
-    "id": "activity_1769454001199_2l8akjm12",
-    "type": "task_deleted",
-    "taskId": "task_20260126_7woED_",
-    "taskTitle": "Test Task 2: Another Success",
-    "timestamp": "2026-01-26T19:00:01.199Z"
-  },
-  {
-    "id": "activity_1769453997941_fvudasza4",
-    "type": "task_deleted",
-    "taskId": "task_20260126_Pq8tK0",
-    "taskTitle": "Test Task 4: Quick Success",
-    "timestamp": "2026-01-26T18:59:57.941Z"
-  },
-  {
-    "id": "activity_1769453994103_32i7hmzqt",
-    "type": "task_deleted",
-    "taskId": "task_20260126_ZfmWI8",
-    "taskTitle": "Test Task 3: Failed Run",
-    "timestamp": "2026-01-26T18:59:54.103Z"
-  },
-  {
-    "id": "activity_1769453088732_hk70bv3rq",
-    "type": "project_archived",
-    "taskId": "Sprint 8",
-    "taskTitle": "Sprint 8",
-    "details": {
-      "taskCount": 8
-    },
-    "timestamp": "2026-01-26T18:44:48.732Z"
-  },
-  {
-    "id": "activity_1769453034844_n3s072u75",
-    "type": "status_changed",
-    "taskId": "task_20260126_ZfmWI8",
-    "taskTitle": "Test Task 3: Failed Run",
-    "details": {
-      "from": "todo",
-      "status": "in-progress"
-    },
-    "timestamp": "2026-01-26T18:43:54.844Z"
-  },
-  {
-    "id": "activity_1769453034765_xwfzg1zgn",
-    "type": "status_changed",
-    "taskId": "task_20260126_Pq8tK0",
-    "taskTitle": "Test Task 4: Quick Success",
-    "details": {
-      "from": "todo",
-      "status": "review"
-    },
-    "timestamp": "2026-01-26T18:43:54.765Z"
-  },
-  {
-    "id": "activity_1769453034685_isvxmmflp",
-    "type": "status_changed",
-    "taskId": "task_20260126_7woED_",
-    "taskTitle": "Test Task 2: Another Success",
-    "details": {
-      "from": "todo",
-      "status": "done"
-    },
-    "timestamp": "2026-01-26T18:43:54.685Z"
   }
 ]
