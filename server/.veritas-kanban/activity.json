@@ -1,5 +1,97 @@
 [
   {
+    "id": "activity_1769580331489_v8447wz2w",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:31.489Z"
+  },
+  {
+    "id": "activity_1769580329016_3gw37kd4h",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:29.016Z"
+  },
+  {
+    "id": "activity_1769580322029_me74uutmk",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:22.029Z"
+  },
+  {
+    "id": "activity_1769580321052_rkxh0zuov",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:21.052Z"
+  },
+  {
+    "id": "activity_1769580320106_ab1u79pn7",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:20.106Z"
+  },
+  {
+    "id": "activity_1769580319251_ncshgs5t0",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:19.251Z"
+  },
+  {
+    "id": "activity_1769580314724_sz5epebbg",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:14.724Z"
+  },
+  {
+    "id": "activity_1769580314047_4s0vsbns0",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:14.047Z"
+  },
+  {
+    "id": "activity_1769580311483_f6mdzcst2",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:11.483Z"
+  },
+  {
+    "id": "activity_1769580300519_vnawltghn",
+    "type": "task_updated",
+    "taskId": "task_20260128_tDh8SO",
+    "taskTitle": "BUG: You can't view or restore archived tasks",
+    "timestamp": "2026-01-28T06:05:00.519Z"
+  },
+  {
+    "id": "activity_1769579993879_1l305f3bj",
+    "type": "comment_added",
+    "taskId": "task_20260128_2dCzyR",
+    "taskTitle": "US-920: Auto-archive by sprint instead of project",
+    "details": {
+      "author": "Veritas",
+      "preview": "Auto-archive logic changed from project-based to s..."
+    },
+    "timestamp": "2026-01-28T05:59:53.879Z"
+  },
+  {
+    "id": "activity_1769579989042_i13qms8h2",
+    "type": "status_changed",
+    "taskId": "task_20260128_2dCzyR",
+    "taskTitle": "US-920: Auto-archive by sprint instead of project",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T05:59:49.042Z"
+  },
+  {
     "id": "activity_1769579842074_0pq1ecb58",
     "type": "status_changed",
     "taskId": "task_20260128_2dCzyR",
@@ -769,114 +861,5 @@
       "status": "in-progress"
     },
     "timestamp": "2026-01-28T03:39:54.717Z"
-  },
-  {
-    "id": "activity_1769571492987_2d3me4i1f",
-    "type": "task_deleted",
-    "taskId": "task_20260128_uce0T_",
-    "taskTitle": "US-918: Custom board columns (managed statuses)",
-    "timestamp": "2026-01-28T03:38:12.987Z"
-  },
-  {
-    "id": "activity_1769571492977_zp7zg69cd",
-    "type": "task_deleted",
-    "taskId": "task_20260128_qhrcxp",
-    "taskTitle": "US-917: Custom priority levels with managed list",
-    "timestamp": "2026-01-28T03:38:12.977Z"
-  },
-  {
-    "id": "activity_1769571477157_2dzg8i6r2",
-    "type": "task_updated",
-    "taskId": "task_20260128_uce0T_",
-    "taskTitle": "US-918: Custom board columns (managed statuses)",
-    "timestamp": "2026-01-28T03:37:57.157Z"
-  },
-  {
-    "id": "activity_1769571477149_wn0lluokq",
-    "type": "task_updated",
-    "taskId": "task_20260128_qhrcxp",
-    "taskTitle": "US-917: Custom priority levels with managed list",
-    "timestamp": "2026-01-28T03:37:57.149Z"
-  },
-  {
-    "id": "activity_1769571477141_9zkjsrcqi",
-    "type": "task_updated",
-    "taskId": "task_20260128_gVorh6",
-    "taskTitle": "US-916: Tag management with managed list",
-    "timestamp": "2026-01-28T03:37:57.141Z"
-  },
-  {
-    "id": "activity_1769571477132_xdkzil61q",
-    "type": "task_updated",
-    "taskId": "task_20260128_UWrGIB",
-    "taskTitle": "US-914: Project management with dropdown selection",
-    "timestamp": "2026-01-28T03:37:57.132Z"
-  },
-  {
-    "id": "activity_1769571477123_onbf9cie3",
-    "type": "task_updated",
-    "taskId": "task_20260128_WOCpqE",
-    "taskTitle": "US-913: Custom task type management",
-    "timestamp": "2026-01-28T03:37:57.123Z"
-  },
-  {
-    "id": "activity_1769571458764_hahi3v44f",
-    "type": "task_created",
-    "taskId": "task_20260128_uce0T_",
-    "taskTitle": "US-918: Custom board columns (managed statuses)",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:37:38.764Z"
-  },
-  {
-    "id": "activity_1769571438316_ilcp9ijxp",
-    "type": "task_created",
-    "taskId": "task_20260128_qhrcxp",
-    "taskTitle": "US-917: Custom priority levels with managed list",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:37:18.316Z"
-  },
-  {
-    "id": "activity_1769571421434_1edrdry8x",
-    "type": "task_created",
-    "taskId": "task_20260128_gVorh6",
-    "taskTitle": "US-916: Tag management with managed list",
-    "details": {
-      "type": "code",
-      "priority": "medium",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:37:01.434Z"
-  },
-  {
-    "id": "activity_1769571401737_kcexl5kol",
-    "type": "task_created",
-    "taskId": "task_20260128_Oq5P-O",
-    "taskTitle": "US-915: ManagedListService — reusable foundation for managed entity lists",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:36:41.737Z"
-  },
-  {
-    "id": "activity_1769571166857_5jkorblpx",
-    "type": "task_created",
-    "taskId": "task_20260128_UWrGIB",
-    "taskTitle": "US-914: Project management with dropdown selection",
-    "details": {
-      "type": "code",
-      "priority": "high",
-      "project": "veritas-kanban"
-    },
-    "timestamp": "2026-01-28T03:32:46.857Z"
   }
 ]
