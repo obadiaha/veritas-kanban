@@ -30,6 +30,9 @@ let cachedConfig: SecurityConfig | null = null;
 let lastLoadTime = 0;
 const CACHE_TTL_MS = 1000; // Reload every second in dev
 
+// In-memory JWT secret (generated at runtime if not in env or config)
+let runtimeJwtSecret: string | null = null;
+
 /**
  * Load security config from disk
  */
@@ -58,6 +61,37 @@ export function getSecurityConfig(): SecurityConfig {
   };
   lastLoadTime = now;
   return cachedConfig;
+}
+
+/**
+ * Get JWT signing secret.
+ * Priority: VERITAS_JWT_SECRET env var > security.json > runtime-generated
+ * 
+ * If using env var, the secret is never written to disk.
+ * If falling back to generated, it's stored in memory only (sessions
+ * invalidate on restart unless env var or config file provides persistence).
+ */
+export function getJwtSecret(): string {
+  // 1. Environment variable (preferred — never touches disk)
+  const envSecret = process.env.VERITAS_JWT_SECRET;
+  if (envSecret) {
+    return envSecret;
+  }
+
+  // 2. security.json (legacy / fallback for existing installs)
+  const config = getSecurityConfig();
+  if (config.jwtSecret) {
+    return config.jwtSecret;
+  }
+
+  // 3. Runtime-generated (ephemeral — sessions won't survive restart)
+  if (!runtimeJwtSecret) {
+    runtimeJwtSecret = crypto.randomBytes(64).toString('hex');
+    console.warn(
+      'JWT secret generated at runtime. Set VERITAS_JWT_SECRET env var for persistence across restarts.'
+    );
+  }
+  return runtimeJwtSecret;
 }
 
 /**
@@ -126,6 +160,7 @@ export function resetSecurityConfig(): void {
     authEnabled: false,
   };
   saveSecurityConfig(newConfig);
+  runtimeJwtSecret = null;
   console.log('Security config reset. Next load will show setup screen.');
 }
 

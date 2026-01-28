@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { asyncHandler } from '../middleware/async-handler.js';
 import {
   getSecurityConfig,
+  getJwtSecret,
   saveSecurityConfig,
   SecurityConfig,
   generateRecoveryKey,
@@ -17,17 +18,6 @@ const router: IRouter = Router();
 const SALT_ROUNDS = 12;
 const JWT_EXPIRY_DEFAULT = '24h';
 const JWT_EXPIRY_REMEMBER = '30d';
-
-// Get or generate JWT secret
-function getJwtSecret(): string {
-  const config = getSecurityConfig();
-  if (!config.jwtSecret) {
-    const secret = crypto.randomBytes(64).toString('hex');
-    saveSecurityConfig({ ...config, jwtSecret: secret });
-    return secret;
-  }
-  return config.jwtSecret;
-}
 
 // Rate limiting for login attempts (in-memory, resets on restart)
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
@@ -144,18 +134,22 @@ router.post('/setup', asyncHandler(async (req: Request, res: Response) => {
   const recoveryKey = generateRecoveryKey();
   const recoveryKeyHash = await hashRecoveryKey(recoveryKey);
   
-  // Generate JWT secret
-  const jwtSecret = crypto.randomBytes(64).toString('hex');
-  
-  // Save config
-  saveSecurityConfig({
+  // Build config to save — only persist jwtSecret to file if env var is NOT set
+  const updatedConfig: SecurityConfig = {
     ...config,
     passwordHash,
     recoveryKeyHash,
-    jwtSecret,
     authEnabled: true,
     setupCompletedAt: new Date().toISOString(),
-  });
+  };
+
+  // If no env var, generate and persist a JWT secret to the config file
+  if (!process.env.VERITAS_JWT_SECRET) {
+    updatedConfig.jwtSecret = crypto.randomBytes(64).toString('hex');
+  }
+
+  // Save config
+  saveSecurityConfig(updatedConfig);
   
   // Return recovery key (only time it's shown in plaintext)
   res.json({
@@ -314,17 +308,22 @@ router.post('/recover', asyncHandler(async (req: Request, res: Response) => {
   const newRecoveryKey = generateRecoveryKey();
   const newRecoveryKeyHash = await hashRecoveryKey(newRecoveryKey);
   
-  // Generate new JWT secret (invalidates all existing sessions)
-  const jwtSecret = crypto.randomBytes(64).toString('hex');
-  
-  // Save config
-  saveSecurityConfig({
+  // Build config — rotate jwtSecret in file only if env var is NOT set
+  const updatedConfig: SecurityConfig = {
     ...config,
     passwordHash,
     recoveryKeyHash: newRecoveryKeyHash,
-    jwtSecret,
     lastPasswordChange: new Date().toISOString(),
-  });
+  };
+
+  // Rotate file-based secret if no env var (invalidates all existing sessions)
+  if (!process.env.VERITAS_JWT_SECRET) {
+    updatedConfig.jwtSecret = crypto.randomBytes(64).toString('hex');
+  }
+  // Note: if using env var, session invalidation requires changing the env var
+
+  // Save config
+  saveSecurityConfig(updatedConfig);
   
   res.json({
     success: true,
