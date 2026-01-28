@@ -26,7 +26,7 @@ import { getTelemetryService } from './services/telemetry-service.js';
 import { ConfigService } from './services/config-service.js';
 import { initBroadcast } from './services/broadcast-service.js';
 import { errorHandler } from './middleware/error-handler.js';
-import type { AgentOutput } from './services/agent-service.js';
+import type { AgentOutput } from './services/clawdbot-agent-service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
