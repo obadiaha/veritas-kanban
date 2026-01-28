@@ -1,121 +1,133 @@
 import { Router, type Router as RouterType } from 'express';
 import { getTelemetryService } from '../services/telemetry-service.js';
-import type { TelemetryEventType, TelemetryQueryOptions } from '@veritas-kanban/shared';
+import { broadcastTelemetryEvent } from '../services/broadcast-service.js';
+import { asyncHandler } from '../middleware/async-handler.js';
+import { validate, type ValidatedRequest } from '../middleware/validate.js';
+import type { TelemetryQueryOptions, AnyTelemetryEvent } from '@veritas-kanban/shared';
+import {
+  TelemetryEventsQuerySchema,
+  TelemetryTaskParamsSchema,
+  TelemetryCountQuerySchema,
+  TelemetryEventIngestionSchema,
+  type TelemetryEventsQuery,
+  type TelemetryTaskParams,
+  type TelemetryCountQuery,
+  type TelemetryEventIngestion,
+} from '../schemas/telemetry-schemas.js';
 
 const router: RouterType = Router();
+
+// ============ POST Endpoint - Event Ingestion ============
+
+/**
+ * POST /api/telemetry/events
+ * Ingest telemetry events from external sources (Veritas, Clawdbot, etc.)
+ * 
+ * Accepts: run.started, run.completed, run.error, run.tokens events
+ * 
+ * Request body:
+ *   - type: Event type (required)
+ *   - taskId: Task ID this event relates to (required)
+ *   - agent: Agent name/type (required)
+ *   - ...type-specific fields
+ * 
+ * Response: The created event with generated id and timestamp
+ */
+router.post(
+  '/events',
+  validate({ body: TelemetryEventIngestionSchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, unknown, TelemetryEventIngestion>, res) => {
+    const telemetry = getTelemetryService();
+    const eventInput = req.validated.body!;
+    
+    // Emit the event (adds id and timestamp)
+    const event = await telemetry.emit(eventInput);
+    
+    // Broadcast to WebSocket clients
+    broadcastTelemetryEvent(event as AnyTelemetryEvent);
+    
+    res.status(201).json(event);
+  })
+);
+
+// ============ GET Endpoints ============
 
 /**
  * GET /api/telemetry/events
  * Query telemetry events with optional filters
- * 
- * Query params:
- *   - type: Event type(s) to filter by (comma-separated)
- *   - since: ISO timestamp for start of range
- *   - until: ISO timestamp for end of range
- *   - taskId: Filter by task ID
- *   - project: Filter by project
- *   - limit: Max number of events to return
  */
-router.get('/events', async (req, res, next) => {
-  try {
+router.get(
+  '/events',
+  validate({ query: TelemetryEventsQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, TelemetryEventsQuery>, res) => {
     const telemetry = getTelemetryService();
+    const { type, since, until, taskId, project, limit } = req.validated.query!;
     
     const options: TelemetryQueryOptions = {};
-
-    if (req.query.type) {
-      const types = (req.query.type as string).split(',') as TelemetryEventType[];
-      options.type = types.length === 1 ? types[0] : types;
+    
+    if (type && type.length > 0) {
+      options.type = type.length === 1 ? type[0] : type;
     }
-
-    if (req.query.since) {
-      options.since = req.query.since as string;
-    }
-
-    if (req.query.until) {
-      options.until = req.query.until as string;
-    }
-
-    if (req.query.taskId) {
-      options.taskId = req.query.taskId as string;
-    }
-
-    if (req.query.project) {
-      options.project = req.query.project as string;
-    }
-
-    if (req.query.limit) {
-      options.limit = parseInt(req.query.limit as string, 10);
-    }
-
+    if (since) options.since = since;
+    if (until) options.until = until;
+    if (taskId) options.taskId = taskId;
+    if (project) options.project = project;
+    if (limit) options.limit = limit;
+    
     const events = await telemetry.getEvents(options);
     res.json(events);
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
  * GET /api/telemetry/events/task/:taskId
  * Get all events for a specific task
  */
-router.get('/events/task/:taskId', async (req, res, next) => {
-  try {
+router.get(
+  '/events/task/:taskId',
+  validate({ params: TelemetryTaskParamsSchema }),
+  asyncHandler(async (req: ValidatedRequest<TelemetryTaskParams>, res) => {
     const telemetry = getTelemetryService();
-    const events = await telemetry.getTaskEvents(req.params.taskId);
+    const { taskId } = req.validated.params!;
+    const events = await telemetry.getTaskEvents(taskId);
     res.json(events);
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
  * GET /api/telemetry/status
  * Get telemetry service status and configuration
  */
-router.get('/status', async (req, res, next) => {
-  try {
-    const telemetry = getTelemetryService();
-    const config = telemetry.getConfig();
-    
-    res.json({
-      enabled: config.enabled,
-      retention: config.retention,
-      traces: config.traces,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get('/status', asyncHandler(async (_req, res) => {
+  const telemetry = getTelemetryService();
+  const config = telemetry.getConfig();
+  
+  res.json({
+    enabled: config.enabled,
+    retention: config.retention,
+    traces: config.traces,
+  });
+}));
 
 /**
  * GET /api/telemetry/count
  * Count events by type within a time period
- * 
- * Query params:
- *   - type: Event type(s) to count (comma-separated, required)
- *   - since: ISO timestamp for start of range
- *   - until: ISO timestamp for end of range
  */
-router.get('/count', async (req, res, next) => {
-  try {
-    if (!req.query.type) {
-      res.status(400).json({ error: 'type query param is required' });
-      return;
-    }
-
+router.get(
+  '/count',
+  validate({ query: TelemetryCountQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, TelemetryCountQuery>, res) => {
     const telemetry = getTelemetryService();
-    const types = (req.query.type as string).split(',') as TelemetryEventType[];
+    const { type, since, until } = req.validated.query!;
     
     const count = await telemetry.countEvents(
-      types.length === 1 ? types[0] : types,
-      req.query.since as string | undefined,
-      req.query.until as string | undefined
+      type.length === 1 ? type[0] : type,
+      since,
+      until
     );
-
+    
     res.json({ count });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 export default router;
