@@ -1,5 +1,8 @@
 import fs from 'fs/promises';
+import { createReadStream, createWriteStream } from 'fs';
 import path from 'path';
+import { createGzip, gunzipSync } from 'zlib';
+import { pipeline } from 'stream/promises';
 import { nanoid } from 'nanoid';
 import type {
   TelemetryEvent,
