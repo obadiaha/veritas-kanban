@@ -21,10 +21,13 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
-# Env
+# Env — never commit real secrets
 .env
 .env.local
 .env.*.local
+# But DO track .env.example files
+!*.env.example
+!.env.example
 
 # Task data (track structure, not content)
 tasks/active/*.md
