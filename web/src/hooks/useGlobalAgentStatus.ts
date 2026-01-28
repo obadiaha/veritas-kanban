@@ -3,7 +3,11 @@ import { api, GlobalAgentStatus } from '@/lib/api';
 
 /**
  * Hook to fetch global agent status (not per-task)
- * Polls every 3 seconds when agent is working, less frequently when idle
+ * 
+ * @deprecated Consider using `useAgentStatus` for real-time WebSocket updates.
+ * This hook uses polling only and is kept for backwards compatibility.
+ * 
+ * Polls every 2 seconds when agent is working, every 10 seconds when idle.
  */
 export function useGlobalAgentStatus() {
   return useQuery({
@@ -24,3 +28,6 @@ export function useGlobalAgentStatus() {
 }
 
 export type { GlobalAgentStatus };
+
+// Re-export the new WebSocket-based hook for easy migration
+export { useAgentStatus, type AgentStatusData, type SubAgent } from './useAgentStatus';

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { TaskService } from '../services/task-service.js';
 import { WorktreeService } from '../services/worktree-service.js';
 import { activityService } from '../services/activity-service.js';
+import { getBlockingService } from '../services/blocking-service.js';
 import type { CreateTaskInput, UpdateTaskInput } from '@veritas-kanban/shared';
 import { broadcastTaskChange } from '../services/broadcast-service.js';
 import { asyncHandler } from '../middleware/async-handler.js';
@@ -11,6 +12,7 @@ import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
 const router: RouterType = Router();
 const taskService = new TaskService();
 const worktreeService = new WorktreeService();
+const blockingService = getBlockingService();
 
 // Validation schemas
 const createTaskSchema = z.object({
@@ -90,34 +92,12 @@ const updateTaskSchema = z.object({
   position: z.number().optional(),
 });
 
+// === Core CRUD Routes ===
+
 // GET /api/tasks - List all tasks
 router.get('/', asyncHandler(async (_req, res) => {
   const tasks = await taskService.listTasks();
   res.json(tasks);
-}));
-
-// GET /api/tasks/archived - List archived tasks
-router.get('/archived', asyncHandler(async (_req, res) => {
-  const tasks = await taskService.listArchivedTasks();
-  res.json(tasks);
-}));
-
-// GET /api/tasks/archive/suggestions - Get sprints ready to archive
-router.get('/archive/suggestions', asyncHandler(async (_req, res) => {
-  const suggestions = await taskService.getArchiveSuggestions();
-  res.json(suggestions);
-}));
-
-// POST /api/tasks/archive/sprint/:sprint - Archive all tasks in a sprint
-router.post('/archive/sprint/:sprint', asyncHandler(async (req, res) => {
-  const result = await taskService.archiveSprint(req.params.sprint as string);
-  
-  // Log activity
-  await activityService.logActivity('sprint_archived', (req.params.sprint as string), (req.params.sprint as string), {
-    taskCount: result.archived,
-  });
-  
-  res.json(result);
 }));
 
 // POST /api/tasks/reorder - Reorder tasks within a column
@@ -129,12 +109,6 @@ router.post('/reorder', asyncHandler(async (req, res) => {
   const updated = await taskService.reorderTasks(orderedIds);
   broadcastTaskChange('reordered');
   res.json({ updated: updated.length });
-}));
-
-// GET /api/tasks/time/summary - Get time summary by project (must be before /:id)
-router.get('/time/summary', asyncHandler(async (_req, res) => {
-  const summary = await taskService.getTimeSummary();
-  res.json(summary);
 }));
 
 // GET /api/tasks/:id - Get single task
@@ -153,19 +127,10 @@ router.get('/:id/blocking-status', asyncHandler(async (req, res) => {
     throw new NotFoundError('Task not found');
   }
 
-  if (!task.blockedBy?.length) {
-    return res.json({ isBlocked: false, blockers: [] });
-  }
-
   const allTasks = await taskService.listTasks();
-  const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
-  const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+  const blockingStatus = blockingService.getBlockingStatus(task, allTasks);
   
-  res.json({
-    isBlocked: incompleteBlockers.length > 0,
-    blockers: incompleteBlockers.map(t => ({ id: t.id, title: t.title, status: t.status })),
-    completedBlockers: blockingTasks.filter(t => t.status === 'done').map(t => ({ id: t.id, title: t.title })),
-  });
+  res.json(blockingStatus);
 }));
 
 // POST /api/tasks - Create task
@@ -211,13 +176,10 @@ router.patch('/:id', asyncHandler(async (req, res) => {
   // Check if trying to move blocked task to in-progress
   if (input.status === 'in-progress' && oldTask.status === 'todo' && oldTask.blockedBy?.length) {
     const allTasks = await taskService.listTasks();
-    const blockingTasks = allTasks.filter(t => oldTask.blockedBy?.includes(t.id));
-    const incompleteBlockers = blockingTasks.filter(t => t.status !== 'done');
+    const { allowed, blockers } = blockingService.canMoveToInProgress(oldTask, allTasks);
     
-    if (incompleteBlockers.length > 0) {
-      throw new ValidationError('Task is blocked', {
-        blockedBy: incompleteBlockers.map(t => ({ id: t.id, title: t.title })),
-      });
+    if (!allowed) {
+      throw new ValidationError('Task is blocked', { blockedBy: blockers });
     }
   }
 
@@ -262,254 +224,6 @@ router.delete('/:id', asyncHandler(async (req, res) => {
   res.status(204).send();
 }));
 
-// POST /api/tasks/:id/archive - Archive task
-router.post('/:id/archive', asyncHandler(async (req, res) => {
-  const task = await taskService.getTask(req.params.id as string);
-  const success = await taskService.archiveTask(req.params.id as string);
-  if (!success) {
-    throw new NotFoundError('Task not found');
-  }
-  broadcastTaskChange('archived', (req.params.id as string));
-  
-  // Log activity
-  if (task) {
-    await activityService.logActivity('task_archived', task.id, task.title);
-  }
-  
-  res.json({ archived: true });
-}));
-
-// POST /api/tasks/bulk-archive - Archive multiple tasks by sprint
-router.post('/bulk-archive', asyncHandler(async (req, res) => {
-  const { sprint } = req.body as { sprint: string };
-  if (!sprint) {
-    throw new ValidationError('Sprint is required');
-  }
-
-  const tasks = await taskService.listTasks();
-  const sprintTasks = tasks.filter(t => t.sprint === sprint && t.status === 'done');
-  
-  if (sprintTasks.length === 0) {
-    throw new ValidationError('No completed tasks found for this sprint');
-  }
-
-  const archived: string[] = [];
-  for (const task of sprintTasks) {
-    const success = await taskService.archiveTask(task.id);
-    if (success) {
-      archived.push(task.id);
-      await activityService.logActivity('task_archived', task.id, task.title);
-    }
-  }
-
-  res.json({ archived, count: archived.length });
-}));
-
-// POST /api/tasks/:id/restore - Restore task from archive
-router.post('/:id/restore', asyncHandler(async (req, res) => {
-  const task = await taskService.restoreTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Archived task not found');
-  }
-  broadcastTaskChange('restored', task.id);
-  
-  // Log activity
-  await activityService.logActivity('status_changed', task.id, task.title, {
-    from: 'archived',
-    status: 'done',
-  });
-  
-  res.json(task);
-}));
-
-// === Subtask Routes ===
-
-const addSubtaskSchema = z.object({
-  title: z.string().min(1).max(200),
-});
-
-const updateSubtaskSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
-  completed: z.boolean().optional(),
-});
-
-const addCommentSchema = z.object({
-  author: z.string().min(1).max(100),
-  text: z.string().min(1).max(2000),
-});
-
-// POST /api/tasks/:id/subtasks - Add subtask
-router.post('/:id/subtasks', asyncHandler(async (req, res) => {
-  let title: string;
-  try {
-    ({ title } = addSubtaskSchema.parse(req.body));
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
-    }
-    throw error;
-  }
-  
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const subtask = {
-    id: `subtask_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    title,
-    completed: false,
-    created: new Date().toISOString(),
-  };
-
-  const subtasks = [...(task.subtasks || []), subtask];
-  const updatedTask = await taskService.updateTask((req.params.id as string), { subtasks });
-  
-  res.status(201).json(updatedTask);
-}));
-
-// PATCH /api/tasks/:id/subtasks/:subtaskId - Update subtask
-router.patch('/:id/subtasks/:subtaskId', asyncHandler(async (req, res) => {
-  let updates;
-  try {
-    updates = updateSubtaskSchema.parse(req.body);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
-    }
-    throw error;
-  }
-  
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const subtasks = task.subtasks || [];
-  const subtaskIndex = subtasks.findIndex(s => s.id === (req.params.subtaskId as string));
-  if (subtaskIndex === -1) {
-    throw new NotFoundError('Subtask not found');
-  }
-
-  subtasks[subtaskIndex] = { ...subtasks[subtaskIndex], ...updates };
-
-  // Check if we should auto-complete the parent task
-  let taskUpdates: any = { subtasks };
-  if (task.autoCompleteOnSubtasks && subtasks.every(s => s.completed)) {
-    taskUpdates.status = 'done';
-  }
-
-  const updatedTask = await taskService.updateTask((req.params.id as string), taskUpdates);
-  
-  res.json(updatedTask);
-}));
-
-// DELETE /api/tasks/:id/subtasks/:subtaskId - Delete subtask
-router.delete('/:id/subtasks/:subtaskId', asyncHandler(async (req, res) => {
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const subtasks = (task.subtasks || []).filter(s => s.id !== (req.params.subtaskId as string));
-  const updatedTask = await taskService.updateTask((req.params.id as string), { subtasks });
-  
-  res.json(updatedTask);
-}));
-
-// === Comment Routes ===
-
-// POST /api/tasks/:id/comments - Add comment
-router.post('/:id/comments', asyncHandler(async (req, res) => {
-  let author: string, text: string;
-  try {
-    ({ author, text } = addCommentSchema.parse(req.body));
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
-    }
-    throw error;
-  }
-  
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const comment = {
-    id: `comment_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    author,
-    text,
-    timestamp: new Date().toISOString(),
-  };
-
-  const comments = [...(task.comments || []), comment];
-  const updatedTask = await taskService.updateTask((req.params.id as string), { comments });
-  
-  // Log activity
-  await activityService.logActivity('comment_added', task.id, task.title, {
-    author,
-    preview: text.slice(0, 50) + (text.length > 50 ? '...' : ''),
-  });
-  
-  res.status(201).json(updatedTask);
-}));
-
-// PATCH /api/tasks/:id/comments/:commentId - Edit comment
-router.patch('/:id/comments/:commentId', asyncHandler(async (req, res) => {
-  let text: string;
-  try {
-    ({ text } = z.object({ text: z.string().min(1) }).parse(req.body));
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
-    }
-    throw error;
-  }
-  
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const comments = task.comments || [];
-  const commentIndex = comments.findIndex(c => c.id === (req.params.commentId as string));
-  if (commentIndex === -1) {
-    throw new NotFoundError('Comment not found');
-  }
-
-  comments[commentIndex] = {
-    ...comments[commentIndex],
-    text,
-    timestamp: comments[commentIndex].timestamp, // preserve original timestamp
-  };
-
-  const updatedTask = await taskService.updateTask((req.params.id as string), { comments });
-  res.json(updatedTask);
-}));
-
-// DELETE /api/tasks/:id/comments/:commentId - Delete comment
-router.delete('/:id/comments/:commentId', asyncHandler(async (req, res) => {
-  const task = await taskService.getTask(req.params.id as string);
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
-
-  const comments = task.comments || [];
-  const filtered = comments.filter(c => c.id !== (req.params.commentId as string));
-  if (filtered.length === comments.length) {
-    throw new NotFoundError('Comment not found');
-  }
-
-  const updatedTask = await taskService.updateTask((req.params.id as string), { comments: filtered });
-
-  await activityService.logActivity('comment_deleted', task.id, task.title, {
-    commentId: (req.params.commentId as string),
-  });
-
-  res.json(updatedTask);
-}));
-
 // === Worktree Routes ===
 
 // POST /api/tasks/:id/worktree - Create worktree
@@ -549,7 +263,7 @@ router.get('/:id/worktree/open', asyncHandler(async (req, res) => {
   res.json({ command });
 }));
 
-// === Template Application Routes ===
+// === Template Application Route ===
 
 // POST /api/tasks/:id/apply-template - Apply template to existing task
 router.post('/:id/apply-template', asyncHandler(async (req, res) => {
@@ -572,36 +286,6 @@ router.post('/:id/apply-template', asyncHandler(async (req, res) => {
   });
 
   res.json({ success: true });
-}));
-
-// === Time Tracking Routes ===
-
-// POST /api/tasks/:id/time/start - Start timer for a task
-router.post('/:id/time/start', asyncHandler(async (req, res) => {
-  const task = await taskService.startTimer(req.params.id as string);
-  res.json(task);
-}));
-
-// POST /api/tasks/:id/time/stop - Stop timer for a task
-router.post('/:id/time/stop', asyncHandler(async (req, res) => {
-  const task = await taskService.stopTimer(req.params.id as string);
-  res.json(task);
-}));
-
-// POST /api/tasks/:id/time/entry - Add manual time entry
-router.post('/:id/time/entry', asyncHandler(async (req, res) => {
-  const { duration, description } = req.body;
-  if (typeof duration !== 'number' || duration <= 0) {
-    throw new ValidationError('Duration must be a positive number (in seconds)');
-  }
-  const task = await taskService.addTimeEntry((req.params.id as string), duration, description);
-  res.json(task);
-}));
-
-// DELETE /api/tasks/:id/time/entry/:entryId - Delete a time entry
-router.delete('/:id/time/entry/:entryId', asyncHandler(async (req, res) => {
-  const task = await taskService.deleteTimeEntry((req.params.id as string), (req.params.entryId as string));
-  res.json(task);
 }));
 
 // === Attachment Context Route ===
