@@ -7,17 +7,17 @@
     "order": 2,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:32:03.855Z"
+    "updated": "2026-01-28T04:39:00.586Z"
   },
   {
     "id": "research",
     "label": "Research",
     "icon": "BookOpen",
     "color": "border-l-cyan-500",
-    "order": 4,
+    "order": 5,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:32:03.855Z"
+    "updated": "2026-01-28T04:39:00.586Z"
   },
   {
     "id": "content",
@@ -27,7 +27,7 @@
     "order": 3,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:32:59.581Z"
+    "updated": "2026-01-28T04:39:00.586Z"
   },
   {
     "id": "automation",
@@ -37,7 +37,7 @@
     "order": 0,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:32:03.855Z"
+    "updated": "2026-01-28T04:39:00.586Z"
   },
   {
     "label": "Bug",
@@ -46,6 +46,15 @@
     "id": "bug-GdN5rT",
     "order": 1,
     "created": "2026-01-28T04:31:31.690Z",
-    "updated": "2026-01-28T04:32:03.855Z"
+    "updated": "2026-01-28T04:39:00.586Z"
+  },
+  {
+    "label": "Feature Request",
+    "icon": "Wrench",
+    "color": "border-l-orange-500",
+    "id": "feature-request-n30mhV",
+    "order": 4,
+    "created": "2026-01-28T04:38:26.956Z",
+    "updated": "2026-01-28T04:39:00.586Z"
   }
 ]
