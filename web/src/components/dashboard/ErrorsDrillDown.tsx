@@ -58,7 +58,6 @@ interface FailedRunRowProps {
   run: {
     timestamp: string;
     taskId?: string;
-    taskTitle?: string;
     project?: string;
     agent: string;
     errorMessage?: string;
@@ -81,7 +80,7 @@ function FailedRunRow({ run, onTaskClick }: FailedRunRowProps) {
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
             <span className="font-medium truncate">
-              {run.taskTitle || run.taskId || 'Unknown task'}
+              {run.taskId || 'Unknown task'}
             </span>
             {canNavigate && (
               <ExternalLink className="h-3 w-3 text-muted-foreground" />

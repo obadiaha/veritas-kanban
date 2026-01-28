@@ -114,7 +114,6 @@ const TELEMETRY_DIR = path.join(PROJECT_ROOT, '.veritas-kanban', 'telemetry');
 export interface FailedRunDetails {
   timestamp: string;
   taskId?: string;
-  taskTitle?: string;
   project?: string;
   agent: string;
   success: boolean;
@@ -738,6 +737,135 @@ export class MetricsService {
   }
 
   /**
+   * Get historical trends data aggregated by day
+   */
+  async getTrends(period: '7d' | '30d', project?: string): Promise<TrendsData> {
+    const since = this.getPeriodStart(period);
+    const files = await this.getEventFiles(since);
+
+    // Accumulator per day
+    const dailyData = new Map<string, {
+      runs: number;
+      successes: number;
+      failures: number;
+      errors: number;
+      totalTokens: number;
+      inputTokens: number;
+      outputTokens: number;
+      durations: number[];
+    }>();
+
+    // Initialize all days in the period
+    const startDate = new Date(since);
+    const endDate = new Date();
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().slice(0, 10);
+      dailyData.set(dateStr, {
+        runs: 0,
+        successes: 0,
+        failures: 0,
+        errors: 0,
+        totalTokens: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        durations: [],
+      });
+    }
+
+    // Process all files
+    for (const filePath of files) {
+      try {
+        const fileStream = createReadStream(filePath, { encoding: 'utf-8' });
+        const rl = readline.createInterface({
+          input: fileStream,
+          crlfDelay: Infinity,
+        });
+
+        for await (const line of rl) {
+          if (!line.trim()) continue;
+
+          try {
+            const event = JSON.parse(line) as AnyTelemetryEvent;
+
+            // Early timestamp filter
+            if (event.timestamp < since) continue;
+            if (project && event.project !== project) continue;
+
+            const dateStr = event.timestamp.slice(0, 10);
+            if (!dailyData.has(dateStr)) {
+              dailyData.set(dateStr, {
+                runs: 0,
+                successes: 0,
+                failures: 0,
+                errors: 0,
+                totalTokens: 0,
+                inputTokens: 0,
+                outputTokens: 0,
+                durations: [],
+              });
+            }
+            const dayAcc = dailyData.get(dateStr)!;
+
+            if (event.type === 'run.completed') {
+              const runEvent = event as RunTelemetryEvent;
+              dayAcc.runs++;
+              if (runEvent.success) {
+                dayAcc.successes++;
+              } else {
+                dayAcc.failures++;
+              }
+              if (runEvent.durationMs && runEvent.durationMs > 0) {
+                dayAcc.durations.push(runEvent.durationMs);
+              }
+            } else if (event.type === 'run.error') {
+              dayAcc.runs++;
+              dayAcc.errors++;
+            } else if (event.type === 'run.tokens') {
+              const tokenEvent = event as TokenTelemetryEvent;
+              const totalTokens = tokenEvent.totalTokens ?? (tokenEvent.inputTokens + tokenEvent.outputTokens);
+              dayAcc.totalTokens += totalTokens;
+              dayAcc.inputTokens += tokenEvent.inputTokens;
+              dayAcc.outputTokens += tokenEvent.outputTokens;
+            }
+          } catch {
+            continue;
+          }
+        }
+      } catch (error: any) {
+        if (error.code !== 'ENOENT') {
+          console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        }
+      }
+    }
+
+    // Convert to sorted array
+    const daily: DailyTrendPoint[] = [];
+    const sortedDates = [...dailyData.keys()].sort();
+
+    for (const date of sortedDates) {
+      const data = dailyData.get(date)!;
+      const avgDurationMs = data.durations.length > 0
+        ? Math.round(data.durations.reduce((a, b) => a + b, 0) / data.durations.length)
+        : 0;
+
+      daily.push({
+        date,
+        runs: data.runs,
+        successes: data.successes,
+        failures: data.failures,
+        errors: data.errors,
+        successRate: data.runs > 0 ? data.successes / data.runs : 0,
+        totalTokens: data.totalTokens,
+        inputTokens: data.inputTokens,
+        outputTokens: data.outputTokens,
+        avgDurationMs,
+      });
+    }
+
+    return { period, daily };
+  }
+
+  /**
    * Get list of failed runs with details
    */
   async getFailedRuns(period: MetricsPeriod, project?: string, limit = 50): Promise<FailedRunDetails[]> {
@@ -772,7 +900,6 @@ export class MetricsService {
               failedRuns.push({
                 timestamp: event.timestamp,
                 taskId: runEvent.taskId,
-                taskTitle: runEvent.taskTitle,
                 project: runEvent.project,
                 agent: runEvent.agent || 'veritas',
                 success: false,
@@ -797,6 +924,24 @@ export class MetricsService {
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, limit);
   }
+}
+
+export interface DailyTrendPoint {
+  date: string; // YYYY-MM-DD
+  runs: number;
+  successes: number;
+  failures: number;
+  errors: number;
+  successRate: number;
+  totalTokens: number;
+  inputTokens: number;
+  outputTokens: number;
+  avgDurationMs: number;
+}
+
+export interface TrendsData {
+  period: '7d' | '30d';
+  daily: DailyTrendPoint[];
 }
 
 // Singleton instance

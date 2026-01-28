@@ -1,5 +1,69 @@
 [
   {
+    "id": "activity_1769608986540_ce8m296ka",
+    "type": "status_changed",
+    "taskId": "task_20260128_EIsIv5",
+    "taskTitle": "US-1003: Agent run summary on task card",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T14:03:06.540Z"
+  },
+  {
+    "id": "activity_1769608891395_czgvtpayp",
+    "type": "sprint_archived",
+    "taskId": "US-1500",
+    "taskTitle": "US-1500",
+    "details": {
+      "taskCount": 7
+    },
+    "timestamp": "2026-01-28T14:01:31.395Z"
+  },
+  {
+    "id": "activity_1769608888567_mwj62gkq4",
+    "type": "sprint_archived",
+    "taskId": "US-1200",
+    "taskTitle": "US-1200",
+    "details": {
+      "taskCount": 25
+    },
+    "timestamp": "2026-01-28T14:01:28.567Z"
+  },
+  {
+    "id": "activity_1769608880616_y41um3n48",
+    "type": "status_changed",
+    "taskId": "task_20260128_W-K6q8",
+    "taskTitle": "US-1306: Header integration and layout",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T14:01:20.616Z"
+  },
+  {
+    "id": "activity_1769608866031_9k1lx5hgc",
+    "type": "comment_added",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented 3 key improvements: (1) useCreateTaskF..."
+    },
+    "timestamp": "2026-01-28T14:01:06.031Z"
+  },
+  {
+    "id": "activity_1769608857146_hxxwzhcq4",
+    "type": "status_changed",
+    "taskId": "task_20260128_XAxJXn",
+    "taskTitle": "RF-24: Frontend State Management Improvements",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T14:00:57.146Z"
+  },
+  {
     "id": "activity_1769608839412_a8t8vs45w",
     "type": "status_changed",
     "taskId": "task_20260128_MwGpPe",

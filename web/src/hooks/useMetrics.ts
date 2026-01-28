@@ -137,7 +137,6 @@ export interface DurationAgentBreakdown {
 export interface FailedRunDetails {
   timestamp: string;
   taskId?: string;
-  taskTitle?: string;
   project?: string;
   agent: string;
   success: boolean;
