@@ -1,5 +1,49 @@
 [
   {
+    "id": "activity_1769591243934_a59soco89",
+    "type": "status_changed",
+    "taskId": "task_20260128_CnogQO",
+    "taskTitle": "US-1157: Sanitize settings import against prototype pollution",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T09:07:23.934Z"
+  },
+  {
+    "id": "activity_1769591188250_6ff1szybq",
+    "type": "status_changed",
+    "taskId": "task_20260128_-KNOy3",
+    "taskTitle": "US-1155: Settings performance — memoization & lazy loading",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T09:06:28.250Z"
+  },
+  {
+    "id": "activity_1769591169459_ugp657565",
+    "type": "status_changed",
+    "taskId": "task_20260128_6SbOnv",
+    "taskTitle": "US-1154: Add test coverage for settings features",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T09:06:09.459Z"
+  },
+  {
+    "id": "activity_1769591162356_cdvv56zb6",
+    "type": "comment_added",
+    "taskId": "task_20260128_6SbOnv",
+    "taskTitle": "US-1154: Add test coverage for settings features",
+    "details": {
+      "author": "Veritas",
+      "preview": "Fixed test discovery (worktrees excluded), fixed e..."
+    },
+    "timestamp": "2026-01-28T09:06:02.356Z"
+  },
+  {
     "id": "activity_1769590946523_ekw6m4yic",
     "type": "task_created",
     "taskId": "task_20260128_d47DtQ",

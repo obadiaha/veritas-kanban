@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   useFeatureSettings,
   useDebouncedFeatureUpdate,
@@ -34,16 +35,31 @@ import {
 } from 'lucide-react';
 import { DEFAULT_FEATURE_SETTINGS } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
-import {
-  GeneralTab,
-  BoardTab,
-  TasksTab,
-  AgentsTab,
-  DataTab,
-  NotificationsTab,
-  ManageTab,
-} from './tabs';
 import { SettingsErrorBoundary } from './shared';
+
+// Lazy-load tab components
+const LazyGeneralTab = lazy(() => import('./tabs/GeneralTab').then(m => ({ default: m.GeneralTab })));
+const LazyBoardTab = lazy(() => import('./tabs/BoardTab').then(m => ({ default: m.BoardTab })));
+const LazyTasksTab = lazy(() => import('./tabs/TasksTab').then(m => ({ default: m.TasksTab })));
+const LazyAgentsTab = lazy(() => import('./tabs/AgentsTab').then(m => ({ default: m.AgentsTab })));
+const LazyDataTab = lazy(() => import('./tabs/DataTab').then(m => ({ default: m.DataTab })));
+const LazyNotificationsTab = lazy(() => import('./tabs/NotificationsTab').then(m => ({ default: m.NotificationsTab })));
+const LazyManageTab = lazy(() => import('./tabs/ManageTab').then(m => ({ default: m.ManageTab })));
+
+// ============ Tab Skeleton ============
+
+function TabSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-6 w-32" />
+      <div className="space-y-3">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    </div>
+  );
+}
 
 // ============ Tab Configuration ============
 
@@ -149,22 +165,31 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   }, [activeTab]);
 
   const renderTab = () => {
-    switch (activeTab) {
-      case 'general':
-        return <SettingsErrorBoundary tabName="General"><GeneralTab /></SettingsErrorBoundary>;
-      case 'board':
-        return <SettingsErrorBoundary tabName="Board"><BoardTab /></SettingsErrorBoundary>;
-      case 'tasks':
-        return <SettingsErrorBoundary tabName="Tasks"><TasksTab /></SettingsErrorBoundary>;
-      case 'agents':
-        return <SettingsErrorBoundary tabName="Agents"><AgentsTab /></SettingsErrorBoundary>;
-      case 'data':
-        return <SettingsErrorBoundary tabName="Data"><DataTab /></SettingsErrorBoundary>;
-      case 'notifications':
-        return <SettingsErrorBoundary tabName="Notifications"><NotificationsTab /></SettingsErrorBoundary>;
-      case 'manage':
-        return <SettingsErrorBoundary tabName="Manage"><ManageTab /></SettingsErrorBoundary>;
-    }
+    return (
+      <Suspense fallback={<TabSkeleton />}>
+        {activeTab === 'general' && (
+          <SettingsErrorBoundary tabName="General"><LazyGeneralTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'board' && (
+          <SettingsErrorBoundary tabName="Board"><LazyBoardTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'tasks' && (
+          <SettingsErrorBoundary tabName="Tasks"><LazyTasksTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'agents' && (
+          <SettingsErrorBoundary tabName="Agents"><LazyAgentsTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'data' && (
+          <SettingsErrorBoundary tabName="Data"><LazyDataTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'notifications' && (
+          <SettingsErrorBoundary tabName="Notifications"><LazyNotificationsTab /></SettingsErrorBoundary>
+        )}
+        {activeTab === 'manage' && (
+          <SettingsErrorBoundary tabName="Manage"><LazyManageTab /></SettingsErrorBoundary>
+        )}
+      </Suspense>
+    );
   };
 
   return (

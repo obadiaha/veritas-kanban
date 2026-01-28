@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useEffect } from 'react';
 import type { ManagedListItem } from '@veritas-kanban/shared';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -52,7 +52,7 @@ interface SortableItemProps<T extends ManagedListItem> {
   canDeleteCheck?: (id: string) => Promise<{ allowed: boolean; referenceCount: number; isDefault: boolean }>;
 }
 
-function SortableItem<T extends ManagedListItem>({
+const SortableItem = memo(function SortableItem<T extends ManagedListItem>({
   item,
   onUpdate,
   onDelete,
@@ -194,7 +194,7 @@ function SortableItem<T extends ManagedListItem>({
       </AlertDialog>
     </>
   );
-}
+}) as <T extends ManagedListItem>(props: SortableItemProps<T>) => React.JSX.Element;
 
 export function ManagedListManager<T extends ManagedListItem>({
   title,
@@ -210,6 +210,7 @@ export function ManagedListManager<T extends ManagedListItem>({
 }: ManagedListManagerProps<T>) {
   const [newItemLabel, setNewItemLabel] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [localItems, setLocalItems] = useState(items);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -218,17 +219,30 @@ export function ManagedListManager<T extends ManagedListItem>({
     })
   );
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  // Sync local state with incoming items
+  useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
+      const oldIndex = localItems.findIndex((item) => item.id === active.id);
+      const newIndex = localItems.findIndex((item) => item.id === over.id);
 
-      const reordered = arrayMove(items, oldIndex, newIndex);
+      const reordered = arrayMove(localItems, oldIndex, newIndex);
       const orderedIds = reordered.map((item) => item.id);
 
-      await onReorder(orderedIds);
+      // Optimistic update
+      setLocalItems(reordered);
+
+      // Fire onReorder in background
+      onReorder(orderedIds).catch((error) => {
+        // Rollback on error
+        console.error('Failed to reorder items:', error);
+        setLocalItems(items);
+      });
     }
   };
 
@@ -261,10 +275,10 @@ export function ManagedListManager<T extends ManagedListItem>({
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={items.map((item) => item.id)}
+          items={localItems.map((item) => item.id)}
           strategy={verticalListSortingStrategy}
         >
-          {items.map((item) => (
+          {localItems.map((item) => (
             <SortableItem
               key={item.id}
               item={item}
