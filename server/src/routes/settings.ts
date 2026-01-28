@@ -4,26 +4,10 @@ import { getTelemetryService } from '../services/telemetry-service.js';
 import { getAttachmentService } from '../services/attachment-service.js';
 import type { FeatureSettings } from '@veritas-kanban/shared';
 import { FeatureSettingsPatchSchema } from '../schemas/feature-settings-schema.js';
+import { strictRateLimit } from '../middleware/rate-limit.js';
 
 const router: RouterType = Router();
 const configService = new ConfigService();
-
-// Simple rate limiter
-const rateLimiter = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10;
-const RATE_WINDOW_MS = 60_000;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimiter.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimiter.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT) return false;
-  entry.count++;
-  return true;
-}
 
 /**
  * Sync feature settings to affected server-side services.
@@ -59,14 +43,9 @@ router.get('/features', async (_req, res) => {
 });
 
 // PATCH /api/settings/features — deep merge partial updates
-router.patch('/features', async (req, res) => {
+// strictRateLimit middleware: 10 req/min per IP
+router.patch('/features', strictRateLimit, async (req, res) => {
   try {
-    // Rate limiting
-    const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-    if (!checkRateLimit(clientIp)) {
-      return res.status(429).json({ error: 'Too many requests. Max 10 settings updates per minute.' });
-    }
-
     // Validate with Zod — strips unknown keys, rejects dangerous ones
     const parseResult = FeatureSettingsPatchSchema.safeParse(req.body);
     if (!parseResult.success) {

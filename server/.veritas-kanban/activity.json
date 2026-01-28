@@ -1,5 +1,115 @@
 [
   {
+    "id": "activity_1769624510791_0lodoau54",
+    "type": "status_changed",
+    "taskId": "task_20260128_lLNafd",
+    "taskTitle": "SECURITY: Add API versioning (/api/v1/...)",
+    "details": {
+      "from": "done",
+      "status": "blocked"
+    },
+    "timestamp": "2026-01-28T18:21:50.791Z"
+  },
+  {
+    "id": "activity_1769624481898_0jpaqzpv8",
+    "type": "status_changed",
+    "taskId": "task_20260128_AD2c2U",
+    "taskTitle": "TESTING: Add E2E tests for critical user flows",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:21:21.898Z"
+  },
+  {
+    "id": "activity_1769624480705_agi31q45d",
+    "type": "status_changed",
+    "taskId": "task_20260128_rDvrGE",
+    "taskTitle": "SECURITY: Replace in-memory rate limiter with Redis",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:21:20.705Z"
+  },
+  {
+    "id": "activity_1769624480649_gvdkqnk0v",
+    "type": "status_changed",
+    "taskId": "task_20260128_PW0c25",
+    "taskTitle": "TESTING: Increase backend test coverage to 50%+",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T18:21:20.649Z"
+  },
+  {
+    "id": "activity_1769624464817_fv9a2be24",
+    "type": "comment_added",
+    "taskId": "task_20260128_lLNafd",
+    "taskTitle": "SECURITY: Add API versioning (/api/v1/...)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added API versioning: created v1 Router (server/sr..."
+    },
+    "timestamp": "2026-01-28T18:21:04.817Z"
+  },
+  {
+    "id": "activity_1769624459463_42mswfm01",
+    "type": "status_changed",
+    "taskId": "task_20260128_lLNafd",
+    "taskTitle": "SECURITY: Add API versioning (/api/v1/...)",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T18:20:59.463Z"
+  },
+  {
+    "id": "activity_1769624446655_zj7pjx4pi",
+    "type": "comment_added",
+    "taskId": "task_20260128_pz20DY",
+    "taskTitle": "PERF: Add Cache-Control headers for static resources and GET endpoints",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added Cache-Control headers for all API endpoints ..."
+    },
+    "timestamp": "2026-01-28T18:20:46.655Z"
+  },
+  {
+    "id": "activity_1769624440366_qs9nn3uo0",
+    "type": "status_changed",
+    "taskId": "task_20260128_pz20DY",
+    "taskTitle": "PERF: Add Cache-Control headers for static resources and GET endpoints",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T18:20:40.366Z"
+  },
+  {
+    "id": "activity_1769624421133_ewco82r1u",
+    "type": "comment_added",
+    "taskId": "task_20260128_vIi7cG",
+    "taskTitle": "PERF: Memoize TaskCard cardMetrics to prevent unnecessary re-renders",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added areTaskCardPropsEqual custom comparison func..."
+    },
+    "timestamp": "2026-01-28T18:20:21.133Z"
+  },
+  {
+    "id": "activity_1769624414904_2uwv87j5m",
+    "type": "status_changed",
+    "taskId": "task_20260128_vIi7cG",
+    "taskTitle": "PERF: Memoize TaskCard cardMetrics to prevent unnecessary re-renders",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T18:20:14.904Z"
+  },
+  {
     "id": "activity_1769624362117_qqkovb929",
     "type": "task_created",
     "taskId": "task_20260128_Mobksx",
