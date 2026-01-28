@@ -27,6 +27,11 @@ Sprint 8 built the telemetry foundation (event logging, metrics API, dashboard).
 | US-1005 | Dashboard drill-down | ⏳ Todo | US-1002 | Click dashboard metrics to see per-project/per-task breakdown |
 | US-1006 | Metrics export | ⏳ Todo | US-1002 | Export task/project metrics as CSV or JSON |
 | US-1007 | Historical trends | ⏳ Todo | US-1001 | Charts showing metrics over time (runs/day, success rate trend) |
+| US-1008 | Agent comparison | ⏳ Todo | US-1001 | Which agent is fastest/cheapest/most reliable per task type |
+| US-1009 | Failure alerts to Teams | ⏳ Todo | US-1001 | Auto-notify Tasks channel when a run fails |
+| US-1010 | Daily digest | ⏳ Todo | US-1001 | Morning summary of yesterday's work sent to Teams |
+| US-1011 | Cost budget tracking | ⏳ Todo | US-1004 | Monthly token budget with burn rate on dashboard |
+| US-1012 | Sprint velocity | ⏳ Todo | US-1007 | Tasks completed per sprint, velocity trend chart |
 
 ---
 
@@ -170,3 +175,98 @@ Line/bar charts showing metrics over time.
 - Responsive charts (works on narrow screens)
 - Uses lightweight chart library (recharts or similar)
 - Auto-refreshes with dashboard
+
+---
+
+### US-1008: Agent Comparison
+
+Compare agent performance across task types.
+
+**Display:**
+- Table: Agent × Task Type → avg duration, success rate, avg tokens
+- "Best agent for..." recommendations
+- Highlight cheapest, fastest, most reliable per category
+
+**Acceptance criteria:**
+- New section on dashboard (collapsible)
+- Aggregates from telemetry events by agent + task type
+- Minimum 3 runs required for comparison (avoid noise)
+- Sortable by metric (speed, cost, reliability)
+- Tooltip explaining the recommendation logic
+
+---
+
+### US-1009: Failure Alerts to Teams
+
+Auto-notify Tasks channel when an agent run fails.
+
+**Flow:**
+1. `run.error` or `run.completed` with `success: false` telemetry event
+2. Server emits notification to configured Teams channel
+3. Message includes: task title, agent, error summary, link to task
+
+**Acceptance criteria:**
+- Notification sent within 30s of failure event
+- Uses existing notification infrastructure
+- Configurable: on/off in settings
+- Deduplicates (don't spam for same task retries)
+- Includes actionable info (what failed, which task)
+
+---
+
+### US-1010: Daily Digest
+
+Morning summary sent to Teams with yesterday's stats.
+
+**Content:**
+- Tasks completed / created / in progress
+- Agent runs: total, success rate
+- Token usage: total, by agent
+- Top accomplishments (recently done tasks)
+- Any failures or blocked items
+
+**Acceptance criteria:**
+- Scheduled via cron (configurable time, default 8:00 AM CT)
+- Sent to Tasks channel
+- Skips if no activity (don't send empty digests)
+- Covers previous 24 hours
+- Clean formatting for Teams
+
+---
+
+### US-1011: Cost Budget Tracking
+
+Set monthly token budget and track burn rate.
+
+**Features:**
+- Budget setting in Settings dialog (monthly token limit)
+- Burn rate calculation (tokens/day average)
+- Projected monthly usage
+- Warning threshold (e.g., 80% of budget)
+- Dashboard card showing: used / budget, projected, status (on track / over)
+
+**Acceptance criteria:**
+- Budget stored in app config
+- Dashboard card with progress bar
+- Color coding: green (< 60%), yellow (60-80%), red (> 80%)
+- Projected overage warning
+- Historical budget vs actual chart (pairs with US-1007)
+
+---
+
+### US-1012: Sprint Velocity
+
+Track task completion rate per sprint.
+
+**Display:**
+- Bar chart: tasks completed per sprint
+- Rolling average line overlay
+- Sprint-over-sprint comparison
+- Velocity trend (accelerating / steady / slowing)
+
+**Acceptance criteria:**
+- Sprint boundaries detected from sprint docs or configurable dates
+- Chart on dashboard (in historical trends section)
+- Includes all task types
+- Breakdown by type available on hover
+- Shows current sprint progress vs average
