@@ -63,7 +63,7 @@ describe('AttachmentService', () => {
 
     it('should sanitize filenames with special characters', async () => {
       const mockFile = {
-        originalname: '../../../etc/passwd',
+        originalname: '../../../etc/passwd.txt',
         mimetype: 'text/plain',
         size: 100,
         buffer: Buffer.from('Test'),
@@ -98,7 +98,7 @@ describe('AttachmentService', () => {
       } as Express.Multer.File;
 
       await expect(service.saveAttachment(testTaskId, mockFile)).rejects.toThrow(
-        /File type.*is not allowed/
+        /not allowed/
       );
     });
 

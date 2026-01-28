@@ -1,8 +1,15 @@
 import fs from 'fs/promises';
+import { watch, type FSWatcher } from 'fs';
 import path from 'path';
 import { simpleGit } from 'simple-git';
 import type { AppConfig, RepoConfig, AgentConfig, AgentType, FeatureSettings } from '@veritas-kanban/shared';
 import { DEFAULT_FEATURE_SETTINGS } from '@veritas-kanban/shared';
+
+/** How long cached config stays valid before re-reading from disk */
+const CACHE_TTL_MS = 60_000; // 60 seconds
+
+/** Ignore file-watcher events within this window after our own writes */
+const WRITE_DEBOUNCE_MS = 200;
 
 // Default paths - resolve to project root
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');

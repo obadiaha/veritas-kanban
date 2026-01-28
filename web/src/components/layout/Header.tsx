@@ -6,6 +6,7 @@ import { ActivitySidebar } from './ActivitySidebar';
 import { ArchiveSidebar } from './ArchiveSidebar';
 import { UserMenu } from './UserMenu';
 import { AgentStatusIndicator } from '@/components/shared/AgentStatusIndicator';
+import { WebSocketIndicator } from '@/components/shared/WebSocketIndicator';
 import { useState, useCallback } from 'react';
 import { useKeyboard } from '@/hooks/useKeyboard';
 
@@ -36,6 +37,8 @@ export function Header() {
             </div>
             <div className="h-4 w-px bg-border" aria-hidden="true" />
             <AgentStatusIndicator />
+            <div className="h-4 w-px bg-border" aria-hidden="true" />
+            <WebSocketIndicator />
           </div>
           
           <div className="flex items-center gap-2">

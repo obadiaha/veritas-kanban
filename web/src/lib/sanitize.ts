@@ -14,6 +14,11 @@
 
 import DOMPurify from 'dompurify';
 
+// Initialize DOMPurify — the default export auto-detects the browser window.
+// In test environments (jsdom), this also works because vitest provides a
+// window global when configured with environment: 'jsdom'.
+const purify = DOMPurify;
+
 /**
  * Allowed HTML tags that are safe for Markdown-rendered content.
  * These cover standard Markdown output (headings, lists, emphasis, code, etc.).
@@ -88,7 +93,7 @@ const ALLOWED_URI_REGEXP = /^(?:(?:https?|mailto|tel|ftp):|[^a-z]|[a-z+.-]+(?:[^
 export function sanitizeHtml(dirty: string): string {
   if (!dirty) return '';
 
-  return DOMPurify.sanitize(dirty, {
+  return purify.sanitize(dirty, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
     ALLOWED_URI_REGEXP,
@@ -120,7 +125,7 @@ export function sanitizeHtml(dirty: string): string {
 export function sanitizeText(dirty: string): string {
   if (!dirty) return '';
 
-  return DOMPurify.sanitize(dirty, {
+  return purify.sanitize(dirty, {
     ALLOWED_TAGS: [],   // Strip ALL tags
     ALLOWED_ATTR: [],   // Strip ALL attributes
     KEEP_CONTENT: true, // Keep text content of stripped tags
@@ -131,7 +136,7 @@ export function sanitizeText(dirty: string): string {
  * Hook DOMPurify to enforce safe link targets.
  * All <a> tags get target="_blank" and rel="noopener noreferrer".
  */
-DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+purify.addHook('afterSanitizeAttributes', (node) => {
   if (node.tagName === 'A') {
     node.setAttribute('target', '_blank');
     node.setAttribute('rel', 'noopener noreferrer');
