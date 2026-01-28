@@ -41,14 +41,14 @@ import { TrendsCharts } from './TrendsCharts';
 import { StatusTimeline } from './StatusTimeline';
 
 // Trend indicator component
+// direction: 'up' always means improvement, 'down' means decline (from backend)
+// change: the actual percentage change in the value (can be negative)
 function TrendIndicator({ 
   direction, 
   change, 
-  positive = true // whether "up" is good
 }: { 
   direction: TrendDirection; 
   change: number;
-  positive?: boolean;
 }) {
   if (direction === 'flat') {
     return (
@@ -59,10 +59,13 @@ function TrendIndicator({
     );
   }
   
-  const isUp = direction === 'up';
-  const isGood = positive ? isUp : !isUp;
+  // direction='up' means improvement, which is always green
+  const isGood = direction === 'up';
   const colorClass = isGood ? 'text-green-500' : 'text-red-500';
-  const Icon = isUp ? TrendingUp : TrendingDown;
+  
+  // Arrow direction based on actual value change
+  const valueWentUp = change > 0;
+  const Icon = valueWentUp ? TrendingUp : TrendingDown;
   
   return (
     <span className={cn('inline-flex items-center text-xs', colorClass)}>
@@ -381,7 +384,6 @@ export function Dashboard() {
                     <TrendIndicator 
                       direction={metrics.trends.successRateTrend} 
                       change={metrics.trends.successRateChange}
-                      positive={true}
                     />
                   </div>
                 }
@@ -425,7 +427,6 @@ export function Dashboard() {
                     <TrendIndicator 
                       direction={metrics.trends.tokensTrend} 
                       change={metrics.trends.tokensChange}
-                      positive={false}
                     />
                   </div>
                 }
@@ -467,7 +468,6 @@ export function Dashboard() {
                     <TrendIndicator 
                       direction={metrics.trends.durationTrend} 
                       change={metrics.trends.durationChange}
-                      positive={false}
                     />
                   </div>
                 }
