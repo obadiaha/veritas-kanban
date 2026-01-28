@@ -1,5 +1,16 @@
 [
   {
+    "id": "activity_1769568629657_tm5gtljgy",
+    "type": "status_changed",
+    "taskId": "task_20260128_2AhuSW",
+    "taskTitle": "US-910: Help context windows + keyboard shortcut fix",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T02:50:29.657Z"
+  },
+  {
     "id": "activity_1769568438135_urtvgud9g",
     "type": "status_changed",
     "taskId": "task_20260128_2AhuSW",
@@ -964,17 +975,5 @@
     "taskId": "task_20260126_kgLjM8",
     "taskTitle": "US-802: Emit Task Events",
     "timestamp": "2026-01-26T17:58:10.324Z"
-  },
-  {
-    "id": "activity_1769450275527_mn0i00lkl",
-    "type": "task_created",
-    "taskId": "task_20260126_vfkPKg",
-    "taskTitle": "US-808: Optional Traces (Stretch)",
-    "details": {
-      "type": "code",
-      "priority": "low",
-      "project": "Sprint 8"
-    },
-    "timestamp": "2026-01-26T17:57:55.527Z"
   }
 ]
