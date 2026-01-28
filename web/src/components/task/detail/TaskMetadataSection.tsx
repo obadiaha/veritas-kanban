@@ -23,7 +23,7 @@ interface TaskMetadataSectionProps {
 const statusLabels: Record<TaskStatus, string> = {
   'todo': 'To Do',
   'in-progress': 'In Progress',
-  'review': 'Review',
+  'blocked': 'Blocked',
   'done': 'Done',
 };
 

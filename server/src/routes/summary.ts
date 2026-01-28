@@ -12,7 +12,7 @@ router.get('/', async (_req, res) => {
     const byStatus = {
       todo: tasks.filter(t => t.status === 'todo').length,
       'in-progress': tasks.filter(t => t.status === 'in-progress').length,
-      review: tasks.filter(t => t.status === 'review').length,
+      blocked: tasks.filter(t => t.status === 'blocked').length,
       done: tasks.filter(t => t.status === 'done').length,
     };
     
@@ -113,7 +113,7 @@ router.get('/memory', async (req, res) => {
     // Active high-priority
     const highPriority = tasks.filter(t => 
       t.priority === 'high' && 
-      (t.status === 'in-progress' || t.status === 'review')
+      (t.status === 'in-progress' || t.status === 'blocked')
     );
     
     // Build markdown

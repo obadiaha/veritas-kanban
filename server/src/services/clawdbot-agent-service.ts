@@ -195,7 +195,7 @@ export class ClawdbotAgentService {
 
     // Update task
     await this.taskService.updateTask(taskId, {
-      status: result.success ? 'review' : 'in-progress',
+      status: result.success ? 'done' : 'in-progress',
       attempt: {
         id: attemptId,
         agent: pending.agent,

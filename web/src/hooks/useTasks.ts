@@ -204,7 +204,7 @@ export function useTasksByStatus(tasks: Task[] | undefined) {
     return {
       todo: [],
       'in-progress': [],
-      review: [],
+      blocked: [],
       done: [],
     };
   }
@@ -212,7 +212,7 @@ export function useTasksByStatus(tasks: Task[] | undefined) {
   return {
     todo: sortByPosition(tasks.filter(t => t.status === 'todo')),
     'in-progress': sortByPosition(tasks.filter(t => t.status === 'in-progress')),
-    review: sortByPosition(tasks.filter(t => t.status === 'review')),
+    blocked: sortByPosition(tasks.filter(t => t.status === 'blocked')),
     done: sortByPosition(tasks.filter(t => t.status === 'done')),
   };
 }

@@ -99,7 +99,7 @@ export class MetricsService {
     const byStatus: Record<TaskStatus, number> = {
       'todo': 0,
       'in-progress': 0,
-      'review': 0,
+      'blocked': 0,
       'done': 0,
     };
 

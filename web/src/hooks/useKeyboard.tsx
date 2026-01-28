@@ -28,7 +28,7 @@ const KeyboardContext = createContext<KeyboardContextValue | null>(null);
 const STATUS_MAP: Record<string, TaskStatus> = {
   '1': 'todo',
   '2': 'in-progress',
-  '3': 'review',
+  '3': 'blocked',
   '4': 'done',
 };
 
@@ -68,7 +68,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
   // Get flat list of tasks sorted by column then position
   const getTaskList = useCallback(() => {
-    const statusOrder: TaskStatus[] = ['todo', 'in-progress', 'review', 'done'];
+    const statusOrder: TaskStatus[] = ['todo', 'in-progress', 'blocked', 'done'];
     return [...tasks].sort((a, b) => {
       const aIndex = statusOrder.indexOf(a.status);
       const bIndex = statusOrder.indexOf(b.status);

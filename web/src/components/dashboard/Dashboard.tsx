@@ -20,7 +20,7 @@ import {
   Archive,
   ListTodo,
   Play,
-  Eye,
+  Ban,
   RefreshCw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -196,10 +196,10 @@ export function Dashboard() {
               color="blue"
             />
             <MetricCard 
-              label="Review" 
-              value={metrics.tasks.byStatus['review'] || 0}
-              icon={<Eye className="h-4 w-4" />}
-              color="yellow"
+              label="Blocked" 
+              value={metrics.tasks.byStatus['blocked'] || 0}
+              icon={<Ban className="h-4 w-4" />}
+              color="red"
             />
             <MetricCard 
               label="Done" 
