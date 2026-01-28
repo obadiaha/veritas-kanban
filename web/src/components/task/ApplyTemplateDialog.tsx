@@ -318,15 +318,40 @@ export function ApplyTemplateDialog({ task, open, onOpenChange, onApplied }: App
             </Button>
           </div>
           {showHelp && (
-            <div className="mt-2 rounded-md border bg-muted/50 p-3 text-sm space-y-2">
-              <p className="font-medium">How Apply Template works:</p>
-              <ul className="space-y-1 text-muted-foreground text-xs">
-                <li><strong>Default mode:</strong> Only fills in empty fields — your existing data is never overwritten.</li>
-                <li><strong>Force Overwrite:</strong> Toggle this on to replace existing values with template values. A preview shows exactly what will change before you apply.</li>
-                <li><strong>Subtasks:</strong> Template subtasks are <em>added</em> to your existing subtasks, never replaced.</li>
-                <li><strong>Variables:</strong> Templates with <code className="bg-background px-1 rounded">{'{{date}}'}</code> or <code className="bg-background px-1 rounded">{'{{custom:name}}'}</code> will prompt you for values before applying.</li>
-                <li><strong>Preview:</strong> The changes preview shows a before/after diff so you know exactly what will happen.</li>
-              </ul>
+            <div className="mt-2 p-3 rounded-md bg-muted/50 border border-muted-foreground/20 text-sm space-y-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-2">
+                  <p className="font-medium text-sm">Apply Template Guide</p>
+                  
+                  <div className="text-xs text-muted-foreground space-y-1.5">
+                    <div>
+                      <strong className="text-foreground">Safe by Default:</strong>
+                      <p className="mt-0.5">Templates only fill in empty fields — your existing task data is never overwritten unless you choose to.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-foreground">Force Overwrite:</strong>
+                      <p className="mt-0.5">Toggle this on to replace existing values with template values. The changes preview shows exactly what will be modified before you apply.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-foreground">Subtasks:</strong>
+                      <p className="mt-0.5">Template subtasks are <em>added</em> to your existing subtasks, never replaced. You'll see a count of how many will be appended.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-foreground">Variables:</strong>
+                      <p className="mt-0.5">Templates with <code className="px-1 py-0.5 rounded bg-muted">{'{{date}}'}</code> or <code className="px-1 py-0.5 rounded bg-muted">{'{{custom:name}}'}</code> will prompt you for values before applying.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-foreground">Changes Preview:</strong>
+                      <p className="mt-0.5">A before/after diff appears below showing exactly what will change. Green lines are additions, red lines are removals.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </DialogHeader>
