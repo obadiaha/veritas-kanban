@@ -514,6 +514,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { data: templates, isLoading: templatesLoading } = useTemplates();
   const taskTypesManager = useTaskTypesManager();
   const projectsManager = useProjectsManager();
+  const { items: tagsItems, isLoading: tagsLoading } = useTags();
   const tagsManager = useTagsManager();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddTemplateForm, setShowAddTemplateForm] = useState(false);
@@ -782,8 +783,8 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             <div className="border rounded-lg p-4">
               <ManagedListManager<TagConfig>
                 title=""
-                items={tagsManager.items}
-                isLoading={tagsManager.isLoading}
+                items={tagsItems}
+                isLoading={tagsLoading}
                 onCreate={tagsManager.create}
                 onUpdate={tagsManager.update}
                 onDelete={tagsManager.remove}
