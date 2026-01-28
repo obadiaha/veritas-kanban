@@ -5,6 +5,18 @@ import { nanoid } from 'nanoid';
 import type { Task, CreateTaskInput, UpdateTaskInput, ReviewComment, Subtask, TaskTelemetryEvent, TimeTracking } from '@veritas-kanban/shared';
 import { getTelemetryService, type TelemetryService } from './telemetry-service.js';
 
+/** 
+ * Task ID format validation
+ * Production format: task_YYYYMMDD_XXXXXX (date + 6-char nanoid)
+ * Legacy/test formats also accepted: task_YYYYMMDD_X{1,20} or task_WORD
+ */
+const TASK_ID_REGEX = /^task_(\d{8}_[a-zA-Z0-9_-]{1,20}|[a-zA-Z0-9_-]+)$/;
+
+/** Validate task ID format */
+function isValidTaskId(id: string): boolean {
+  return TASK_ID_REGEX.test(id);
+}
+
 // Simple slug function to avoid CJS/ESM issues with slugify
 function makeSlug(text: string): string {
   return text
@@ -91,44 +103,56 @@ export class TaskService {
     return content;
   }
 
-  private parseTaskFile(content: string, filename: string): Task {
-    const { data, content: description } = matter(content);
-    
-    // Extract review comments from description if present
-    let cleanDescription = description;
-    const reviewComments: Task['reviewComments'] = [];
-    
-    const reviewSection = description.indexOf('## Review Comments');
-    if (reviewSection !== -1) {
-      cleanDescription = description.slice(0, reviewSection).trim();
-    }
+  private parseTaskFile(content: string, filename: string): Task | null {
+    try {
+      const { data, content: description } = matter(content);
+      
+      // Extract review comments from description if present
+      let cleanDescription = description;
+      const reviewComments: Task['reviewComments'] = [];
+      
+      const reviewSection = description.indexOf('## Review Comments');
+      if (reviewSection !== -1) {
+        cleanDescription = description.slice(0, reviewSection).trim();
+      }
 
-    return {
-      id: data.id || filename.split('-')[0],
-      title: data.title || 'Untitled',
-      description: cleanDescription.trim(),
-      type: data.type || 'code',
-      status: data.status || 'todo',
-      priority: data.priority || 'medium',
-      project: data.project,
-      sprint: data.sprint,
-      created: data.created || new Date().toISOString(),
-      updated: data.updated || new Date().toISOString(),
-      git: data.git,
-      attempt: data.attempt,
-      attempts: data.attempts,
-      reviewComments,
-      review: data.review,
-      subtasks: data.subtasks,
-      autoCompleteOnSubtasks: data.autoCompleteOnSubtasks,
-      blockedBy: data.blockedBy,
-      blockedReason: data.blockedReason,
-      automation: data.automation,
-      timeTracking: data.timeTracking,
-      comments: data.comments,
-      attachments: data.attachments,
-      position: data.position,
-    };
+      // Validate required fields
+      const id = data.id || filename.split('-')[0];
+      if (!isValidTaskId(id)) {
+        console.warn(`Invalid task ID format in file ${filename}: ${id}`);
+        return null;
+      }
+
+      return {
+        id,
+        title: data.title || 'Untitled',
+        description: cleanDescription.trim(),
+        type: data.type || 'code',
+        status: data.status || 'todo',
+        priority: data.priority || 'medium',
+        project: data.project,
+        sprint: data.sprint,
+        created: data.created || new Date().toISOString(),
+        updated: data.updated || new Date().toISOString(),
+        git: data.git,
+        attempt: data.attempt,
+        attempts: data.attempts,
+        reviewComments,
+        review: data.review,
+        subtasks: data.subtasks,
+        autoCompleteOnSubtasks: data.autoCompleteOnSubtasks,
+        blockedBy: data.blockedBy,
+        blockedReason: data.blockedReason,
+        automation: data.automation,
+        timeTracking: data.timeTracking,
+        comments: data.comments,
+        attachments: data.attachments,
+        position: data.position,
+      };
+    } catch (error) {
+      console.error(`Failed to parse task file ${filename}:`, error);
+      return null;
+    }
   }
 
   async listTasks(): Promise<Task[]> {
@@ -137,13 +161,16 @@ export class TaskService {
     const files = await fs.readdir(this.tasksDir);
     const mdFiles = files.filter(f => f.endsWith('.md'));
     
-    const tasks = await Promise.all(
+    const results = await Promise.all(
       mdFiles.map(async (filename) => {
         const filepath = path.join(this.tasksDir, filename);
         const content = await fs.readFile(filepath, 'utf-8');
         return this.parseTaskFile(content, filename);
       })
     );
+    
+    // Filter out null values from failed parses
+    const tasks = results.filter((t): t is Task => t !== null);
 
     // Sort by updated date, newest first
     return tasks.sort((a: Task, b: Task) => 
@@ -314,13 +341,16 @@ export class TaskService {
     const files = await fs.readdir(this.archiveDir);
     const mdFiles = files.filter(f => f.endsWith('.md'));
     
-    const tasks = await Promise.all(
+    const results = await Promise.all(
       mdFiles.map(async (filename) => {
         const filepath = path.join(this.archiveDir, filename);
         const content = await fs.readFile(filepath, 'utf-8');
         return this.parseTaskFile(content, filename);
       })
     );
+    
+    // Filter out null values from failed parses
+    const tasks = results.filter((t): t is Task => t !== null);
 
     // Sort by updated date, newest first
     return tasks.sort((a: Task, b: Task) => 

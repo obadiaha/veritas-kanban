@@ -6,7 +6,6 @@ import { getTelemetryService, type TelemetryService } from './telemetry-service.
 import { TaskService } from './task-service.js';
 import type { 
   TaskStatus, 
-  AgentType,
   BlockedCategory,
   RunTelemetryEvent, 
   TokenTelemetryEvent,
@@ -25,7 +24,7 @@ export interface TaskMetrics {
 }
 
 export interface AgentBreakdown {
-  agent: AgentType;
+  agent: string;
   runs: number;
   successes: number;
   failures: number;
@@ -58,7 +57,7 @@ export interface TokenMetrics {
     p95: number;
   };
   byAgent: Array<{
-    agent: AgentType;
+    agent: string;
     totalTokens: number;
     inputTokens: number;
     outputTokens: number;
@@ -73,7 +72,7 @@ export interface DurationMetrics {
   p50Ms: number;
   p95Ms: number;
   byAgent: Array<{
-    agent: AgentType;
+    agent: string;
     runs: number;
     avgMs: number;
     p50Ms: number;
@@ -87,7 +86,7 @@ interface RunAccumulator {
   failures: number;
   errors: number;
   durations: number[];
-  byAgent: Map<AgentType, {
+  byAgent: Map<string, {
     successes: number;
     failures: number;
     errors: number;
@@ -100,7 +99,7 @@ interface TokenAccumulator {
   inputTokens: number;
   outputTokens: number;
   tokensPerRun: number[];
-  byAgent: Map<AgentType, {
+  byAgent: Map<string, {
     totalTokens: number;
     inputTokens: number;
     outputTokens: number;
@@ -394,17 +393,19 @@ export class MetricsService {
       (event, acc) => {
         const tokenEvent = event as TokenTelemetryEvent;
         const agent = tokenEvent.agent || 'veritas';
+        // Calculate totalTokens if not provided
+        const totalTokens = tokenEvent.totalTokens ?? (tokenEvent.inputTokens + tokenEvent.outputTokens);
 
-        acc.totalTokens += tokenEvent.totalTokens;
+        acc.totalTokens += totalTokens;
         acc.inputTokens += tokenEvent.inputTokens;
         acc.outputTokens += tokenEvent.outputTokens;
-        acc.tokensPerRun.push(tokenEvent.totalTokens);
+        acc.tokensPerRun.push(totalTokens);
 
         if (!acc.byAgent.has(agent)) {
           acc.byAgent.set(agent, { totalTokens: 0, inputTokens: 0, outputTokens: 0, runs: 0 });
         }
         const agentAcc = acc.byAgent.get(agent)!;
-        agentAcc.totalTokens += tokenEvent.totalTokens;
+        agentAcc.totalTokens += totalTokens;
         agentAcc.inputTokens += tokenEvent.inputTokens;
         agentAcc.outputTokens += tokenEvent.outputTokens;
         agentAcc.runs++;
@@ -458,7 +459,7 @@ export class MetricsService {
 
     const accumulator = {
       durations: [] as number[],
-      byAgent: new Map<AgentType, number[]>(),
+      byAgent: new Map<string, number[]>(),
     };
 
     await this.streamEvents(
@@ -602,17 +603,19 @@ export class MetricsService {
             if (eventType === 'run.tokens') {
               const tokenEvent = event as TokenTelemetryEvent;
               const agent = tokenEvent.agent || 'veritas';
+              // Calculate totalTokens if not provided
+              const totalTokens = tokenEvent.totalTokens ?? (tokenEvent.inputTokens + tokenEvent.outputTokens);
 
-              tokenAcc.totalTokens += tokenEvent.totalTokens;
+              tokenAcc.totalTokens += totalTokens;
               tokenAcc.inputTokens += tokenEvent.inputTokens;
               tokenAcc.outputTokens += tokenEvent.outputTokens;
-              tokenAcc.tokensPerRun.push(tokenEvent.totalTokens);
+              tokenAcc.tokensPerRun.push(totalTokens);
 
               if (!tokenAcc.byAgent.has(agent)) {
                 tokenAcc.byAgent.set(agent, { totalTokens: 0, inputTokens: 0, outputTokens: 0, runs: 0 });
               }
               const agentTokenAcc = tokenAcc.byAgent.get(agent)!;
-              agentTokenAcc.totalTokens += tokenEvent.totalTokens;
+              agentTokenAcc.totalTokens += totalTokens;
               agentTokenAcc.inputTokens += tokenEvent.inputTokens;
               agentTokenAcc.outputTokens += tokenEvent.outputTokens;
               agentTokenAcc.runs++;
