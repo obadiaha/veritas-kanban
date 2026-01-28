@@ -785,9 +785,9 @@ function ManageTab() {
   return (
     <div className="space-y-6">
       {/* Task Types */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <h3 className="text-sm font-medium">Task Types</h3>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-md p-3">
           <ManagedListManager<TaskTypeConfig>
             title=""
             items={taskTypesManager.items}
@@ -842,9 +842,9 @@ function ManageTab() {
       </div>
 
       {/* Projects */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <h3 className="text-sm font-medium">Projects</h3>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-md p-3">
           <ManagedListManager<ProjectConfig>
             title=""
             items={projectsManager.items}
@@ -889,9 +889,9 @@ function ManageTab() {
       </div>
 
       {/* Sprints */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <h3 className="text-sm font-medium">Sprints</h3>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-md p-3">
           <ManagedListManager<SprintConfig>
             title=""
             items={sprintsManager.items}
@@ -1305,8 +1305,8 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[85vh] p-0 overflow-hidden">
-        <div className="flex h-full">
+      <DialogContent className="sm:max-w-[800px] h-[85vh] p-0 overflow-hidden">
+        <div className="flex h-full min-h-0">
           {/* Sidebar Tabs — hidden on narrow screens, shown as dropdown instead */}
           <div className="hidden sm:flex flex-col w-48 border-r bg-muted/30 py-4">
             <div className="px-4 pb-3">
@@ -1357,12 +1357,12 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </div>
 
           {/* Content */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 min-h-0">
             <DialogHeader className="px-6 py-4 border-b sm:hidden">
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
-            <ScrollArea className="flex-1 px-6 py-4">
-              <div className="max-w-lg">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="max-w-lg px-6 py-4">
                 {renderTab()}
               </div>
             </ScrollArea>

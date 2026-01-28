@@ -7,27 +7,27 @@
     "order": 2,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
   },
   {
     "id": "research",
     "label": "Research",
     "icon": "BookOpen",
     "color": "border-l-cyan-500",
-    "order": 5,
+    "order": 6,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
   },
   {
     "id": "content",
     "label": "Content",
     "icon": "FileText",
-    "color": "border-l-orange-500",
+    "color": "border-l-green-700",
     "order": 3,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
   },
   {
     "id": "automation",
@@ -37,7 +37,7 @@
     "order": 0,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
   },
   {
     "label": "Bug",
@@ -46,7 +46,7 @@
     "id": "bug-GdN5rT",
     "order": 1,
     "created": "2026-01-28T04:31:31.690Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
   },
   {
     "label": "Feature Request",
@@ -55,6 +55,24 @@
     "id": "feature-request-n30mhV",
     "order": 4,
     "created": "2026-01-28T04:38:26.956Z",
-    "updated": "2026-01-28T04:39:00.586Z"
+    "updated": "2026-01-28T08:31:41.818Z"
+  },
+  {
+    "label": "Model",
+    "icon": "Lightbulb",
+    "color": "border-l-blue-700",
+    "id": "model-EhHjEh",
+    "order": 5,
+    "created": "2026-01-28T08:30:20.794Z",
+    "updated": "2026-01-28T08:31:41.818Z"
+  },
+  {
+    "label": "System",
+    "icon": "Database",
+    "color": "border-l-fuchsia-500",
+    "id": "system-jJZQh0",
+    "order": 7,
+    "created": "2026-01-28T08:31:13.845Z",
+    "updated": "2026-01-28T08:31:41.818Z"
   }
 ]

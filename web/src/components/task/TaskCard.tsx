@@ -7,12 +7,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig } from '@veritas-kanban/shared';
-import { Check, Ban, Clock, Timer, Loader2, Paperclip, ListChecks } from 'lucide-react';
+import type { Task, TaskPriority, TaskTypeConfig, ProjectConfig, SprintConfig } from '@veritas-kanban/shared';
+import { Check, Ban, Clock, Timer, Loader2, Paperclip, ListChecks, Zap } from 'lucide-react';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { formatDuration } from '@/hooks/useTimeTracking';
 import { getTypeIcon, getTypeColor } from '@/hooks/useTaskTypes';
 import { getProjectColor, getProjectLabel } from '@/hooks/useProjects';
+import { getSprintLabel } from '@/hooks/useSprints';
+import { useFeatureSettings } from '@/hooks/useFeatureSettings';
 
 const agentNames: Record<string, string> = {
   'claude-code': 'Claude',
@@ -31,6 +33,7 @@ interface TaskCardProps {
   blockerTitles?: string[];
   taskTypes?: TaskTypeConfig[];
   projects?: ProjectConfig[];
+  sprints?: SprintConfig[];
 }
 
 const priorityColors: Record<TaskPriority, string> = {
@@ -39,7 +42,7 @@ const priorityColors: Record<TaskPriority, string> = {
   low: 'bg-slate-500/20 text-slate-400',
 };
 
-export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [] }: TaskCardProps) {
+export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blockerTitles, taskTypes = [], projects = [], sprints = [] }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -52,6 +55,9 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
   });
   const { isSelecting, toggleSelect, isSelected: isBulkSelected } = useBulkActions();
   const isChecked = isBulkSelected(task.id);
+  const { settings: featureSettings } = useFeatureSettings();
+  const boardSettings = featureSettings.board;
+  const isCompact = boardSettings.cardDensity === 'compact';
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -102,7 +108,8 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
             {...attributes}
             onClick={handleClick}
             className={cn(
-              'group bg-card border border-border rounded-md p-3 cursor-grab active:cursor-grabbing',
+              'group bg-card border border-border rounded-md cursor-grab active:cursor-grabbing',
+              isCompact ? 'p-2' : 'p-3',
               'hover:border-muted-foreground/50 hover:bg-card/80 transition-all',
               'border-l-2',
               typeColor,
@@ -133,7 +140,7 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                 <h3 className="text-sm font-medium leading-tight truncate">
                   {task.title}
                 </h3>
-                {task.description && (
+                {!isCompact && task.description && (
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                     {task.description}
                   </p>
@@ -175,21 +182,29 @@ export function TaskCard({ task, isDragging, onClick, isSelected, isBlocked, blo
                   </TooltipContent>
                 </Tooltip>
               )}
-              {/* Left side: project, type label, priority */}
-              {task.project && (
+              {/* Left side: project, type label, priority — controlled by board settings */}
+              {boardSettings.showProjectBadges && task.project && (
                 <span className={cn("text-xs px-1.5 py-0.5 rounded", projectColor)}>
                   {projectLabel}
+                </span>
+              )}
+              {boardSettings.showSprintBadges && task.sprint && (
+                <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  {getSprintLabel(sprints, task.sprint)}
                 </span>
               )}
               <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                 {typeLabel}
               </span>
-              <span className={cn(
-                'text-xs px-1.5 py-0.5 rounded capitalize',
-                priorityColors[task.priority]
-              )}>
-                {task.priority}
-              </span>
+              {boardSettings.showPriorityIndicators && (
+                <span className={cn(
+                  'text-xs px-1.5 py-0.5 rounded capitalize',
+                  priorityColors[task.priority]
+                )}>
+                  {task.priority}
+                </span>
+              )}
               {/* Attachment indicator */}
               {task.attachments && task.attachments.length > 0 && (
                 <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground flex items-center gap-1">
