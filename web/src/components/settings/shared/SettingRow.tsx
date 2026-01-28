@@ -1,4 +1,6 @@
-export function SettingRow({ label, description, children }: {
+import { memo } from 'react';
+
+export const SettingRow = memo(function SettingRow({ label, description, children }: {
   label: string;
   description?: string;
   children: React.ReactNode;
@@ -14,4 +16,4 @@ export function SettingRow({ label, description, children }: {
       <div className="flex-shrink-0">{children}</div>
     </div>
   );
-}
+});

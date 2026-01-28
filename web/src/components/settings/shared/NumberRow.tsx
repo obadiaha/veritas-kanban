@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { Input } from '@/components/ui/input';
 import { SettingRow } from './SettingRow';
 
-export function NumberRow({ label, description, value, onChange, min, max, unit }: {
+export const NumberRow = memo(function NumberRow({ label, description, value, onChange, min, max, unit }: {
   label: string;
   description?: string;
   value: number;
@@ -31,4 +32,4 @@ export function NumberRow({ label, description, value, onChange, min, max, unit 
       </div>
     </SettingRow>
   );
-}
+});
