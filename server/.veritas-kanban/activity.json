@@ -1,5 +1,289 @@
 [
   {
+    "id": "activity_1769607668847_8x4uf7m8o",
+    "type": "status_changed",
+    "taskId": "task_20260128_eib_Vw",
+    "taskTitle": "RF-04: Add Comprehensive Test Suite",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:41:08.847Z"
+  },
+  {
+    "id": "activity_1769607648371_yxsbzmr8v",
+    "type": "comment_added",
+    "taskId": "task_20260128_ntcrK0",
+    "taskTitle": "US-1401: Telemetry event ingestion endpoint",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented POST /api/telemetry/events endpoint wi..."
+    },
+    "timestamp": "2026-01-28T13:40:48.371Z"
+  },
+  {
+    "id": "activity_1769607640669_1hx09x5pp",
+    "type": "status_changed",
+    "taskId": "task_20260128_ntcrK0",
+    "taskTitle": "US-1401: Telemetry event ingestion endpoint",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:40:40.669Z"
+  },
+  {
+    "id": "activity_1769607594159_rtcwc3rsp",
+    "type": "status_changed",
+    "taskId": "task_20260128_o0FPtg",
+    "taskTitle": "US-1303: Real-time status hook (useAgentStatus)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:39:54.159Z"
+  },
+  {
+    "id": "activity_1769607572943_27x8ae2ec",
+    "type": "comment_added",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added comprehensive Zod validation layer: reusable..."
+    },
+    "timestamp": "2026-01-28T13:39:32.943Z"
+  },
+  {
+    "id": "activity_1769607568735_j9sd5hp4a",
+    "type": "status_changed",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:39:28.735Z"
+  },
+  {
+    "id": "activity_1769607534373_ha79rulq0",
+    "type": "status_changed",
+    "taskId": "task_20260128_XIY4cW",
+    "taskTitle": "RF-03: Server Security Hardening",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:38:54.373Z"
+  },
+  {
+    "id": "activity_1769607514816_73fqj2mez",
+    "type": "comment_added",
+    "taskId": "task_20260128_q38wnR",
+    "taskTitle": "US-1302: Animated status indicator component",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created AgentStatusIndicator component with 5 stat..."
+    },
+    "timestamp": "2026-01-28T13:38:34.816Z"
+  },
+  {
+    "id": "activity_1769607514780_tatl3k2rr",
+    "type": "status_changed",
+    "taskId": "task_20260128_q38wnR",
+    "taskTitle": "US-1302: Animated status indicator component",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:38:34.780Z"
+  },
+  {
+    "id": "activity_1769607494003_2oqg5sh8a",
+    "type": "status_changed",
+    "taskId": "task_20260128_wgJpvX",
+    "taskTitle": "RF-09: Move Business Logic from Routes to Services",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:38:14.003Z"
+  },
+  {
+    "id": "activity_1769607473541_r7re5bk88",
+    "type": "comment_added",
+    "taskId": "task_20260128_v5QxzF",
+    "taskTitle": "RF-01: Server Authentication & Authorization",
+    "details": {
+      "author": "Veritas",
+      "preview": "Implemented comprehensive authentication and autho..."
+    },
+    "timestamp": "2026-01-28T13:37:53.541Z"
+  },
+  {
+    "id": "activity_1769607468915_ukpis8bi7",
+    "type": "status_changed",
+    "taskId": "task_20260128_v5QxzF",
+    "taskTitle": "RF-01: Server Authentication & Authorization",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:37:48.915Z"
+  },
+  {
+    "id": "activity_1769607382839_wrhwla58n",
+    "type": "status_changed",
+    "taskId": "task_20260128_q38wnR",
+    "taskTitle": "US-1302: Animated status indicator component",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:36:22.839Z"
+  },
+  {
+    "id": "activity_1769607365350_pgi5i51p8",
+    "type": "comment_added",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "author": "Veritas",
+      "preview": "Split 777-line tasks.ts into 5 focused route files..."
+    },
+    "timestamp": "2026-01-28T13:36:05.350Z"
+  },
+  {
+    "id": "activity_1769607365321_lf1mhblbp",
+    "type": "status_changed",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:36:05.321Z"
+  },
+  {
+    "id": "activity_1769607357483_514cyzaal",
+    "type": "comment_deleted",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "commentId": "comment_1769607341855_fa0o7u"
+    },
+    "timestamp": "2026-01-28T13:35:57.483Z"
+  },
+  {
+    "id": "activity_1769607357471_njv87ugln",
+    "type": "comment_deleted",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "commentId": "comment_1769607333188_vtiagr"
+    },
+    "timestamp": "2026-01-28T13:35:57.471Z"
+  },
+  {
+    "id": "activity_1769607341857_metjqvsea",
+    "type": "comment_added",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "author": "Test",
+      "preview": "Testing"
+    },
+    "timestamp": "2026-01-28T13:35:41.857Z"
+  },
+  {
+    "id": "activity_1769607333191_cdtwyae9b",
+    "type": "comment_added",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "author": "Test",
+      "preview": "Testing split routes - will delete"
+    },
+    "timestamp": "2026-01-28T13:35:33.191Z"
+  },
+  {
+    "id": "activity_1769607259294_agxseasu5",
+    "type": "status_changed",
+    "taskId": "task_20260128_v5QxzF",
+    "taskTitle": "RF-01: Server Authentication & Authorization",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:34:19.294Z"
+  },
+  {
+    "id": "activity_1769607242332_t3hz73320",
+    "type": "comment_added",
+    "taskId": "task_20260128_tD7fef",
+    "taskTitle": "US-1301: Agent status API endpoint",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created server/src/routes/agent-status.ts with GET..."
+    },
+    "timestamp": "2026-01-28T13:34:02.332Z"
+  },
+  {
+    "id": "activity_1769607242265_4i9g1vf46",
+    "type": "status_changed",
+    "taskId": "task_20260128_tD7fef",
+    "taskTitle": "US-1301: Agent status API endpoint",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T13:34:02.265Z"
+  },
+  {
+    "id": "activity_1769607203578_lz1irndd9",
+    "type": "status_changed",
+    "taskId": "task_20260128_-8OO8l",
+    "taskTitle": "RF-07: Server Input Validation Layer",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:33:23.578Z"
+  },
+  {
+    "id": "activity_1769607175903_4vkkj2iye",
+    "type": "status_changed",
+    "taskId": "task_20260128_hfzlfd",
+    "taskTitle": "RF-08: Split tasks.ts Route (777 lines)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:32:55.903Z"
+  },
+  {
+    "id": "activity_1769607175642_o35qj3ev7",
+    "type": "status_changed",
+    "taskId": "task_20260128_ntcrK0",
+    "taskTitle": "US-1401: Telemetry event ingestion endpoint",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:32:55.642Z"
+  },
+  {
+    "id": "activity_1769607175424_w49ojojh3",
+    "type": "status_changed",
+    "taskId": "task_20260128_tD7fef",
+    "taskTitle": "US-1301: Agent status API endpoint",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T13:32:55.424Z"
+  },
+  {
     "id": "activity_1769606100953_ohhdp3l90",
     "type": "comment_added",
     "taskId": "task_20260128_g86sZV",
