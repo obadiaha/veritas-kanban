@@ -4,21 +4,20 @@
     "label": "Code",
     "icon": "Code",
     "color": "border-l-violet-500",
-    "order": 0,
+    "order": 1,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:03:21.782Z"
+    "updated": "2026-01-28T04:27:49.587Z"
   },
   {
     "id": "research",
     "label": "Research",
-    "icon": "Search",
+    "icon": "BookOpen",
     "color": "border-l-cyan-500",
-    "order": 1,
+    "order": 3,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:10:37.498Z",
-    "isHidden": true
+    "updated": "2026-01-28T04:27:49.587Z"
   },
   {
     "id": "content",
@@ -28,16 +27,16 @@
     "order": 2,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:03:21.782Z"
+    "updated": "2026-01-28T04:27:49.587Z"
   },
   {
     "id": "automation",
     "label": "Automation",
     "icon": "Zap",
     "color": "border-l-emerald-500",
-    "order": 3,
+    "order": 0,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:03:21.782Z"
+    "updated": "2026-01-28T04:27:49.587Z"
   }
 ]

@@ -126,6 +126,16 @@ export class ManagedListService<T extends ManagedListItem> {
   }
 
   /**
+   * Seed a pre-built item with a specific ID (for migrations)
+   * Skips ID generation — caller provides the full item
+   */
+  async seedItem(item: T): Promise<T> {
+    this.items.push(item);
+    await this.save();
+    return item;
+  }
+
+  /**
    * Update an existing item
    */
   async update(id: string, patch: Partial<T>): Promise<T | null> {

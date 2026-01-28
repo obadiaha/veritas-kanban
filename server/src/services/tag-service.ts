@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { existsSync } from 'fs';
 import type { TagConfig } from '@veritas-kanban/shared';
 import { ManagedListService } from './managed-list-service.js';
 import { TaskService } from './task-service.js';
@@ -42,16 +41,15 @@ export class TagService extends ManagedListService<TagConfig> {
    * Initialize and seed tags from existing tasks if first run
    */
   async init(): Promise<void> {
-    await super.init();
-    
-    // Only seed once
+    // Prevent re-entrant init (list() calls init(), seed calls list())
     if (this.seeded) return;
     this.seeded = true;
 
-    const filePath = resolve(process.cwd(), '..', '.veritas-kanban', 'tags.json');
+    await super.init();
     
-    // If file doesn't exist, we need to seed from existing tasks
-    if (!existsSync(filePath)) {
+    // Seed from existing tasks if no tags exist yet
+    const existing = await this.list(true);
+    if (existing.length === 0) {
       await this.seedFromExistingTasks();
     }
   }
@@ -75,22 +73,19 @@ export class TagService extends ManagedListService<TagConfig> {
       // Create TagConfig entries for each unique tag
       const tagArray = Array.from(uniqueTags).sort();
       
+      const now = new Date().toISOString();
       for (let i = 0; i < tagArray.length; i++) {
         const tagString = tagArray[i];
         const color = TAG_COLORS[i % TAG_COLORS.length];
         
-        const now = new Date().toISOString();
-        const newTag: TagConfig = {
-          id: tagString, // Use tag string as ID for backward compatibility
+        await this.seedItem({
+          id: tagString,  // Must match existing task.tags values
           label: tagString,
           color,
           order: i,
           created: now,
           updated: now,
-        };
-
-        // Add to items array directly since we're seeding
-        await this.create({ label: tagString, color } as any);
+        } as TagConfig);
       }
 
       console.log(`Seeded ${tagArray.length} tags from existing tasks`);

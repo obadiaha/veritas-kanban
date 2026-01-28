@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { existsSync } from 'fs';
 import type { ProjectConfig } from '@veritas-kanban/shared';
 import { ManagedListService } from './managed-list-service.js';
 import { TaskService } from './task-service.js';
@@ -43,14 +42,15 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
    * Initialize service and perform seed migration if needed
    */
   async init(): Promise<void> {
+    // Prevent re-entrant init (list() calls init(), seed calls list())
+    if (this.seeded) return;
+    this.seeded = true;
+
     // Call parent init first
     await super.init();
 
     // Seed projects from existing tasks on first run
-    if (!this.seeded) {
-      await this.seedProjectsFromTasks();
-      this.seeded = true;
-    }
+    await this.seedProjectsFromTasks();
   }
 
   /**
@@ -82,21 +82,23 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
     });
 
     // Create ProjectConfig entries for each unique project
+    // Use the raw project string as the ID for backward compatibility
+    // (tasks store project as a plain string that must match the project ID)
     const projectArray = Array.from(projectStrings).sort();
+    const now = new Date().toISOString();
     
     for (let i = 0; i < projectArray.length; i++) {
       const projectName = projectArray[i];
       const color = PROJECT_COLORS[i % PROJECT_COLORS.length];
       
-      // Create the project using the project name as both id and label
-      const now = new Date().toISOString();
-      await this.create({
+      await this.seedItem({
+        id: projectName,  // Must match existing task.project values
         label: projectName,
         color,
         order: i,
         created: now,
         updated: now,
-      } as any);
+      } as ProjectConfig);
     }
 
     console.log(`✅ Seeded ${projectArray.length} projects from existing tasks`);
