@@ -67,6 +67,7 @@ describe('Auth Middleware', () => {
     // Reset environment
     delete process.env.VERITAS_AUTH_ENABLED;
     delete process.env.VERITAS_AUTH_LOCALHOST_BYPASS;
+    delete process.env.VERITAS_AUTH_LOCALHOST_ROLE;
     delete process.env.VERITAS_ADMIN_KEY;
     delete process.env.VERITAS_API_KEYS;
     process.env.NODE_ENV = 'development';
@@ -89,6 +90,7 @@ describe('Auth Middleware', () => {
       const config = getAuthConfig();
       expect(config.enabled).toBe(true); // default is enabled
       expect(config.allowLocalhostBypass).toBe(false);
+      expect(config.localhostRole).toBe('read-only'); // default is read-only, not admin
       expect(config.apiKeys).toEqual([]);
     });
 
@@ -130,6 +132,24 @@ describe('Auth Middleware', () => {
       process.env.VERITAS_ADMIN_KEY = 'admin-secret';
       const config = getAuthConfig();
       expect(config.adminKey).toBe('admin-secret');
+    });
+
+    it('should parse localhost role from env', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'admin';
+      const config = getAuthConfig();
+      expect(config.localhostRole).toBe('admin');
+    });
+
+    it('should accept agent as localhost role', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'agent';
+      const config = getAuthConfig();
+      expect(config.localhostRole).toBe('agent');
+    });
+
+    it('should default to read-only for invalid localhost role', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'superuser';
+      const config = getAuthConfig();
+      expect(config.localhostRole).toBe('read-only');
     });
   });
 
@@ -187,7 +207,7 @@ describe('Auth Middleware', () => {
       expect(req.auth?.keyName).toBe('myagent');
     });
 
-    it('should allow localhost bypass when enabled', () => {
+    it('should allow localhost bypass with read-only role by default', () => {
       process.env.VERITAS_AUTH_LOCALHOST_BYPASS = 'true';
       const req = mockRequest({
         socket: { remoteAddress: '127.0.0.1' } as any,
@@ -197,7 +217,38 @@ describe('Auth Middleware', () => {
 
       authenticate(req, res, next);
       expect(next).toHaveBeenCalled();
+      expect(req.auth?.role).toBe('read-only');
+      expect(req.auth?.keyName).toBe('localhost-bypass');
+      expect(req.auth?.isLocalhost).toBe(true);
+    });
+
+    it('should allow localhost bypass with admin role when explicitly configured', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_BYPASS = 'true';
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'admin';
+      const req = mockRequest({
+        socket: { remoteAddress: '127.0.0.1' } as any,
+      }) as AuthenticatedRequest;
+      const res = mockResponse();
+      const next = mockNext();
+
+      authenticate(req, res, next);
+      expect(next).toHaveBeenCalled();
       expect(req.auth?.role).toBe('admin');
+      expect(req.auth?.isLocalhost).toBe(true);
+    });
+
+    it('should allow localhost bypass with agent role when configured', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_BYPASS = 'true';
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'agent';
+      const req = mockRequest({
+        socket: { remoteAddress: '127.0.0.1' } as any,
+      }) as AuthenticatedRequest;
+      const res = mockResponse();
+      const next = mockNext();
+
+      authenticate(req, res, next);
+      expect(next).toHaveBeenCalled();
+      expect(req.auth?.role).toBe('agent');
       expect(req.auth?.isLocalhost).toBe(true);
     });
 
@@ -526,8 +577,23 @@ describe('Auth Middleware', () => {
       expect(result.role).toBe('admin');
     });
 
-    it('should allow localhost bypass for WebSocket', () => {
+    it('should allow localhost bypass for WebSocket with read-only role by default', () => {
       process.env.VERITAS_AUTH_LOCALHOST_BYPASS = 'true';
+      const req = {
+        headers: {},
+        url: '/ws',
+        socket: { remoteAddress: '127.0.0.1' },
+      } as unknown as IncomingMessage;
+
+      const result = authenticateWebSocket(req);
+      expect(result.authenticated).toBe(true);
+      expect(result.role).toBe('read-only');
+      expect(result.keyName).toBe('localhost-bypass');
+    });
+
+    it('should allow WebSocket localhost bypass with admin when configured', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_BYPASS = 'true';
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'admin';
       const req = {
         headers: {},
         url: '/ws',
@@ -646,11 +712,18 @@ describe('Auth Middleware', () => {
       expect(status.enabled).toBe(true);
       expect(status.hasAdminKey).toBe(true);
       expect(status.configuredKeys).toBe(2);
+      expect(status.localhostRole).toBe('read-only');
     });
 
     it('should report no admin key when not set', () => {
       const status = getAuthStatus();
       expect(status.hasAdminKey).toBe(false);
+    });
+
+    it('should report configured localhost role', () => {
+      process.env.VERITAS_AUTH_LOCALHOST_ROLE = 'agent';
+      const status = getAuthStatus();
+      expect(status.localhostRole).toBe('agent');
     });
   });
 });

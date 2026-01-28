@@ -390,9 +390,9 @@ export function authenticateWebSocket(req: IncomingMessage): WebSocketAuthResult
     }
   }
   
-  // 3. Localhost bypass
+  // 3. Localhost bypass — role is configurable (default: read-only)
   if (config.allowLocalhostBypass && isLocalhost) {
-    return { authenticated: true, role: 'admin', isLocalhost };
+    return { authenticated: true, role: config.localhostRole, keyName: 'localhost-bypass', isLocalhost };
   }
   
   return {
@@ -485,6 +485,7 @@ export function isAuthRequired(): boolean {
 export function getAuthStatus(): {
   enabled: boolean;
   localhostBypass: boolean;
+  localhostRole: AuthRole;
   configuredKeys: number;
   hasAdminKey: boolean;
 } {
@@ -492,6 +493,7 @@ export function getAuthStatus(): {
   return {
     enabled: config.enabled,
     localhostBypass: config.allowLocalhostBypass,
+    localhostRole: config.localhostRole,
     configuredKeys: config.apiKeys.length,
     hasAdminKey: !!config.adminKey,
   };

@@ -1,5 +1,38 @@
 [
   {
+    "id": "activity_1769641651256_pk0yk59x9",
+    "type": "status_changed",
+    "taskId": "task_20260128_nK2-lo",
+    "taskTitle": "SECURITY: Fix timing-unsafe recovery key comparison",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-28T23:07:31.256Z"
+  },
+  {
+    "id": "activity_1769641629119_qtl7depgy",
+    "type": "comment_added",
+    "taskId": "task_20260128_CvshRR",
+    "taskTitle": "SECURITY: Remove plaintext credentials from task data",
+    "details": {
+      "author": "Veritas",
+      "preview": "Redacted plaintext Bird auth_token and ct0 from ta..."
+    },
+    "timestamp": "2026-01-28T23:07:09.119Z"
+  },
+  {
+    "id": "activity_1769641629103_3fb9xjz8n",
+    "type": "status_changed",
+    "taskId": "task_20260128_CvshRR",
+    "taskTitle": "SECURITY: Remove plaintext credentials from task data",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-28T23:07:09.103Z"
+  },
+  {
     "id": "activity_1769641568958_ls1eo4x7s",
     "type": "task_updated",
     "taskId": "task_20260128_Wfm3py",

@@ -293,8 +293,10 @@ router.post('/recover', asyncHandler(async (req: Request, res: Response) => {
   // Verify recovery key
   const recoveryKeyHash = await hashRecoveryKey(recoveryKey);
   
-  // Use timing-safe comparison
-  const valid = config.recoveryKeyHash === recoveryKeyHash;
+  // Timing-safe comparison to prevent side-channel attacks
+  const storedBuf = Buffer.from(config.recoveryKeyHash, 'hex');
+  const inputBuf = Buffer.from(recoveryKeyHash, 'hex');
+  const valid = storedBuf.length === inputBuf.length && crypto.timingSafeEqual(storedBuf, inputBuf);
   
   if (!valid) {
     res.status(401).json({
