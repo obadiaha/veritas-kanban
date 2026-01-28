@@ -1,13 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { useWebSocketStatus } from '@/contexts/WebSocketContext';
 import type { Task, CreateTaskInput, UpdateTaskInput } from '@veritas-kanban/shared';
 
+/**
+ * Polling intervals based on WebSocket connection state.
+ * - Connected: 60s safety-net polling (WS delivers real-time updates)
+ * - Disconnected: 10s aggressive polling as fallback
+ */
+const POLL_INTERVAL_WS_CONNECTED = 60_000;
+const POLL_INTERVAL_WS_DISCONNECTED = 10_000;
+
 export function useTasks() {
+  const { isConnected } = useWebSocketStatus();
+
   return useQuery({
     queryKey: ['tasks'],
     queryFn: api.tasks.list,
-    refetchInterval: 10000, // Poll every 10s as fallback (WebSocket handles instant updates)
-    staleTime: 5000, // Consider data stale after 5s
+    refetchInterval: isConnected
+      ? POLL_INTERVAL_WS_CONNECTED
+      : POLL_INTERVAL_WS_DISCONNECTED,
+    staleTime: isConnected ? 30_000 : 5_000,
   });
 }
 
@@ -323,10 +336,13 @@ export function getTaskBlockers(task: Task, allTasks: Task[]): Task[] {
 
 // Archive suggestions - sprints where all tasks are done
 export function useArchiveSuggestions() {
+  const { isConnected } = useWebSocketStatus();
+
   return useQuery({
     queryKey: ['tasks', 'archive-suggestions'],
     queryFn: api.tasks.getArchiveSuggestions,
-    refetchInterval: 30000, // Check every 30s
+    // When WS is connected, task:changed events trigger invalidation anyway
+    refetchInterval: isConnected ? 120_000 : 30_000,
   });
 }
 

@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import mime from 'mime-types';
 import type { Attachment, AttachmentLimits } from '@veritas-kanban/shared';
 import { DEFAULT_ATTACHMENT_LIMITS, ALLOWED_MIME_TYPES } from '@veritas-kanban/shared';
+import { validateMimeType, getAllowedTypesDescription } from './mime-validation.js';
 
 // Default paths - resolve to project root (one level up from server/)
 const DEFAULT_PROJECT_ROOT = path.resolve(process.cwd(), '..');
@@ -98,10 +99,11 @@ export class AttachmentService {
   }
 
   /**
-   * Validate file against limits and allowed types
+   * Validate file against limits and allowed types (basic checks only).
+   * For full MIME validation including magic bytes, use validateFileWithMime().
    */
   validateFile(file: Express.Multer.File, currentAttachments: Attachment[] = []): void {
-    // Check file size
+    // Check file size (global limit)
     if (file.size > this.limits.maxFileSize) {
       throw new Error(
         `File size (${Math.round(file.size / 1024 / 1024)}MB) exceeds maximum allowed size (${Math.round(this.limits.maxFileSize / 1024 / 1024)}MB)`
@@ -123,22 +125,54 @@ export class AttachmentService {
       );
     }
 
-    // Check MIME type
+    // Check MIME type against shared allowed list (quick pre-check)
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new Error(`File type "${file.mimetype}" is not allowed`);
+      throw new Error(
+        `File type "${file.mimetype}" is not allowed. Allowed types: ${getAllowedTypesDescription()}`
+      );
     }
   }
 
   /**
-   * Save an uploaded file and return attachment metadata
+   * Validate file with full server-side MIME type detection using magic bytes.
+   * This verifies the actual file content matches the claimed type to prevent
+   * disguised file uploads (e.g., executables renamed as .jpg).
+   *
+   * Returns the validated/detected MIME type to use for the attachment metadata.
+   */
+  async validateFileWithMime(
+    file: Express.Multer.File,
+    currentAttachments: Attachment[] = []
+  ): Promise<string> {
+    // Run basic validation first (size, count, total limits)
+    this.validateFile(file, currentAttachments);
+
+    // Run magic-byte MIME validation
+    const result = await validateMimeType(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      file.size,
+    );
+
+    if (!result.valid) {
+      throw new Error(result.error || 'File type validation failed');
+    }
+
+    return result.effectiveMime;
+  }
+
+  /**
+   * Save an uploaded file and return attachment metadata.
+   * Performs full MIME validation using magic bytes before saving.
    */
   async saveAttachment(
     taskId: string,
     file: Express.Multer.File,
     currentAttachments: Attachment[] = []
   ): Promise<Attachment> {
-    // Validate file
-    this.validateFile(file, currentAttachments);
+    // Validate file with magic-byte MIME detection
+    const validatedMime = await this.validateFileWithMime(file, currentAttachments);
 
     // Generate attachment ID and sanitize filename
     const attachmentId = `att_${Date.now()}_${nanoid(6)}`;
@@ -153,12 +187,12 @@ export class AttachmentService {
     const filepath = path.join(taskDir, filename);
     await fs.writeFile(filepath, file.buffer);
 
-    // Create attachment metadata
+    // Create attachment metadata (use validated MIME type, not client-provided)
     const attachment: Attachment = {
       id: attachmentId,
       filename,
       originalName: file.originalname,
-      mimeType: file.mimetype,
+      mimeType: validatedMime,
       size: file.size,
       uploaded: new Date().toISOString(),
     };

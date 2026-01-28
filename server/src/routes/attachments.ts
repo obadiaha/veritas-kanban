@@ -40,20 +40,21 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
 
     const currentAttachments = task.attachments || [];
     const newAttachments: Attachment[] = [];
+    const rejectedFiles: { filename: string; error: string }[] = [];
 
     // Process each file
     for (const file of files) {
       try {
-        // Save attachment
+        // Save attachment (includes magic-byte MIME validation)
         const attachment = await attachmentService.saveAttachment(
           taskId,
           file,
           [...currentAttachments, ...newAttachments]
         );
 
-        // Extract text
+        // Extract text using the validated MIME type
         const filepath = attachmentService.getAttachmentPath(taskId, attachment.filename);
-        const extractedText = await textExtractionService.extractText(filepath, file.mimetype);
+        const extractedText = await textExtractionService.extractText(filepath, attachment.mimeType);
 
         // Save extracted text if available
         if (extractedText) {
@@ -62,9 +63,19 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
 
         newAttachments.push(attachment);
       } catch (error) {
-        console.error('Error processing file:', error);
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error(`Rejected file "${file.originalname}":`, message);
+        rejectedFiles.push({ filename: file.originalname, error: message });
         // Continue with other files
       }
+    }
+
+    // If ALL files were rejected, return 400
+    if (newAttachments.length === 0 && rejectedFiles.length > 0) {
+      return res.status(400).json({
+        error: 'All files were rejected',
+        rejected: rejectedFiles,
+      });
     }
 
     // Update task with new attachments
@@ -76,6 +87,8 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
       success: true,
       attachments: newAttachments,
       task: updatedTask,
+      // Include rejected files info if some were rejected
+      ...(rejectedFiles.length > 0 && { rejected: rejectedFiles }),
     });
   } catch (error) {
     console.error('Upload error:', error);
