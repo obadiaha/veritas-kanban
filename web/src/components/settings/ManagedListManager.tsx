@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import { Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
+import { Trash2, GripVertical } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -101,10 +101,6 @@ function SortableItem<T extends ManagedListItem>({
     setDeleteDialogOpen(false);
   };
 
-  const handleToggleHidden = async () => {
-    await onUpdate(item.id, { isHidden: !item.isHidden });
-  };
-
   const handleExtraFieldChange = (patch: Partial<T>) => {
     onUpdate(item.id, patch);
   };
@@ -146,9 +142,6 @@ function SortableItem<T extends ManagedListItem>({
               onClick={() => setIsEditing(true)}
             >
               {item.label}
-              {item.isDefault && (
-                <span className="ml-2 text-xs text-muted-foreground">(default)</span>
-              )}
               {item.isHidden && (
                 <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>
               )}
@@ -159,23 +152,11 @@ function SortableItem<T extends ManagedListItem>({
         </div>
 
         <div className="flex items-center gap-1">
-          {item.isDefault && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleToggleHidden}
-              title={item.isHidden ? 'Show' : 'Hide'}
-            >
-              {item.isHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-          )}
-
           <Button
             variant="ghost"
             size="sm"
             onClick={handleDeleteClick}
-            disabled={item.isDefault}
-            title={item.isDefault ? 'Cannot delete default item' : 'Delete'}
+            title="Delete"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -189,16 +170,12 @@ function SortableItem<T extends ManagedListItem>({
               {deleteInfo && !deleteInfo.allowed ? 'Cannot Delete' : 'Delete Item?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {deleteInfo && deleteInfo.isDefault && (
-                <span>This is a default item and cannot be deleted.</span>
-              )}
-              {deleteInfo && !deleteInfo.isDefault && deleteInfo.referenceCount > 0 && !deleteInfo.allowed && (
-                <span>This item is referenced by {deleteInfo.referenceCount} task(s) and cannot be deleted.</span>
-              )}
-              {deleteInfo && deleteInfo.allowed && (
-                <span>Are you sure you want to delete &quot;{item.label}&quot;? This action cannot be undone.</span>
-              )}
-              {!deleteInfo && (
+              {deleteInfo && deleteInfo.referenceCount > 0 && !deleteInfo.allowed ? (
+                <span>
+                  &quot;{item.label}&quot; is used by {deleteInfo.referenceCount} task(s). 
+                  Remove or reassign those tasks first before deleting this item.
+                </span>
+              ) : (
                 <span>Are you sure you want to delete &quot;{item.label}&quot;? This action cannot be undone.</span>
               )}
             </AlertDialogDescription>

@@ -4,30 +4,30 @@
     "label": "Code",
     "icon": "Code",
     "color": "border-l-violet-500",
-    "order": 1,
+    "order": 2,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:27:49.587Z"
+    "updated": "2026-01-28T04:32:03.855Z"
   },
   {
     "id": "research",
     "label": "Research",
     "icon": "BookOpen",
     "color": "border-l-cyan-500",
-    "order": 3,
+    "order": 4,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:27:49.587Z"
+    "updated": "2026-01-28T04:32:03.855Z"
   },
   {
     "id": "content",
     "label": "Content",
     "icon": "FileText",
     "color": "border-l-orange-500",
-    "order": 2,
+    "order": 3,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:27:49.587Z"
+    "updated": "2026-01-28T04:32:59.581Z"
   },
   {
     "id": "automation",
@@ -37,6 +37,15 @@
     "order": 0,
     "isDefault": true,
     "created": "2026-01-28T04:03:21.782Z",
-    "updated": "2026-01-28T04:27:49.587Z"
+    "updated": "2026-01-28T04:32:03.855Z"
+  },
+  {
+    "label": "Bug",
+    "icon": "Bug",
+    "color": "border-l-red-500",
+    "id": "bug-GdN5rT",
+    "order": 1,
+    "created": "2026-01-28T04:31:31.690Z",
+    "updated": "2026-01-28T04:32:03.855Z"
   }
 ]

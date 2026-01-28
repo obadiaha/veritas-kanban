@@ -172,7 +172,7 @@ export class ManagedListService<T extends ManagedListItem> {
     const referenceCount = this.referenceCounter ? await this.referenceCounter(id) : 0;
     
     return {
-      allowed: !isDefault && referenceCount === 0,
+      allowed: referenceCount === 0,
       referenceCount,
       isDefault,
     };
@@ -187,11 +187,6 @@ export class ManagedListService<T extends ManagedListItem> {
     const item = this.items.find(item => item.id === id);
     if (!item) {
       return { deleted: false };
-    }
-    
-    // Don't allow deleting default items
-    if (item.isDefault && !force) {
-      return { deleted: false, referenceCount: 0 };
     }
     
     // Check references if not forced
