@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { 
-  useDailySummary, 
-  formatDurationMs, 
+import {
+  useDailySummary,
+  formatDurationMs,
   calculateActivePercent,
   getStatusColor,
   type DailySummary,
@@ -18,7 +18,7 @@ interface StatusTimelineProps {
 
 function TimelineBar({ summary }: { summary: DailySummary }) {
   const total = summary.activeMs + summary.idleMs + summary.errorMs;
-  
+
   if (total === 0) {
     return (
       <div className="h-8 bg-muted rounded-md flex items-center justify-center text-sm text-muted-foreground">
@@ -35,7 +35,7 @@ function TimelineBar({ summary }: { summary: DailySummary }) {
   return (
     <div className="h-8 rounded-md overflow-hidden flex">
       {activePercent > 0 && (
-        <div 
+        <div
           className="bg-green-500 flex items-center justify-center text-xs text-white font-medium transition-all"
           style={{ width: `${activePercent}%` }}
           title={`Active: ${formatDurationMs(summary.activeMs)}`}
@@ -44,7 +44,7 @@ function TimelineBar({ summary }: { summary: DailySummary }) {
         </div>
       )}
       {idlePercent > 0 && (
-        <div 
+        <div
           className="bg-gray-400 flex items-center justify-center text-xs text-white font-medium transition-all"
           style={{ width: `${idlePercent}%` }}
           title={`Idle: ${formatDurationMs(summary.idleMs)}`}
@@ -53,7 +53,7 @@ function TimelineBar({ summary }: { summary: DailySummary }) {
         </div>
       )}
       {errorPercent > 0 && (
-        <div 
+        <div
           className="bg-red-500 flex items-center justify-center text-xs text-white font-medium transition-all"
           style={{ width: `${errorPercent}%` }}
           title={`Error: ${formatDurationMs(summary.errorMs)}`}
@@ -67,12 +67,14 @@ function TimelineBar({ summary }: { summary: DailySummary }) {
 
 function StatusBadge({ status }: { status: string }) {
   const colorClass = getStatusColor(status);
-  
+
   return (
-    <span className={cn(
-      'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white',
-      colorClass
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white',
+        colorClass
+      )}
+    >
       {status}
     </span>
   );
@@ -81,23 +83,21 @@ function StatusBadge({ status }: { status: string }) {
 function RecentTransitions({ entries }: { entries: StatusHistoryEntry[] }) {
   if (entries.length === 0) {
     return (
-      <div className="text-sm text-muted-foreground text-center py-2">
-        No recent transitions
-      </div>
+      <div className="text-sm text-muted-foreground text-center py-2">No recent transitions</div>
     );
   }
 
   return (
     <div className="space-y-2 max-h-48 overflow-y-auto">
       {entries.slice(0, 10).map((entry) => (
-        <div 
+        <div
           key={entry.id}
           className="flex items-center gap-2 text-sm p-2 rounded hover:bg-muted/50"
         >
           <span className="text-xs text-muted-foreground w-16 shrink-0">
-            {new Date(entry.timestamp).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
+            {new Date(entry.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
             })}
           </span>
           <StatusBadge status={entry.previousStatus} />
@@ -122,9 +122,7 @@ export function StatusTimeline({ date }: StatusTimelineProps) {
   const todayEntries = useMemo(() => {
     if (!history) return [];
     const targetDate = date || new Date().toISOString().split('T')[0];
-    return history.filter(entry => 
-      entry.timestamp.startsWith(targetDate)
-    );
+    return history.filter((entry) => entry.timestamp.startsWith(targetDate));
   }, [history, date]);
 
   if (summaryLoading || historyLoading) {
@@ -141,63 +139,59 @@ export function StatusTimeline({ date }: StatusTimelineProps) {
   }
 
   if (!summary) {
-    return (
-      <div className="text-center text-muted-foreground py-4">
-        No status data available
-      </div>
-    );
+    return <div className="text-center text-muted-foreground py-4">No status data available</div>;
   }
 
   const activePercent = calculateActivePercent(summary);
 
   return (
     <div className="space-y-4">
-      {/* Daily Timeline Bar */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Daily Activity ({summary.date})
-          </h4>
-          <span className="text-sm font-medium">
-            {activePercent}% active
-          </span>
-        </div>
-        <TimelineBar summary={summary} />
-      </div>
+      {/* Daily Activity (75%) + Recent Status Changes (25%) side by side */}
+      <div className="grid grid-cols-4 gap-4">
+        {/* Daily Activity — 3/4 width */}
+        <div className="col-span-3 space-y-4">
+          {/* Timeline Bar */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium text-muted-foreground">
+                Daily Activity ({summary.date})
+              </h4>
+              <span className="text-sm font-medium">{activePercent}% active</span>
+            </div>
+            <TimelineBar summary={summary} />
+          </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border bg-green-500/10 border-green-500/20 p-3 text-center">
-          <Activity className="h-4 w-4 mx-auto mb-1 text-green-500" />
-          <div className="text-lg font-bold text-green-500">
-            {formatDurationMs(summary.activeMs)}
-          </div>
-          <div className="text-xs text-muted-foreground">Active</div>
-        </div>
-        
-        <div className="rounded-lg border bg-muted/50 p-3 text-center">
-          <Coffee className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-          <div className="text-lg font-bold text-muted-foreground">
-            {formatDurationMs(summary.idleMs)}
-          </div>
-          <div className="text-xs text-muted-foreground">Idle</div>
-        </div>
-        
-        <div className="rounded-lg border bg-card p-3 text-center">
-          <Clock className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-          <div className="text-lg font-bold">
-            {summary.transitions}
-          </div>
-          <div className="text-xs text-muted-foreground">Transitions</div>
-        </div>
-      </div>
+          {/* Summary Stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="rounded-lg border bg-green-500/10 border-green-500/20 p-3 text-center">
+              <Activity className="h-4 w-4 mx-auto mb-1 text-green-500" />
+              <div className="text-lg font-bold text-green-500">
+                {formatDurationMs(summary.activeMs)}
+              </div>
+              <div className="text-xs text-muted-foreground">Active</div>
+            </div>
 
-      {/* Recent Transitions */}
-      <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-2">
-          Recent Status Changes
-        </h4>
-        <RecentTransitions entries={todayEntries} />
+            <div className="rounded-lg border bg-muted/50 p-3 text-center">
+              <Coffee className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
+              <div className="text-lg font-bold text-muted-foreground">
+                {formatDurationMs(summary.idleMs)}
+              </div>
+              <div className="text-xs text-muted-foreground">Idle</div>
+            </div>
+
+            <div className="rounded-lg border bg-card p-3 text-center">
+              <Clock className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
+              <div className="text-lg font-bold">{summary.transitions}</div>
+              <div className="text-xs text-muted-foreground">Transitions</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Status Changes — 1/4 width */}
+        <div className="col-span-1">
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Recent Status Changes</h4>
+          <RecentTransitions entries={todayEntries} />
+        </div>
       </div>
 
       {/* Legend */}
