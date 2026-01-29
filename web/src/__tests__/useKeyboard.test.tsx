@@ -7,18 +7,23 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
 import { createMockTask } from './test-utils';
 
-// Mock toast — vi.mock is hoisted before imports
+// Mock toast — vi.mock is hoisted before imports.
+// useKeyboard.tsx imports from relative path but vitest resolves @/ aliases in mocks.
 vi.mock('@/hooks/useToast', () => ({
   toast: vi.fn(),
   useToast: () => ({ toast: vi.fn(), toasts: [], dismiss: vi.fn() }),
+  default: vi.fn(),
 }));
 
 import { KeyboardProvider, useKeyboard } from '@/hooks/useKeyboard';
 
 // ── Test Component ───────────────────────────────────────────
 
+/** Stable empty array to avoid infinite re-render loops from default params. */
+const EMPTY_TASKS: Task[] = [];
+
 function TestConsumer({
-  tasks = [],
+  tasks = EMPTY_TASKS,
   onOpenTask,
   onMoveTask,
 }: {
@@ -26,22 +31,23 @@ function TestConsumer({
   onOpenTask?: (task: Task) => void;
   onMoveTask?: (taskId: string, status: TaskStatus) => void;
 }) {
-  const ctx = useKeyboard();
+  const { setTasks, setOnOpenTask, setOnMoveTask, selectedTaskId, isHelpOpen, openHelpDialog } =
+    useKeyboard();
 
   React.useEffect(() => {
-    ctx.setTasks(tasks);
-  }, [tasks, ctx]);
+    setTasks(tasks);
+  }, [tasks, setTasks]);
 
   React.useEffect(() => {
-    if (onOpenTask) ctx.setOnOpenTask(onOpenTask);
-    if (onMoveTask) ctx.setOnMoveTask(onMoveTask);
-  }, [onOpenTask, onMoveTask, ctx]);
+    if (onOpenTask) setOnOpenTask(onOpenTask);
+    if (onMoveTask) setOnMoveTask(onMoveTask);
+  }, [onOpenTask, onMoveTask, setOnOpenTask, setOnMoveTask]);
 
   return (
     <div>
-      <div data-testid="selected">{ctx.selectedTaskId ?? 'none'}</div>
-      <div data-testid="help-open">{ctx.isHelpOpen ? 'yes' : 'no'}</div>
-      <button data-testid="open-help" onClick={ctx.openHelpDialog}>
+      <div data-testid="selected">{selectedTaskId ?? 'none'}</div>
+      <div data-testid="help-open">{isHelpOpen ? 'yes' : 'no'}</div>
+      <button data-testid="open-help" onClick={openHelpDialog}>
         Open Help
       </button>
     </div>

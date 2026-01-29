@@ -1,4 +1,13 @@
-import { createContext, useContext, useCallback, useEffect, useState, useRef, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  type ReactNode,
+} from 'react';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
 import { toast } from './useToast';
 
@@ -9,15 +18,15 @@ interface KeyboardContextValue {
   openHelpDialog: () => void;
   closeHelpDialog: () => void;
   isHelpOpen: boolean;
-  
+
   // Task selection
   selectedTaskId: string | null;
   setSelectedTaskId: (id: string | null) => void;
-  
+
   // Task list for navigation
   tasks: Task[];
   setTasks: (tasks: Task[]) => void;
-  
+
   // Callbacks (using refs to avoid re-render loops)
   setOnOpenTask: (fn: (task: Task) => void) => void;
   setOnMoveTask: (fn: (taskId: string, status: TaskStatus) => void) => void;
@@ -36,7 +45,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  
+
   // Use refs for callbacks to avoid re-render loops
   const openCreateDialogRef = useRef<(() => void) | null>(null);
   const onOpenTaskRef = useRef<((task: Task) => void) | null>(null);
@@ -82,11 +91,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if typing in input/textarea
       const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
       }
 
@@ -98,9 +103,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       }
 
       const taskList = getTaskList();
-      const currentIndex = selectedTaskId
-        ? taskList.findIndex(t => t.id === selectedTaskId)
-        : -1;
+      const currentIndex = selectedTaskId ? taskList.findIndex((t) => t.id === selectedTaskId) : -1;
 
       switch (e.key) {
         case 'c':
@@ -110,7 +113,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
         case '?':
           e.preventDefault();
-          setIsHelpOpen(prev => !prev);
+          setIsHelpOpen((prev) => !prev);
           break;
 
         case 'Escape':
@@ -143,7 +146,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         case 'Enter':
           e.preventDefault();
           if (selectedTaskId && onOpenTaskRef.current) {
-            const task = taskList.find(t => t.id === selectedTaskId);
+            const task = taskList.find((t) => t.id === selectedTaskId);
             if (task) {
               onOpenTaskRef.current(task);
             }
@@ -171,32 +174,38 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    getTaskList,
-    selectedTaskId,
-    isHelpOpen,
-    openCreateDialog,
-  ]);
+  }, [getTaskList, selectedTaskId, isHelpOpen, openCreateDialog]);
 
-  const value: KeyboardContextValue = {
-    openCreateDialog,
-    setOpenCreateDialog,
-    openHelpDialog,
-    closeHelpDialog,
-    isHelpOpen,
-    selectedTaskId,
-    setSelectedTaskId,
-    tasks,
-    setTasks,
-    setOnOpenTask,
-    setOnMoveTask,
-  };
-
-  return (
-    <KeyboardContext.Provider value={value}>
-      {children}
-    </KeyboardContext.Provider>
+  const value = useMemo<KeyboardContextValue>(
+    () => ({
+      openCreateDialog,
+      setOpenCreateDialog,
+      openHelpDialog,
+      closeHelpDialog,
+      isHelpOpen,
+      selectedTaskId,
+      setSelectedTaskId,
+      tasks,
+      setTasks,
+      setOnOpenTask,
+      setOnMoveTask,
+    }),
+    [
+      openCreateDialog,
+      setOpenCreateDialog,
+      openHelpDialog,
+      closeHelpDialog,
+      isHelpOpen,
+      selectedTaskId,
+      setSelectedTaskId,
+      tasks,
+      setTasks,
+      setOnOpenTask,
+      setOnMoveTask,
+    ]
   );
+
+  return <KeyboardContext.Provider value={value}>{children}</KeyboardContext.Provider>;
 }
 
 export function useKeyboard() {
