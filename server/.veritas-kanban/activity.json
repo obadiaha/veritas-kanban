@@ -1,5 +1,27 @@
 [
   {
+    "id": "activity_1769684823903_4j3z6nj0v",
+    "type": "status_changed",
+    "taskId": "task_20260129_5A1uqL",
+    "taskTitle": "[v1.1] TESTING: Create load testing suite with k6 or Artillery",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-29T11:07:03.903Z"
+  },
+  {
+    "id": "activity_1769684823894_d7xlvr08f",
+    "type": "status_changed",
+    "taskId": "task_20260128_znWaEu",
+    "taskTitle": "QUALITY: Add frontend unit tests (1 test for 152 source files)",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-29T11:07:03.894Z"
+  },
+  {
     "id": "activity_1769684783257_lolvoukac",
     "type": "comment_added",
     "taskId": "task_20260128_RcHzcp",
