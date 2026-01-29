@@ -1,5 +1,27 @@
 [
   {
+    "id": "activity_1769672571937_gnev4tzs2",
+    "type": "comment_added",
+    "taskId": "task_20260129_dbCQKb",
+    "taskTitle": "LAUNCH: Bump version to 1.0.0, create CHANGELOG, and tag release",
+    "details": {
+      "author": "Veritas",
+      "preview": "v1.0.0 shipped. All 6 packages bumped, CHANGELOG c..."
+    },
+    "timestamp": "2026-01-29T07:42:51.937Z"
+  },
+  {
+    "id": "activity_1769672571911_a55xyy9rv",
+    "type": "status_changed",
+    "taskId": "task_20260129_dbCQKb",
+    "taskTitle": "LAUNCH: Bump version to 1.0.0, create CHANGELOG, and tag release",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-29T07:42:51.911Z"
+  },
+  {
     "id": "activity_1769672406939_9zqexuw9f",
     "type": "comment_added",
     "taskId": "task_20260129_ShiEfl",
