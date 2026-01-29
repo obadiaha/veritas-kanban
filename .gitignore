@@ -35,6 +35,7 @@ tasks/archive/*.md
 .veritas-kanban/logs/
 .veritas-kanban/config.json
 .veritas-kanban/security.json
+.veritas-kanban/backups/
 
 # Test
 coverage/
