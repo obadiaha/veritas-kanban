@@ -1,15 +1,18 @@
 import { useState, useMemo } from 'react';
-import { Archive, RefreshCw, Search, Calendar, FolderOpen, RotateCcw, ChevronDown } from 'lucide-react';
+import {
+  Archive,
+  RefreshCw,
+  Search,
+  Calendar,
+  FolderOpen,
+  RotateCcw,
+  ChevronDown,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   Select,
   SelectContent,
@@ -64,43 +67,39 @@ interface SprintConfig {
   label: string;
 }
 
-function ArchivedTaskItem({ 
-  task, 
+function ArchivedTaskItem({
+  task,
   onClick,
   onRestore,
   isRestoring,
   projects = [],
   sprints = [],
-}: { 
-  task: Task; 
+}: {
+  task: Task;
   onClick?: () => void;
   onRestore?: () => void;
   isRestoring?: boolean;
   projects?: ProjectConfig[];
   sprints?: SprintConfig[];
 }) {
-  const projectLabel = task.project 
-    ? projects.find(p => p.id === task.project)?.label || task.project 
+  const projectLabel = task.project
+    ? projects.find((p) => p.id === task.project)?.label || task.project
     : null;
-  const sprintLabel = task.sprint 
-    ? sprints.find(s => s.id === task.sprint)?.label || task.sprint 
+  const sprintLabel = task.sprint
+    ? sprints.find((s) => s.id === task.sprint)?.label || task.sprint
     : null;
 
   return (
-    <div 
+    <div
       className={cn(
-        "flex items-start gap-3 py-3 px-2 rounded-md transition-colors group",
-        "hover:bg-muted/50 cursor-pointer"
+        'flex items-start gap-3 py-3 px-2 rounded-md transition-colors group',
+        'hover:bg-muted/50 cursor-pointer'
       )}
       onClick={onClick}
     >
-      <span className="text-lg flex-shrink-0">
-        {typeIcons[task.type] || '📋'}
-      </span>
+      <span className="text-lg flex-shrink-0">{typeIcons[task.type] || '📋'}</span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium truncate">
-          {task.title}
-        </div>
+        <div className="text-sm font-medium truncate">{task.title}</div>
         <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
           {projectLabel && (
             <span className="flex items-center gap-1">
@@ -133,7 +132,7 @@ function ArchivedTaskItem({
           disabled={isRestoring}
           title="Restore to board"
         >
-          <RotateCcw className={cn("h-4 w-4", isRestoring && "animate-spin")} />
+          <RotateCcw className={cn('h-4 w-4', isRestoring && 'animate-spin')} />
         </Button>
       )}
     </div>
@@ -148,7 +147,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  
+
   const { data: archivedTasks, isLoading, refetch, isRefetching } = useArchivedTasks();
   const restoreTask = useRestoreTask();
   const { data: sprintsList = [] } = useSprints();
@@ -170,7 +169,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
   };
 
   const handleRestoreFromDetail = async (taskId: string) => {
-    const task = archivedTasks?.find(t => t.id === taskId);
+    const task = archivedTasks?.find((t) => t.id === taskId);
     if (task) {
       await handleRestore(task);
     }
@@ -194,32 +193,33 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
   // Get unique projects for filter dropdown, with labels
   const projects = useMemo(() => {
     if (!archivedTasks) return [];
-    const projectIds = new Set(archivedTasks.map(t => t.project).filter(Boolean) as string[]);
+    const projectIds = new Set(archivedTasks.map((t) => t.project).filter(Boolean) as string[]);
     return projectsList
-      .filter(p => projectIds.has(p.id))
+      .filter((p) => projectIds.has(p.id))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [archivedTasks, projectsList]);
 
   // Filter tasks
   const filteredTasks = useMemo(() => {
     if (!archivedTasks) return [];
-    
-    return archivedTasks.filter(task => {
+
+    return archivedTasks.filter((task) => {
       // Search filter
       if (search) {
         const searchLower = search.toLowerCase();
         const matchesTitle = task.title.toLowerCase().includes(searchLower);
         const matchesDescription = task.description?.toLowerCase().includes(searchLower);
         const matchesSprint = task.sprint?.toLowerCase().includes(searchLower);
-        if (!matchesTitle && !matchesDescription && !matchesSprint) return false;
+        const matchesId = task.id.toLowerCase().includes(searchLower);
+        if (!matchesTitle && !matchesDescription && !matchesSprint && !matchesId) return false;
       }
-      
+
       // Type filter
       if (typeFilter !== 'all' && task.type !== typeFilter) return false;
-      
+
       // Project filter
       if (projectFilter !== 'all' && task.project !== projectFilter) return false;
-      
+
       return true;
     });
   }, [archivedTasks, search, typeFilter, projectFilter]);
@@ -256,10 +256,10 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                 disabled={isRefetching}
                 className="h-8 w-8"
               >
-                <RefreshCw className={cn("h-4 w-4", isRefetching && "animate-spin")} />
+                <RefreshCw className={cn('h-4 w-4', isRefetching && 'animate-spin')} />
               </Button>
             </div>
-            
+
             {/* Search */}
             <div className="relative mt-2">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -286,7 +286,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                   ))}
                 </SelectContent>
               </Select>
-              
+
               {projects.length > 0 && (
                 <Select value={projectFilter} onValueChange={setProjectFilter}>
                   <SelectTrigger className="flex-1">
@@ -294,7 +294,7 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Projects</SelectItem>
-                    {projects.map(project => (
+                    {projects.map((project) => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.label}
                       </SelectItem>
@@ -307,7 +307,8 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
             {/* Results count */}
             {filteredTasks.length > 0 && filteredTasks.length !== archivedTasks?.length && (
               <div className="text-xs text-muted-foreground mt-1">
-                Showing {Math.min(visibleCount, filteredTasks.length)} of {filteredTasks.length} filtered tasks
+                Showing {Math.min(visibleCount, filteredTasks.length)} of {filteredTasks.length}{' '}
+                filtered tasks
               </div>
             )}
           </SheetHeader>
@@ -320,16 +321,16 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                 </div>
               ) : filteredTasks.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
-                  {archivedTasks?.length === 0 
+                  {archivedTasks?.length === 0
                     ? 'No archived tasks yet'
                     : 'No tasks match your filters'}
                 </div>
               ) : (
                 <>
                   <div className="divide-y divide-border">
-                    {visibleTasks.map(task => (
-                      <ArchivedTaskItem 
-                        key={task.id} 
+                    {visibleTasks.map((task) => (
+                      <ArchivedTaskItem
+                        key={task.id}
                         task={task}
                         onClick={() => handleTaskClick(task)}
                         onRestore={() => handleRestore(task)}
@@ -339,14 +340,14 @@ export function ArchiveSidebar({ open, onOpenChange }: ArchiveSidebarProps) {
                       />
                     ))}
                   </div>
-                  
+
                   {/* Load More */}
                   {hasMore && (
                     <div className="py-4 text-center">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+                        onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
                         className="flex items-center gap-1 mx-auto"
                       >
                         <ChevronDown className="h-4 w-4" />

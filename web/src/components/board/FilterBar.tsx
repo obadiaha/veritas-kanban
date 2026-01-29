@@ -160,12 +160,13 @@ export function searchParamsToFilters(params: URLSearchParams): FilterState {
 // Filter function
 export function filterTasks(tasks: Task[], filters: FilterState): Task[] {
   return tasks.filter((task) => {
-    // Search filter (title + description)
+    // Search filter (title + description + task ID)
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       const titleMatch = task.title.toLowerCase().includes(searchLower);
       const descMatch = task.description?.toLowerCase().includes(searchLower);
-      if (!titleMatch && !descMatch) return false;
+      const idMatch = task.id.toLowerCase().includes(searchLower);
+      if (!titleMatch && !descMatch && !idMatch) return false;
     }
 
     // Project filter
