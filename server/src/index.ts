@@ -1,4 +1,14 @@
 import 'dotenv/config';
+
+// ============================================
+// Environment Validation (fail-fast)
+// ============================================
+// Must run immediately after dotenv loads, before any other setup.
+// If required env vars are missing or invalid, the process exits with
+// a clear error message listing ALL issues at once.
+import { validateEnv } from './config/env.js';
+validateEnv();
+
 import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -46,6 +56,7 @@ import attachmentRoutes from './routes/attachments.js';
 import { configRoutes } from './routes/config.js';
 import { agentRoutes } from './routes/agents.js';
 import { cspNonceMiddleware, cspNonceDirective } from './middleware/csp-nonce.js';
+import { healthRouter, setHealthWss } from './routes/health.js';
 
 const log = createLogger('server');
 
@@ -264,10 +275,8 @@ app.use(cookieParser());
 // ============================================
 app.use(express.json({ limit: '1mb' }));
 
-// Health check (unauthenticated)
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+// Health checks (liveness, readiness, deep diagnostics)
+app.use('/health', healthRouter);
 
 // ============================================
 // API Documentation (Swagger UI) — unauthenticated
@@ -436,6 +445,9 @@ initBroadcast(wss);
 
 // Initialize agent status service for WebSocket broadcasts
 initAgentStatus(wss);
+
+// Provide WSS reference to health checks for connection counting
+setHealthWss(wss);
 
 // Track subscriptions: taskId -> Set of WebSocket clients
 const agentSubscriptions = new Map<string, Set<WebSocket>>();

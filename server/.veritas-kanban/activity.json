@@ -1,5 +1,71 @@
 [
   {
+    "id": "activity_1769682573109_kru8c1xjn",
+    "type": "comment_added",
+    "taskId": "task_20260129_U74hPd",
+    "taskTitle": "SECURITY: Add startup environment validation with fail-fast",
+    "details": {
+      "author": "Veritas",
+      "preview": "Added Zod-based env validation at startup. Created..."
+    },
+    "timestamp": "2026-01-29T10:29:33.109Z"
+  },
+  {
+    "id": "activity_1769682569962_fi8h5j3ta",
+    "type": "comment_added",
+    "taskId": "task_20260129_7nqiTa",
+    "taskTitle": "STABILITY: Upgrade /health endpoint with deep checks and readiness probe",
+    "details": {
+      "author": "Veritas",
+      "preview": "Created server/src/routes/health.ts with three-tie..."
+    },
+    "timestamp": "2026-01-29T10:29:29.962Z"
+  },
+  {
+    "id": "activity_1769682565765_ufrn1c13l",
+    "type": "status_changed",
+    "taskId": "task_20260129_U74hPd",
+    "taskTitle": "SECURITY: Add startup environment validation with fail-fast",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-29T10:29:25.765Z"
+  },
+  {
+    "id": "activity_1769682563233_3z0lwe4zn",
+    "type": "status_changed",
+    "taskId": "task_20260129_7nqiTa",
+    "taskTitle": "STABILITY: Upgrade /health endpoint with deep checks and readiness probe",
+    "details": {
+      "from": "in-progress",
+      "status": "done"
+    },
+    "timestamp": "2026-01-29T10:29:23.233Z"
+  },
+  {
+    "id": "activity_1769682285002_asqzcsz7v",
+    "type": "status_changed",
+    "taskId": "task_20260129_7nqiTa",
+    "taskTitle": "STABILITY: Upgrade /health endpoint with deep checks and readiness probe",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-29T10:24:45.002Z"
+  },
+  {
+    "id": "activity_1769682284973_5kba84nno",
+    "type": "status_changed",
+    "taskId": "task_20260129_U74hPd",
+    "taskTitle": "SECURITY: Add startup environment validation with fail-fast",
+    "details": {
+      "from": "todo",
+      "status": "in-progress"
+    },
+    "timestamp": "2026-01-29T10:24:44.973Z"
+  },
+  {
     "id": "activity_1769681144523_yod68p5bg",
     "type": "status_changed",
     "taskId": "task_20260129_e492Yn",
