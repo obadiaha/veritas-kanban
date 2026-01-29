@@ -82,13 +82,28 @@ export function KanbanBoard() {
 
   // Listen for open-task events from dashboard drill-downs
   useEffect(() => {
-    const handler = (e: Event) => {
+    const handler = async (e: Event) => {
       const taskId = (e as CustomEvent).detail?.taskId;
       if (!taskId) return;
-      const task = tasks?.find((t) => t.id === taskId);
-      if (task) {
-        setSelectedTask(task);
+
+      // Try local task list first
+      const localTask = tasks?.find((t) => t.id === taskId);
+      if (localTask) {
+        setSelectedTask(localTask);
         setDetailOpen(true);
+        return;
+      }
+
+      // Fallback: fetch from API (task may be archived or filtered out)
+      try {
+        const { api } = await import('@/lib/api');
+        const fetchedTask = await api.tasks.get(taskId);
+        if (fetchedTask) {
+          setSelectedTask(fetchedTask);
+          setDetailOpen(true);
+        }
+      } catch {
+        // Task no longer exists — ignore silently
       }
     };
     window.addEventListener('open-task', handler);
