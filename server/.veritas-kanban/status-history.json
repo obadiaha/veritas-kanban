@@ -1,5 +1,37 @@
 [
   {
+    "id": "status_1769672026238_wd0pw5mvd",
+    "timestamp": "2026-01-29T07:33:46.238Z",
+    "previousStatus": "idle",
+    "newStatus": "sub-agent",
+    "subAgentCount": 0,
+    "durationMs": 2471936
+  },
+  {
+    "id": "status_1769669554302_md5sd8ucw",
+    "timestamp": "2026-01-29T06:52:34.302Z",
+    "previousStatus": "idle",
+    "newStatus": "sub-agent",
+    "subAgentCount": 0,
+    "durationMs": 1418335
+  },
+  {
+    "id": "status_1769668135967_l37kdao9n",
+    "timestamp": "2026-01-29T06:28:55.967Z",
+    "previousStatus": "sub-agent",
+    "newStatus": "idle",
+    "subAgentCount": 0,
+    "durationMs": 41396
+  },
+  {
+    "id": "status_1769668094571_xcf0zwlq1",
+    "timestamp": "2026-01-29T06:28:14.571Z",
+    "previousStatus": "idle",
+    "newStatus": "sub-agent",
+    "subAgentCount": 0,
+    "durationMs": 13959779
+  },
+  {
     "id": "status_1769654134792_iq4v5hy73",
     "timestamp": "2026-01-29T02:35:34.792Z",
     "previousStatus": "idle",
