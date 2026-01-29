@@ -12,23 +12,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  useStartTimer, 
-  useStopTimer, 
-  useAddTimeEntry, 
+import {
+  useStartTimer,
+  useStopTimer,
+  useAddTimeEntry,
   useDeleteTimeEntry,
   formatDuration,
   parseDuration,
 } from '@/hooks/useTimeTracking';
-import { 
-  Play, 
-  Square, 
-  Plus, 
-  Trash2, 
-  Clock, 
-  Loader2,
-  Timer,
-} from 'lucide-react';
+import { Play, Square, Plus, Trash2, Clock, Loader2, Timer } from 'lucide-react';
 import type { Task, TimeEntry } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
 import { sanitizeText } from '@/lib/sanitize';
@@ -42,14 +34,14 @@ function RunningTimer({ startTime }: { startTime: string }) {
 
   useEffect(() => {
     const start = new Date(startTime).getTime();
-    
+
     const updateElapsed = () => {
       setElapsed(Math.floor((Date.now() - start) / 1000));
     };
-    
+
     updateElapsed();
     const interval = setInterval(updateElapsed, 1000);
-    
+
     return () => clearInterval(interval);
   }, [startTime]);
 
@@ -64,35 +56,54 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [durationInput, setDurationInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
-  
+  // Local optimistic state — toggles immediately on click, syncs with server data
+  const [optimisticRunning, setOptimisticRunning] = useState<boolean | null>(null);
+
   const startTimer = useStartTimer();
   const stopTimer = useStopTimer();
   const addTimeEntry = useAddTimeEntry();
   const deleteTimeEntry = useDeleteTimeEntry();
 
-  const isRunning = task.timeTracking?.isRunning || false;
+  const serverRunning = task.timeTracking?.isRunning || false;
+  // Use optimistic state if set, otherwise fall back to server state
+  const isRunning = optimisticRunning !== null ? optimisticRunning : serverRunning;
   const totalSeconds = task.timeTracking?.totalSeconds || 0;
   const entries = task.timeTracking?.entries || [];
-  const activeEntry = entries.find(e => e.id === task.timeTracking?.activeEntryId);
+  const activeEntry = entries.find((e) => e.id === task.timeTracking?.activeEntryId);
+
+  // Sync optimistic state back when server catches up
+  useEffect(() => {
+    if (optimisticRunning !== null && serverRunning === optimisticRunning) {
+      setOptimisticRunning(null);
+    }
+  }, [serverRunning, optimisticRunning]);
 
   const handleStartStop = async () => {
-    if (isRunning) {
-      await stopTimer.mutateAsync(task.id);
-    } else {
-      await startTimer.mutateAsync(task.id);
+    // Toggle immediately for responsive UI
+    const newState = !isRunning;
+    setOptimisticRunning(newState);
+    try {
+      if (!newState) {
+        await stopTimer.mutateAsync(task.id);
+      } else {
+        await startTimer.mutateAsync(task.id);
+      }
+    } catch {
+      // Revert on error
+      setOptimisticRunning(null);
     }
   };
 
   const handleAddEntry = async () => {
     const seconds = parseDuration(durationInput);
     if (!seconds) return;
-    
+
     await addTimeEntry.mutateAsync({
       taskId: task.id,
       duration: seconds,
       description: descriptionInput || undefined,
     });
-    
+
     setDurationInput('');
     setDescriptionInput('');
     setAddDialogOpen(false);
@@ -120,9 +131,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
           Time Tracking
         </Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">
-            Total: {formatDuration(totalSeconds)}
-          </span>
+          <span className="text-sm font-medium">Total: {formatDuration(totalSeconds)}</span>
         </div>
       </div>
 
@@ -150,7 +159,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
                 </>
               )}
             </Button>
-            
+
             {isRunning && activeEntry && (
               <div className="flex items-center gap-2">
                 <Timer className="h-4 w-4 text-green-500 animate-pulse" />
@@ -169,9 +178,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add Time Entry</DialogTitle>
-                <DialogDescription>
-                  Manually add time spent on this task.
-                </DialogDescription>
+                <DialogDescription>Manually add time spent on this task.</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -200,7 +207,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
                 <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleAddEntry}
                   disabled={!parseDuration(durationInput) || addTimeEntry.isPending}
                 >
@@ -224,48 +231,55 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
             </Label>
             <ScrollArea className="max-h-48">
               <div className="space-y-2">
-                {entries.slice().reverse().map((entry) => (
-                  <div
-                    key={entry.id}
-                    className={cn(
-                      "flex items-center justify-between p-2 rounded text-sm",
-                      entry.id === task.timeTracking?.activeEntryId
-                        ? "bg-green-500/10 border border-green-500/20"
-                        : "bg-muted/50"
-                    )}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        {entry.id === task.timeTracking?.activeEntryId ? (
-                          <Timer className="h-3 w-3 text-green-500 animate-pulse flex-shrink-0" />
-                        ) : (
-                          <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                        )}
-                        <span className="font-medium">
-                          {entry.duration ? formatDuration(entry.duration) : (
-                            <RunningTimer startTime={entry.startTime} />
+                {entries
+                  .slice()
+                  .reverse()
+                  .map((entry) => (
+                    <div
+                      key={entry.id}
+                      className={cn(
+                        'flex items-center justify-between p-2 rounded text-sm',
+                        entry.id === task.timeTracking?.activeEntryId
+                          ? 'bg-green-500/10 border border-green-500/20'
+                          : 'bg-muted/50'
+                      )}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          {entry.id === task.timeTracking?.activeEntryId ? (
+                            <Timer className="h-3 w-3 text-green-500 animate-pulse flex-shrink-0" />
+                          ) : (
+                            <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                           )}
-                        </span>
-                        {entry.manual && (
-                          <span className="text-xs text-muted-foreground">(manual)</span>
-                        )}
+                          <span className="font-medium">
+                            {entry.duration ? (
+                              formatDuration(entry.duration)
+                            ) : (
+                              <RunningTimer startTime={entry.startTime} />
+                            )}
+                          </span>
+                          {entry.manual && (
+                            <span className="text-xs text-muted-foreground">(manual)</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground pl-5 truncate">
+                          {entry.description
+                            ? sanitizeText(entry.description)
+                            : formatEntryTime(entry)}
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground pl-5 truncate">
-                        {entry.description ? sanitizeText(entry.description) : formatEntryTime(entry)}
-                      </div>
+                      {entry.id !== task.timeTracking?.activeEntryId && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDeleteEntry(entry.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
-                    {entry.id !== task.timeTracking?.activeEntryId && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDeleteEntry(entry.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
+                  ))}
               </div>
             </ScrollArea>
           </div>
