@@ -30,10 +30,10 @@ export function DashboardSection() {
       ) {
         return;
       }
-      
+
       if (e.key === 'd' || e.key === 'D') {
         e.preventDefault();
-        setExpanded(prev => !prev);
+        setExpanded((prev) => !prev);
       }
     };
 
@@ -65,8 +65,8 @@ export function DashboardSection() {
       {/* Dashboard Content */}
       <div
         className={cn(
-          'overflow-hidden transition-all duration-300 ease-in-out',
-          expanded ? 'max-h-[5000px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+          'transition-all duration-300 ease-in-out',
+          expanded ? 'max-h-[5000px] opacity-100 mt-4' : 'max-h-0 opacity-0 overflow-hidden'
         )}
       >
         {expanded && <Dashboard />}
