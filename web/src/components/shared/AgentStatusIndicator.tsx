@@ -3,7 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import { useGlobalAgentStatus } from '@/hooks/useGlobalAgentStatus';
 import { api, Activity } from '@/lib/api';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Clock, Users, AlertCircle, PlayCircle, PauseCircle, Brain, Cpu } from 'lucide-react';
+import {
+  Clock,
+  Users,
+  AlertCircle,
+  PlayCircle,
+  PauseCircle,
+  Brain,
+  Cpu,
+  ExternalLink,
+} from 'lucide-react';
 
 type AgentState = 'idle' | 'working' | 'thinking' | 'subagents' | 'error';
 
@@ -159,9 +168,13 @@ interface StatusHistoryEntry {
 
 interface AgentStatusIndicatorProps {
   className?: string;
+  onOpenActivityLog?: () => void;
 }
 
-export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorProps) {
+export function AgentStatusIndicator({
+  className = '',
+  onOpenActivityLog,
+}: AgentStatusIndicatorProps) {
   const { data, isLoading, error } = useGlobalAgentStatus();
   const [hasFlashed, setHasFlashed] = useState(false);
   const [lastStatus, setLastStatus] = useState<string | null>(null);
@@ -366,6 +379,19 @@ export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorPro
             </div>
           </div>
 
+          {/* Description */}
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {state === 'idle' &&
+              'No AI agent is currently active. When an agent starts working on a task, this indicator will update in real time.'}
+            {state === 'working' &&
+              'An AI agent is actively working on a task. Time is being tracked automatically.'}
+            {state === 'thinking' && 'An AI agent is processing and planning its next action.'}
+            {state === 'subagents' &&
+              'Multiple AI sub-agents are running in parallel to complete work faster.'}
+            {state === 'error' &&
+              'Something went wrong with the agent. Check the activity log for details.'}
+          </p>
+
           {/* Current Task */}
           {data?.activeTaskTitle && state !== 'idle' && (
             <div className="space-y-1">
@@ -403,9 +429,19 @@ export function AgentStatusIndicator({ className = '' }: AgentStatusIndicatorPro
           {/* Status History */}
           {(statusHistory.length > 0 || (activities && activities.length > 0)) && (
             <div className="space-y-2">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Recent Activity
-              </div>
+              {onOpenActivityLog ? (
+                <button
+                  onClick={onOpenActivityLog}
+                  className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors group w-full text-left"
+                >
+                  Recent Activity
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              ) : (
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Recent Activity
+                </div>
+              )}
               <div className="space-y-1.5 max-h-[120px] overflow-y-auto">
                 {/* Use activities if available, otherwise use local status history */}
                 {activities && activities.length > 0

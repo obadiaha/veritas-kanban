@@ -38,7 +38,7 @@ export function Header() {
             <div className="h-4 w-px bg-border" aria-hidden="true" />
             <WebSocketIndicator />
             <div className="h-4 w-px bg-border" aria-hidden="true" />
-            <AgentStatusIndicator />
+            <AgentStatusIndicator onOpenActivityLog={() => setActivityOpen(true)} />
           </div>
 
           <div className="flex items-center gap-2">
