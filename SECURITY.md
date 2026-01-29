@@ -8,7 +8,7 @@ We take security seriously. If you discover a vulnerability, please report it re
 
 Instead, email us at:
 
-📧 **[security@digitalmeld.io](mailto:security@digitalmeld.io)**
+📧 **[contact@digitalmeld.io](mailto:contact@digitalmeld.io)**
 
 ### What to Include
 
