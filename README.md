@@ -359,6 +359,18 @@ pnpm test:e2e   # E2E tests (Playwright)
 
 ---
 
+## 💬 Support
+
+All support and feature requests go through GitHub:
+
+- **🐛 Bug reports** — [Open an issue](https://github.com/dm-bradgroux/veritas-kanban/issues/new?template=bug_report.md)
+- **💡 Feature requests** — [Open an issue](https://github.com/dm-bradgroux/veritas-kanban/issues/new?template=feature_request.md)
+- **❓ Questions & discussion** — [GitHub Discussions](https://github.com/dm-bradgroux/veritas-kanban/discussions)
+
+> **Note:** Support is not provided via email or social media. GitHub is the single source of truth for all project communication.
+
+---
+
 ## 🙏 Acknowledgments
 
 Special thanks to [Peter Steinberger](https://github.com/steipete) and [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot) — the platform that inspired this project and made autonomous agent orchestration feel like magic.
