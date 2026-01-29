@@ -11,7 +11,7 @@ function jsonResponse(body: unknown, status = 200): Response {
     ok: status >= 200 && status < 300,
     status,
     json: async () => body,
-  } as Response;
+  } as unknown as Response;
 }
 
 function brokenJsonResponse(status = 200): Response {
@@ -21,7 +21,7 @@ function brokenJsonResponse(status = 200): Response {
     json: async () => {
       throw new SyntaxError('Unexpected token');
     },
-  } as Response;
+  } as unknown as Response;
 }
 
 // ── Tests ────────────────────────────────────────────────────
