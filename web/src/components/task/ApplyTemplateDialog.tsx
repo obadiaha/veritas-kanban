@@ -96,7 +96,7 @@ export function ApplyTemplateDialog({
     // Build variable context
     const context: VariableContext = {
       project: task.project,
-      author: 'Brad', // TODO: Get from user config
+      author: 'User',
       customVars,
     };
 
@@ -209,7 +209,7 @@ export function ApplyTemplateDialog({
     // Build variable context
     const context: VariableContext = {
       project: task.project,
-      author: 'Brad', // TODO: Get from user config
+      author: 'User',
       customVars,
     };
 

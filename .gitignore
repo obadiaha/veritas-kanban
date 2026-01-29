@@ -29,13 +29,11 @@ pnpm-debug.log*
 !*.env.example
 !.env.example
 
-# Task data (track structure, not content)
+# Runtime data (keep .gitkeep for structure)
 tasks/active/*.md
 tasks/archive/*.md
-.veritas-kanban/logs/
-.veritas-kanban/config.json
-.veritas-kanban/security.json
-.veritas-kanban/backups/
+.veritas-kanban/*
+!.veritas-kanban/.gitkeep
 
 # Test
 coverage/
@@ -54,4 +52,5 @@ coverage/
 # Vite generated
 vite.config.d.ts
 vite.config.js
-server/.veritas-kanban/security.json
+server/.veritas-kanban/*
+!server/.veritas-kanban/.gitkeep

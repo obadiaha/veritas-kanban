@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { ConnectionState } from '@/hooks/useWebSocket';
 
 interface WebSocketStatus {
@@ -27,10 +27,13 @@ export function WebSocketStatusProvider({
   connectionState: ConnectionState;
   reconnectAttempt: number;
 }) {
+  const value = useMemo(
+    () => ({ isConnected, connectionState, reconnectAttempt }),
+    [isConnected, connectionState, reconnectAttempt]
+  );
+
   return (
-    <WebSocketStatusContext.Provider value={{ isConnected, connectionState, reconnectAttempt }}>
-      {children}
-    </WebSocketStatusContext.Provider>
+    <WebSocketStatusContext.Provider value={value}>{children}</WebSocketStatusContext.Provider>
   );
 }
 

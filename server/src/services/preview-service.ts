@@ -17,10 +17,35 @@ export interface PreviewServer {
 }
 
 // Store running servers by taskId
-const runningServers = new Map<string, {
-  process: ChildProcess;
-  info: PreviewServer;
-}>();
+const runningServers = new Map<
+  string,
+  {
+    process: ChildProcess;
+    info: PreviewServer;
+  }
+>();
+
+// Maximum concurrent preview servers to prevent resource exhaustion
+const MAX_PREVIEW_SERVERS = 5;
+
+// Register cleanup on process signals (runs once)
+let cleanupRegistered = false;
+function registerCleanup() {
+  if (cleanupRegistered) return;
+  cleanupRegistered = true;
+  const cleanup = () => {
+    for (const [, entry] of runningServers) {
+      try {
+        entry.process.kill('SIGTERM');
+      } catch {
+        /* already dead */
+      }
+    }
+    runningServers.clear();
+  };
+  process.on('SIGTERM', cleanup);
+  process.on('SIGINT', cleanup);
+}
 
 export class PreviewService {
   private configService: ConfigService;
@@ -30,6 +55,7 @@ export class PreviewService {
   constructor() {
     this.configService = new ConfigService();
     this.taskService = new TaskService();
+    registerCleanup();
   }
 
   /**
@@ -43,7 +69,7 @@ export class PreviewService {
       /port\s+(\d+)/i,
       /listening on.*:(\d+)/i,
       /http:\/\/[^:]+:(\d+)/i,
-      /:(\d{4,5})/,  // Any 4-5 digit port
+      /:(\d{4,5})/, // Any 4-5 digit port
     ];
 
     for (const pattern of patterns) {
@@ -62,7 +88,7 @@ export class PreviewService {
     if (customPattern) {
       return new RegExp(customPattern).test(output);
     }
-    
+
     // Common ready patterns
     const readyPatterns = [
       /ready/i,
@@ -73,7 +99,7 @@ export class PreviewService {
       /server running/i,
     ];
 
-    return readyPatterns.some(p => p.test(output));
+    return readyPatterns.some((p) => p.test(output));
   }
 
   /**
@@ -84,6 +110,13 @@ export class PreviewService {
     const existing = runningServers.get(taskId);
     if (existing && existing.info.status === 'running') {
       return existing.info;
+    }
+
+    // Enforce max concurrent servers
+    if (runningServers.size >= MAX_PREVIEW_SERVERS) {
+      throw new Error(
+        `Maximum concurrent preview servers (${MAX_PREVIEW_SERVERS}) reached. Stop an existing server first.`
+      );
     }
 
     // Get task
@@ -98,20 +131,24 @@ export class PreviewService {
 
     // Get repo config
     const config = await this.configService.getConfig();
-    const repoConfig = config.repos.find(r => r.name === task.git!.repo);
+    const repoConfig = config.repos.find((r) => r.name === task.git!.repo);
     if (!repoConfig) {
       throw new Error(`Repository "${task.git.repo}" not found in config`);
     }
 
     if (!repoConfig.devServer) {
-      throw new Error(`No dev server configured for repository "${task.git.repo}". Configure it in Settings.`);
+      throw new Error(
+        `No dev server configured for repository "${task.git.repo}". Configure it in Settings.`
+      );
     }
 
     // Determine working directory (worktree or main repo)
     const workDir = task.git.worktreePath || expandPath(repoConfig.path);
 
-    // Parse command
-    const [cmd, ...args] = repoConfig.devServer.command.split(' ');
+    // Parse command safely — split on whitespace (no shell interpretation)
+    const parts = repoConfig.devServer.command.trim().split(/\s+/);
+    const cmd = parts[0];
+    const args = parts.slice(1);
 
     const info: PreviewServer = {
       taskId,
@@ -128,7 +165,7 @@ export class PreviewService {
       try {
         const proc = spawn(cmd, args, {
           cwd: workDir,
-          shell: true,
+          shell: false,
           env: { ...process.env, FORCE_COLOR: '1' },
         });
 
@@ -138,20 +175,22 @@ export class PreviewService {
         const handleOutput = (data: Buffer) => {
           const text = data.toString();
           info.output.push(text);
-          
+
           // Calculate total output size
           const totalSize = info.output.reduce((sum, line) => sum + line.length, 0);
-          
+
           // Enforce size limit
           if (totalSize > this.MAX_OUTPUT_SIZE) {
             // Truncate from the beginning, keep recent output
-            while (info.output.length > 0 && 
-                   info.output.reduce((sum, line) => sum + line.length, 0) > this.MAX_OUTPUT_SIZE * 0.8) {
+            while (
+              info.output.length > 0 &&
+              info.output.reduce((sum, line) => sum + line.length, 0) > this.MAX_OUTPUT_SIZE * 0.8
+            ) {
               info.output.shift();
             }
             info.output.unshift('...[output truncated due to size limit]...\n');
           }
-          
+
           // Keep only last 100 lines as secondary limit
           if (info.output.length > 100) {
             info.output = info.output.slice(-100);
@@ -167,9 +206,12 @@ export class PreviewService {
           }
 
           // Check if ready
-          if (info.status === 'starting' && this.isServerReady(text, repoConfig.devServer?.readyPattern)) {
+          if (
+            info.status === 'starting' &&
+            this.isServerReady(text, repoConfig.devServer?.readyPattern)
+          ) {
             info.status = 'running';
-            
+
             // If port still not detected, use configured or default
             if (!info.port) {
               info.port = repoConfig.devServer?.port || 3000;
@@ -201,7 +243,7 @@ export class PreviewService {
         // Wait for server to be ready (with timeout)
         const startTime = Date.now();
         const timeout = 30000; // 30 seconds
-        
+
         const checkReady = () => {
           if (info.status === 'running') {
             resolve(info);
@@ -224,7 +266,6 @@ export class PreviewService {
         };
 
         setTimeout(checkReady, 1000);
-
       } catch (error: any) {
         info.status = 'error';
         info.error = error.message;
@@ -245,7 +286,7 @@ export class PreviewService {
     try {
       // Kill the process and all children
       server.process.kill('SIGTERM');
-      
+
       // Force kill after 5 seconds if not dead
       setTimeout(() => {
         try {
@@ -254,7 +295,6 @@ export class PreviewService {
           // Already dead
         }
       }, 5000);
-
     } finally {
       runningServers.delete(taskId);
     }
@@ -272,7 +312,7 @@ export class PreviewService {
    * Get all running preview servers
    */
   getAllPreviews(): PreviewServer[] {
-    return Array.from(runningServers.values()).map(s => s.info);
+    return Array.from(runningServers.values()).map((s) => s.info);
   }
 
   /**

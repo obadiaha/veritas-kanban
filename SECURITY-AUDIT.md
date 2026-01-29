@@ -1,6 +1,6 @@
 # Security Audit Report
 
-**Last audited:** 2025-01-29
+**Last audited:** 2026-01-29
 **Tool:** pnpm audit (pnpm 9.15.4)
 **Node version:** 22.x
 

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { API_BASE } from '../../lib/config';
 import {
   Paperclip,
   Upload,
@@ -68,7 +69,7 @@ function AttachmentItem({ taskId, attachment }: { taskId: string; attachment: At
       setLoadingText(true);
       try {
         const response = await fetch(
-          `http://localhost:3001/api/tasks/${taskId}/attachments/${attachment.id}/text`
+          `${API_BASE}/tasks/${taskId}/attachments/${attachment.id}/text`
         );
         const data = await response.json();
         setExtractedText(data.text || '(No text extracted)');
@@ -82,7 +83,7 @@ function AttachmentItem({ taskId, attachment }: { taskId: string; attachment: At
     setExpanded(!expanded);
   };
 
-  const downloadUrl = `http://localhost:3001/api/tasks/${taskId}/attachments/${attachment.id}/download`;
+  const downloadUrl = `${API_BASE}/tasks/${taskId}/attachments/${attachment.id}/download`;
 
   return (
     <div className="border rounded-md p-3 space-y-2">

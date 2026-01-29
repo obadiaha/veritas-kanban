@@ -1,10 +1,11 @@
-import { exec } from 'child_process';
+import { exec, execFile } from 'child_process';
 import { promisify } from 'util';
 import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
 import { getBreaker } from './circuit-registry.js';
 
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export interface CreatePRInput {
   taskId: string;
@@ -83,8 +84,15 @@ export class GitHubService {
     const ghBreaker = getBreaker('github');
     try {
       const { stdout } = await ghBreaker.execute(() =>
-        execAsync(
-          `gh pr view ${branch} --json url,number,title,state,isDraft,headRefName,baseRefName 2>/dev/null`,
+        execFileAsync(
+          'gh',
+          [
+            'pr',
+            'view',
+            branch,
+            '--json',
+            'url,number,title,state,isDraft,headRefName,baseRefName',
+          ],
           { cwd: repoPath }
         )
       );
@@ -153,7 +161,7 @@ export class GitHubService {
 
     // Push branch first to ensure it exists on remote
     try {
-      await execAsync(`git push -u origin ${task.git.branch}`, { cwd: workingDir });
+      await execFileAsync('git', ['push', '-u', 'origin', task.git.branch], { cwd: workingDir });
     } catch (error: any) {
       // Ignore if already pushed
       if (!error.message?.includes('Everything up-to-date')) {
@@ -166,15 +174,14 @@ export class GitHubService {
     const prBody = input.body || this.buildPRBody(task);
     const targetBranch = input.targetBranch || task.git.baseBranch || 'main';
 
-    // Create the PR
-    const args = [
-      'gh',
+    // Create the PR using execFile (no shell — safe from injection)
+    const ghArgs = [
       'pr',
       'create',
       '--title',
-      JSON.stringify(prTitle),
+      prTitle,
       '--body',
-      JSON.stringify(prBody),
+      prBody,
       '--base',
       targetBranch,
       '--head',
@@ -182,13 +189,13 @@ export class GitHubService {
     ];
 
     if (input.draft) {
-      args.push('--draft');
+      ghArgs.push('--draft');
     }
 
     const ghBreaker = getBreaker('github');
     try {
       const { stdout } = await ghBreaker.execute(() =>
-        execAsync(args.join(' '), { cwd: repoPath })
+        execFileAsync('gh', ghArgs, { cwd: repoPath })
       );
       const prUrl = stdout.trim();
 
@@ -263,6 +270,6 @@ export class GitHubService {
 
     // Return the URL - frontend will handle opening
     // Or we could use 'open' command on macOS
-    await execAsync(`open "${task.git.prUrl}"`);
+    await execFileAsync('open', [task.git.prUrl]);
   }
 }

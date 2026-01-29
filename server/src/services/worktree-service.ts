@@ -74,9 +74,17 @@ export class WorktreeService {
         }
       });
 
-      // Set timeout manually as backup
+      // Set timeout manually as backup — SIGTERM first, SIGKILL after grace period
       const timeoutId = setTimeout(() => {
         proc.kill('SIGTERM');
+        // Force-kill after 5s grace period if SIGTERM is ignored
+        setTimeout(() => {
+          try {
+            proc.kill('SIGKILL');
+          } catch {
+            /* already dead */
+          }
+        }, 5000);
         reject(new Error(`Git operation timed out after ${this.GIT_TIMEOUT}ms`));
       }, this.GIT_TIMEOUT);
 

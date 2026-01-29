@@ -111,7 +111,7 @@ export function useTemplateForm() {
     // Build variable context
     const context: VariableContext = {
       project: project.trim() || undefined,
-      author: 'Brad', // TODO: Get from user config
+      author: 'User',
       customVars,
     };
 
