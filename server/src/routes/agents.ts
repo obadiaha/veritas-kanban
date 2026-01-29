@@ -9,7 +9,7 @@ import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
 const router: RouterType = Router();
 
 // Validation schemas
-const AgentTypeSchema = z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']);
+const AgentTypeSchema = z.string().min(1).max(50);
 
 const startAgentSchema = z.object({
   agent: AgentTypeSchema.optional(),

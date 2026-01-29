@@ -3,7 +3,9 @@
 export type TaskType = string;
 export type TaskStatus = 'todo' | 'in-progress' | 'blocked' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
-export type AgentType = 'claude-code' | 'amp' | 'copilot' | 'gemini' | 'veritas';
+/** Built-in agent types. Custom agents use any string slug. */
+export type BuiltInAgentType = 'claude-code' | 'amp' | 'copilot' | 'gemini' | 'veritas';
+export type AgentType = BuiltInAgentType | (string & {});
 export type AttemptStatus = 'pending' | 'running' | 'complete' | 'failed';
 export type BlockedCategory = 'waiting-on-feedback' | 'technical-snag' | 'prerequisite' | 'other';
 

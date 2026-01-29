@@ -586,8 +586,14 @@ describe('Config Schemas', () => {
       }
     });
 
-    it('should reject invalid agent type', () => {
-      expect(() => SetDefaultAgentBodySchema.parse({ agent: 'invalid' })).toThrow();
+    it('should accept custom agent types', () => {
+      expect(SetDefaultAgentBodySchema.parse({ agent: 'my-custom-agent' }).agent).toBe(
+        'my-custom-agent'
+      );
+    });
+
+    it('should reject empty agent string', () => {
+      expect(() => SetDefaultAgentBodySchema.parse({ agent: '' })).toThrow();
     });
 
     it('should reject missing agent', () => {
@@ -623,8 +629,14 @@ describe('Agent Schemas', () => {
       expect(result.agent).toBeUndefined();
     });
 
-    it('should reject invalid agent type', () => {
-      expect(() => StartAgentBodySchema.parse({ agent: 'invalid' })).toThrow();
+    it('should accept custom agent types', () => {
+      expect(StartAgentBodySchema.parse({ agent: 'my-custom-agent' }).agent).toBe(
+        'my-custom-agent'
+      );
+    });
+
+    it('should reject empty agent string', () => {
+      expect(() => StartAgentBodySchema.parse({ agent: '' })).toThrow();
     });
   });
 

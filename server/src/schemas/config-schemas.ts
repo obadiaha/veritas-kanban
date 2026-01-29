@@ -4,10 +4,7 @@ import { z } from 'zod';
  * PUT /api/config/default-agent - Set default agent
  */
 export const SetDefaultAgentBodySchema = z.object({
-  agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini'], {
-    required_error: 'Agent type is required',
-    invalid_type_error: 'Agent type is required',
-  }),
+  agent: z.string().min(1, 'Agent type is required'),
 });
 
 export type SetDefaultAgentBody = z.infer<typeof SetDefaultAgentBodySchema>;

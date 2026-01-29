@@ -14,18 +14,19 @@ const repoSchema = z.object({
 });
 
 const agentSchema = z.object({
-  type: z.enum(['claude-code', 'amp', 'copilot', 'gemini']),
-  name: z.string().min(1),
+  type: z
+    .string()
+    .min(1)
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, 'Agent type must be lowercase alphanumeric with dashes'),
+  name: z.string().min(1).max(100),
   command: z.string().min(1),
   args: z.array(z.string()),
   enabled: z.boolean(),
 });
 
 const setDefaultAgentSchema = z.object({
-  agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini'], {
-    required_error: 'Agent type is required',
-    invalid_type_error: 'Agent type is required',
-  }),
+  agent: z.string().min(1, 'Agent type is required'),
 });
 
 const validateRepoPathSchema = z.object({

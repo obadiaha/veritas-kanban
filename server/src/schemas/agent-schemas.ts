@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const AgentTypeSchema = z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']);
+const AgentTypeSchema = z.string().min(1).max(50);
 
 /**
  * POST /api/agents/:taskId/start - Start agent on task
