@@ -24,6 +24,8 @@ interface UseBoardDragDropOptions {
 interface UseBoardDragDropReturn {
   activeTask: Task | null;
   isDragActive: boolean;
+  /** Use this for rendering columns — reflects real-time drag state */
+  liveTasksByStatus: Record<TaskStatus, Task[]>;
   sensors: ReturnType<typeof useSensors>;
   collisionDetection: CollisionDetection;
   handleDragStart: (event: DragStartEvent) => void;
@@ -39,7 +41,10 @@ export function useBoardDragDrop({
   onReorder,
 }: UseBoardDragDropOptions): UseBoardDragDropReturn {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const lastOverColumnRef = useRef<TaskStatus | null>(null);
+  // Local copy of tasksByStatus that updates in real-time during drag.
+  // null = not dragging, use server state; non-null = mid-drag, use local state
+  const [dragState, setDragState] = useState<Record<TaskStatus, Task[]> | null>(null);
+  const activeIdRef = useRef<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -51,50 +56,45 @@ export function useBoardDragDrop({
 
   const columnIds = columns.map((c) => c.id);
 
-  // Custom collision detection for kanban cross-column support.
-  // pointerWithin alone misses when the pointer is between cards inside a column,
-  // so we fall back to rectIntersection which catches overlapping rects.
-  // We always prefer column droppables over task droppables for cross-container moves.
+  // Custom collision detection: pointerWithin for accuracy, rectIntersection as fallback.
+  // When over a column, prefer a task collision for precise positioning; fall back to
+  // the column droppable for empty areas.
   const collisionDetection: CollisionDetection = useCallback(
     (args) => {
-      // First try pointerWithin — most accurate when pointer is directly over a droppable
       const pointerCollisions = pointerWithin(args);
 
       if (pointerCollisions.length > 0) {
-        // If we hit a column droppable, prefer it for cross-column detection
-        const columnCollision = pointerCollisions.find((c) =>
-          columnIds.includes(c.id as TaskStatus)
-        );
-        // Also check for task collisions within the column
         const taskCollision = pointerCollisions.find(
           (c) => !columnIds.includes(c.id as TaskStatus)
         );
+        const columnCollision = pointerCollisions.find((c) =>
+          columnIds.includes(c.id as TaskStatus)
+        );
 
-        // If we found a task inside the target column, prefer it (for precise positioning)
         if (taskCollision) return [taskCollision];
-        // Otherwise use the column (for drops into empty areas or between tasks)
         if (columnCollision) return [columnCollision];
-
         return pointerCollisions;
       }
 
-      // Fallback to rect intersection when pointer isn't directly within any droppable
       return rectIntersection(args);
     },
     [columnIds]
   );
 
-  // Find which column a task belongs to
-  const findColumnForTask = useCallback(
-    (taskId: string): TaskStatus | null => {
+  // The live state columns should render from — either mid-drag local state or server state
+  const liveTasksByStatus = dragState ?? tasksByStatus;
+
+  // Find which column a task belongs to in the given state
+  const findColumn = useCallback(
+    (taskId: string, state: Record<TaskStatus, Task[]>): TaskStatus | null => {
       for (const col of columns) {
-        if (tasksByStatus[col.id]?.some((t: Task) => t.id === taskId)) {
+        if (state[col.id]?.some((t: Task) => t.id === taskId)) {
           return col.id;
         }
       }
       return null;
     },
-    [columns, tasksByStatus]
+    [columns]
   );
 
   const handleDragStart = useCallback(
@@ -102,10 +102,12 @@ export function useBoardDragDrop({
       const task = tasks?.find((t) => t.id === event.active.id);
       if (task) {
         setActiveTask(task);
-        lastOverColumnRef.current = null;
+        activeIdRef.current = event.active.id as string;
+        // Snapshot current server state into local drag state
+        setDragState({ ...tasksByStatus });
       }
     },
-    [tasks]
+    [tasks, tasksByStatus]
   );
 
   const handleDragOver = useCallback(
@@ -115,83 +117,102 @@ export function useBoardDragDrop({
 
       const activeId = active.id as string;
       const overId = over.id as string;
+      if (activeId === overId) return;
 
-      // Determine which column the active task is currently in
-      const activeColumn = findColumnForTask(activeId);
-      if (!activeColumn) return;
+      setDragState((prev) => {
+        if (!prev) return prev;
 
-      // Determine the target column — either the column directly, or the column a task belongs to
-      const isOverColumn = columnIds.includes(overId as TaskStatus);
-      const overColumn = isOverColumn ? (overId as TaskStatus) : findColumnForTask(overId);
+        const activeColumn = findColumn(activeId, prev);
+        if (!activeColumn) return prev;
 
-      if (!overColumn || activeColumn === overColumn) return;
+        // Determine destination column
+        const isOverColumn = columnIds.includes(overId as TaskStatus);
+        const overColumn = isOverColumn ? (overId as TaskStatus) : findColumn(overId, prev);
 
-      // Track which column we're over for handleDragEnd
-      lastOverColumnRef.current = overColumn;
+        if (!overColumn || activeColumn === overColumn) return prev;
+
+        // Move the task from source to destination
+        const sourceTasks = prev[activeColumn];
+        const destTasks = prev[overColumn];
+        const activeIndex = sourceTasks.findIndex((t) => t.id === activeId);
+        if (activeIndex === -1) return prev;
+
+        const movedTask = sourceTasks[activeIndex];
+        const newSource = [...sourceTasks];
+        newSource.splice(activeIndex, 1);
+
+        const newDest = [...destTasks];
+        if (isOverColumn) {
+          // Dropped on column itself — append to end
+          newDest.push(movedTask);
+        } else {
+          // Dropped on a task — insert at that position
+          const overIndex = newDest.findIndex((t) => t.id === overId);
+          if (overIndex >= 0) {
+            newDest.splice(overIndex, 0, movedTask);
+          } else {
+            newDest.push(movedTask);
+          }
+        }
+
+        return {
+          ...prev,
+          [activeColumn]: newSource,
+          [overColumn]: newDest,
+        };
+      });
     },
-    [columnIds, findColumnForTask]
+    [columnIds, findColumn]
   );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
-      setActiveTask(null);
-      lastOverColumnRef.current = null;
+      const finalState = dragState;
 
-      if (!over) return;
+      // Clear drag UI state
+      setActiveTask(null);
+      setDragState(null);
+      activeIdRef.current = null;
+
+      if (!over || !finalState) return;
 
       const activeId = active.id as string;
       const overId = over.id as string;
 
-      // Check if dropped on a column (status) directly
-      const isOverColumn = columnIds.includes(overId as TaskStatus);
+      // Find where the task ended up in our local drag state
+      const originalColumn = findColumn(activeId, tasksByStatus);
+      const finalColumn = findColumn(activeId, finalState);
 
-      if (isOverColumn) {
-        // Dropped on column area — change status
-        const newStatus = overId as TaskStatus;
-        const task = tasks?.find((t) => t.id === activeId);
-        if (task && task.status !== newStatus) {
-          onStatusChange(activeId, newStatus);
-        }
-        return;
-      }
+      if (!originalColumn || !finalColumn) return;
 
-      // Dropped on another task — figure out source/destination columns
-      const activeColumn = findColumnForTask(activeId);
-      const overColumn = findColumnForTask(overId);
+      if (originalColumn === finalColumn && !columnIds.includes(overId as TaskStatus)) {
+        // Same column — check for reorder
+        const columnTasks = finalState[finalColumn];
+        const origColumnTasks = tasksByStatus[originalColumn];
+        const oldIndex = origColumnTasks.findIndex((t: Task) => t.id === activeId);
+        const newIndex = columnTasks.findIndex((t: Task) => t.id === activeId);
 
-      if (!activeColumn || !overColumn) return;
-
-      if (activeColumn === overColumn) {
-        // Same column — reorder
-        const columnTasks = tasksByStatus[activeColumn];
-        const oldIndex = columnTasks.findIndex((t: Task) => t.id === activeId);
-        const newIndex = columnTasks.findIndex((t: Task) => t.id === overId);
-
-        if (oldIndex !== newIndex) {
-          const reordered = arrayMove(columnTasks, oldIndex, newIndex);
+        if (oldIndex !== newIndex && oldIndex >= 0 && newIndex >= 0) {
+          const reordered = arrayMove(origColumnTasks, oldIndex, newIndex);
           onReorder(reordered.map((t: Task) => t.id));
         }
-      } else {
-        // Cross-column: change status, then insert at the target position
-        const destTasks = [...tasksByStatus[overColumn]];
-        const overIndex = destTasks.findIndex((t: Task) => t.id === overId);
+      } else if (originalColumn !== finalColumn) {
+        // Cross-column: commit the status change and new order
+        onStatusChange(activeId, finalColumn);
 
-        // Update the task's status to the destination column
-        onStatusChange(activeId, overColumn);
-
-        // Build the new order for the destination column including the moved task
-        const newOrder = destTasks.map((t: Task) => t.id);
-        newOrder.splice(overIndex, 0, activeId);
+        // Send the new order for the destination column
+        const newOrder = finalState[finalColumn].map((t: Task) => t.id);
         onReorder(newOrder);
       }
     },
-    [columnIds, findColumnForTask, onReorder, onStatusChange, tasks, tasksByStatus]
+    [columnIds, dragState, findColumn, onReorder, onStatusChange, tasksByStatus]
   );
 
   return {
     activeTask,
     isDragActive: activeTask !== null,
+    liveTasksByStatus,
     sensors,
     collisionDetection,
     handleDragStart,
