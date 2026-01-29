@@ -46,6 +46,33 @@ Open [http://localhost:3000](http://localhost:3000) — that's it.
 
 ---
 
+## ⚠️ Agentic AI Safety
+
+> [!CAUTION]
+> **AI agents can write code, execute commands, and modify your system.** While tools like Veritas Kanban make agentic workflows powerful, they can also cause real damage without proper guardrails. Read this before giving any AI agent access to your environment.
+
+### Best Practices for Agentic AI
+
+1. **Run locally first.** Keep your board and agents on your own machine until you fully understand the behavior. Never expose an unauthenticated instance to the internet.
+
+2. **Never trigger agents from uncontrolled inputs.** Don't let inbound emails, webhooks from third parties, or public form submissions automatically spawn agent work. An attacker who can craft an input can control your agent.
+
+3. **Principle of least privilege.** Give agents the minimum permissions they need. Use the `agent` role (not `admin`) for API keys. Restrict file system access. Don't run agents as root.
+
+4. **Review before merge.** Agents can write code — that doesn't mean the code is correct or safe. Always review agent-generated code before merging to production branches. Use the built-in code review workflow.
+
+5. **Set boundaries on destructive actions.** Agents should not have unsupervised access to `rm`, `git push --force`, database drops, or production deployments. Require human approval for irreversible operations.
+
+6. **Monitor and audit.** Use time tracking and activity logs to understand what agents are doing. Review agent-completed tasks. Check git diffs before pushing.
+
+7. **Rotate credentials regularly.** If an agent has access to API keys, tokens, or secrets, rotate them on a schedule. Don't embed real credentials in task descriptions or prompts.
+
+8. **Isolate environments.** Run agents in containers, VMs, or sandboxed environments when possible. Keep agent workspaces separate from sensitive data.
+
+**The bottom line:** Agentic AI is transformational, but it amplifies both your capabilities and your mistakes. Plan accordingly, start small, and add autonomy gradually as you build confidence in your guardrails.
+
+---
+
 ## ✨ Feature Highlights
 
 > 📋 **Full feature reference:** [docs/FEATURES.md](docs/FEATURES.md)
