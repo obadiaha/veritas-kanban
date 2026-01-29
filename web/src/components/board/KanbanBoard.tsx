@@ -102,6 +102,7 @@ export function KanbanBoard() {
   const {
     activeTask,
     isDragActive,
+    liveTasksByStatus,
     sensors,
     collisionDetection,
     handleDragStart,
@@ -171,7 +172,7 @@ export function KanbanBoard() {
                     key={column.id}
                     id={column.id}
                     title={column.title}
-                    tasks={tasksByStatus[column.id]}
+                    tasks={liveTasksByStatus[column.id]}
                     allTasks={filteredTasks}
                     onTaskClick={handleTaskClick}
                     selectedTaskId={selectedTaskId}
