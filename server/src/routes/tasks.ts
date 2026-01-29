@@ -10,6 +10,8 @@ import { asyncHandler } from '../middleware/async-handler.js';
 import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
 import { setLastModified } from '../middleware/cache-control.js';
 import { sanitizeTaskFields } from '../utils/sanitize.js';
+import { auditLog } from '../services/audit-service.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router: RouterType = Router();
 const taskService = new TaskService();
@@ -429,6 +431,15 @@ router.post(
       project: task.project,
     });
 
+    // Audit log
+    const authReq = req as AuthenticatedRequest;
+    await auditLog({
+      action: 'task.create',
+      actor: authReq.auth?.keyName || 'unknown',
+      resource: task.id,
+      details: { title: task.title, type: task.type, priority: task.priority },
+    });
+
     res.status(201).json(task);
   })
 );
@@ -567,6 +578,15 @@ router.delete(
     if (task) {
       await activityService.logActivity('task_deleted', task.id, task.title);
     }
+
+    // Audit log
+    const authReqDel = req as AuthenticatedRequest;
+    await auditLog({
+      action: 'task.delete',
+      actor: authReqDel.auth?.keyName || 'unknown',
+      resource: req.params.id as string,
+      details: task ? { title: task.title } : undefined,
+    });
 
     res.status(204).send();
   })

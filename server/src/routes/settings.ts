@@ -5,6 +5,8 @@ import { getAttachmentService } from '../services/attachment-service.js';
 import type { FeatureSettings } from '@veritas-kanban/shared';
 import { FeatureSettingsPatchSchema } from '../schemas/feature-settings-schema.js';
 import { strictRateLimit } from '../middleware/rate-limit.js';
+import { auditLog } from '../services/audit-service.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router: RouterType = Router();
 const configService = new ConfigService();
@@ -49,19 +51,29 @@ router.patch('/features', strictRateLimit, async (req, res) => {
     // Validate with Zod — strips unknown keys, rejects dangerous ones
     const parseResult = FeatureSettingsPatchSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid settings payload',
-        details: parseResult.error.issues.map(i => i.message),
+        details: parseResult.error.issues.map((i) => i.message),
       });
     }
     const patch = parseResult.data;
-    
+
     if (Object.keys(patch).length === 0) {
       return res.status(400).json({ error: 'No valid settings provided' });
     }
-    
+
     const updated = await configService.updateFeatureSettings(patch);
     syncSettingsToServices(updated);
+
+    // Audit log
+    const authReq = req as AuthenticatedRequest;
+    await auditLog({
+      action: 'settings.update',
+      actor: authReq.auth?.keyName || 'unknown',
+      resource: 'features',
+      details: { keys: Object.keys(patch) },
+    });
+
     res.json(updated);
   } catch (error) {
     console.error('Error updating feature settings:', error);

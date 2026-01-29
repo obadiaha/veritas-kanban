@@ -28,6 +28,7 @@ import { ConfigService } from './services/config-service.js';
 import { disposeTaskService } from './services/task-service.js';
 import { initBroadcast } from './services/broadcast-service.js';
 import { runStartupMigrations } from './services/migration-service.js';
+import { createBackup, runIntegrityChecks } from './services/integrity-service.js';
 import { errorHandler, AppError } from './middleware/error-handler.js';
 import { requestIdMiddleware } from './middleware/request-id.js';
 import { requestTimeout } from './middleware/request-timeout.js';
@@ -414,10 +415,31 @@ let configService: ConfigService | null = null;
 // Initialize services on startup
 (async () => {
   try {
-    // Run data migrations first (idempotent)
+    // 1. Backup + integrity checks on the data directory
+    const dataDir =
+      process.env.VERITAS_DATA_DIR || path.join(process.cwd(), '..', '.veritas-kanban');
+    let backupPath = '';
+    try {
+      backupPath = await createBackup(dataDir);
+    } catch (backupErr) {
+      log.warn({ err: backupErr }, 'Startup backup failed — continuing without backup');
+    }
+
+    const integrityReport = await runIntegrityChecks(dataDir);
+    log.info(
+      {
+        backup: backupPath || '(skipped)',
+        filesChecked: integrityReport.filesChecked,
+        issues: integrityReport.issuesFound,
+        recovered: integrityReport.recoveredCount,
+      },
+      `Startup: backup ${backupPath ? 'created' : 'skipped'}, integrity: ${integrityReport.filesChecked} files checked, ${integrityReport.issuesFound} issues found`
+    );
+
+    // 2. Run data migrations (idempotent)
     await runStartupMigrations();
 
-    // Initialize telemetry service and sync with feature settings
+    // 3. Initialize telemetry service and sync with feature settings
     configService = new ConfigService();
     const featureSettings = await configService.getFeatureSettings();
     syncSettingsToServices(featureSettings);

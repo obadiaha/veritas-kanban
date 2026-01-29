@@ -14,6 +14,7 @@ import {
   getJwtRotationStatus,
 } from '../config/security.js';
 import { authenticate, authorize, type AuthenticatedRequest } from '../middleware/auth.js';
+import { auditLog } from '../services/audit-service.js';
 
 const router: IRouter = Router();
 
@@ -305,6 +306,11 @@ router.post(
 
     if (!valid) {
       recordFailedAttempt(ip);
+      await auditLog({
+        action: 'auth.failed',
+        actor: 'anonymous',
+        details: { ip, userAgent: req.headers['user-agent'] },
+      });
       res.status(401).json({
         error: 'Invalid password',
         code: 'INVALID_PASSWORD',
@@ -338,6 +344,12 @@ router.post(
       path: '/',
     });
 
+    await auditLog({
+      action: 'auth.login',
+      actor: 'admin',
+      details: { ip, userAgent: req.headers['user-agent'], rememberMe: !!rememberMe },
+    });
+
     res.json({
       success: true,
       expiresAt: new Date(Date.now() + maxAge).toISOString(),
@@ -351,12 +363,18 @@ router.post(
  */
 router.post(
   '/logout',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('veritas_session', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
+    });
+
+    await auditLog({
+      action: 'auth.logout',
+      actor: 'admin',
+      details: { ip: req.ip || req.socket.remoteAddress },
     });
 
     res.json({ success: true });
