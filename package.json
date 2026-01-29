@@ -22,6 +22,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "clean": "pnpm -r clean && rm -rf node_modules",
+    "audit": "pnpm audit --prod",
+    "audit:all": "pnpm audit",
     "prepare": "husky"
   },
   "devDependencies": {
