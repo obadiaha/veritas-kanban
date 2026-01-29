@@ -99,6 +99,7 @@ export class TaskService {
   /** Read every .md file in tasksDir and populate the cache */
   private async loadCacheFromDisk(): Promise<void> {
     await this.ensureDirectories();
+    await this.seedIfEmpty();
     const files = await fs.readdir(this.tasksDir);
     const mdFiles = files.filter((f) => f.endsWith('.md'));
 
@@ -113,6 +114,32 @@ export class TaskService {
         }
       })
     );
+  }
+
+  /**
+   * First-run seed: if tasks/active/ is empty, copy example tasks from
+   * tasks/examples/ so new users see a populated board out of the box.
+   */
+  private async seedIfEmpty(): Promise<void> {
+    const files = await fs.readdir(this.tasksDir);
+    const hasTasks = files.some((f) => f.endsWith('.md'));
+    if (hasTasks) return;
+
+    const examplesDir = path.join(this.tasksDir, '..', 'examples');
+    try {
+      const examples = await fs.readdir(examplesDir);
+      const mdExamples = examples.filter((f) => f.endsWith('.md'));
+      if (mdExamples.length === 0) return;
+
+      await Promise.all(
+        mdExamples.map((filename) =>
+          fs.copyFile(path.join(examplesDir, filename), path.join(this.tasksDir, filename))
+        )
+      );
+      log.info({ count: mdExamples.length }, 'Seeded example tasks for first run');
+    } catch {
+      // examples/ doesn't exist — that's fine, skip silently
+    }
   }
 
   /** Reload a single file from disk into the cache */

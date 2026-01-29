@@ -27,6 +27,7 @@
     "clean": "pnpm -r clean && rm -rf node_modules",
     "audit": "pnpm audit --prod",
     "audit:all": "pnpm audit",
+    "seed": "bash scripts/seed.sh",
     "prepare": "husky"
   },
   "devDependencies": {
