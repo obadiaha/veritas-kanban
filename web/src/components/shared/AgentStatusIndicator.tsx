@@ -379,18 +379,18 @@ export function AgentStatusIndicator({
             </div>
           </div>
 
-          {/* Description */}
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {state === 'idle' &&
-              'No AI agent is currently active. When an agent starts working on a task, this indicator will update in real time.'}
-            {state === 'working' &&
-              'An AI agent is actively working on a task. Time is being tracked automatically.'}
-            {state === 'thinking' && 'An AI agent is processing and planning its next action.'}
-            {state === 'subagents' &&
-              'Multiple AI sub-agents are running in parallel to complete work faster.'}
-            {state === 'error' &&
-              'Something went wrong with the agent. Check the activity log for details.'}
-          </p>
+          {/* Description (non-idle states) */}
+          {state !== 'idle' && (
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {state === 'working' &&
+                'An AI agent is actively working on a task. Time is being tracked automatically.'}
+              {state === 'thinking' && 'An AI agent is processing and planning its next action.'}
+              {state === 'subagents' &&
+                'Multiple AI sub-agents are running in parallel to complete work faster.'}
+              {state === 'error' &&
+                'Something went wrong with the agent. Check the activity log for details.'}
+            </p>
+          )}
 
           {/* Current Task */}
           {data?.activeTaskTitle && state !== 'idle' && (
@@ -495,6 +495,14 @@ export function AgentStatusIndicator({
           <div className="text-xs text-muted-foreground/60 pt-2 border-t border-border">
             Last updated: {data?.lastUpdated ? formatTimeAgo(data.lastUpdated) : 'never'}
           </div>
+
+          {/* Idle description at the bottom */}
+          {state === 'idle' && (
+            <p className="text-xs text-muted-foreground/60 leading-relaxed">
+              No AI agent is currently active. When an agent starts working on a task, this
+              indicator will update in real time.
+            </p>
+          )}
         </div>
       </PopoverContent>
     </Popover>
