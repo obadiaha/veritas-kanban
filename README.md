@@ -2,6 +2,8 @@
 
 # ⚖️ Veritas Kanban
 
+_Veritas in actis — Truth in action._
+
 **Local-first task management and AI agent orchestration platform.**
 
 Built for developers who want a visual Kanban board that works with autonomous coding agents.
