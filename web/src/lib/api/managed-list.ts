@@ -23,6 +23,7 @@ export const managedList = {
 
     create: async (input: any): Promise<T> => {
       const response = await fetch(`${API_BASE}${endpoint}`, {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
@@ -32,6 +33,7 @@ export const managedList = {
 
     update: async (id: string, patch: any): Promise<T> => {
       const response = await fetch(`${API_BASE}${endpoint}/${id}`, {
+        credentials: 'include',
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patch),
@@ -43,7 +45,7 @@ export const managedList = {
       const url = force
         ? `${API_BASE}${endpoint}/${id}?force=true`
         : `${API_BASE}${endpoint}/${id}`;
-      const response = await fetch(url, { method: 'DELETE' });
+      const response = await fetch(url, { credentials: 'include', method: 'DELETE' });
       return handleResponse<void>(response);
     },
 
@@ -56,6 +58,7 @@ export const managedList = {
 
     reorder: async (orderedIds: string[]): Promise<T[]> => {
       const response = await fetch(`${API_BASE}${endpoint}/reorder`, {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderedIds }),

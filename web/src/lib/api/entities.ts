@@ -24,6 +24,7 @@ export const templatesApi = {
 
   create: async (input: CreateTemplateInput): Promise<TaskTemplate> => {
     const response = await fetch(`${API_BASE}/templates`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -33,6 +34,7 @@ export const templatesApi = {
 
   update: async (id: string, input: UpdateTemplateInput): Promise<TaskTemplate> => {
     const response = await fetch(`${API_BASE}/templates/${id}`, {
+      credentials: 'include',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -42,6 +44,7 @@ export const templatesApi = {
 
   delete: async (id: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/templates/${id}`, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);
@@ -65,6 +68,7 @@ export const taskTypesApi = {
     color?: string;
   }): Promise<TaskTypeConfig> => {
     const response = await fetch(`${API_BASE}/task-types`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -74,6 +78,7 @@ export const taskTypesApi = {
 
   update: async (id: string, patch: Partial<TaskTypeConfig>): Promise<TaskTypeConfig> => {
     const response = await fetch(`${API_BASE}/task-types/${id}`, {
+      credentials: 'include',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
@@ -84,6 +89,7 @@ export const taskTypesApi = {
   delete: async (id: string, force = false): Promise<void> => {
     const url = force ? `${API_BASE}/task-types/${id}?force=true` : `${API_BASE}/task-types/${id}`;
     const response = await fetch(url, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);
@@ -98,6 +104,7 @@ export const taskTypesApi = {
 
   reorder: async (orderedIds: string[]): Promise<TaskTypeConfig[]> => {
     const response = await fetch(`${API_BASE}/task-types/reorder`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ orderedIds }),
@@ -119,6 +126,7 @@ export const sprintsApi = {
 
   create: async (input: { label: string; description?: string }): Promise<SprintConfig> => {
     const response = await fetch(`${API_BASE}/sprints`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -128,6 +136,7 @@ export const sprintsApi = {
 
   update: async (id: string, patch: Partial<SprintConfig>): Promise<SprintConfig> => {
     const response = await fetch(`${API_BASE}/sprints/${id}`, {
+      credentials: 'include',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
@@ -138,6 +147,7 @@ export const sprintsApi = {
   delete: async (id: string, force = false): Promise<void> => {
     const url = force ? `${API_BASE}/sprints/${id}?force=true` : `${API_BASE}/sprints/${id}`;
     const response = await fetch(url, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);
@@ -152,6 +162,7 @@ export const sprintsApi = {
 
   reorder: async (orderedIds: string[]): Promise<SprintConfig[]> => {
     const response = await fetch(`${API_BASE}/sprints/reorder`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ orderedIds }),
@@ -168,6 +179,7 @@ export const activityApi = {
 
   clear: async (): Promise<void> => {
     const response = await fetch(`${API_BASE}/activity`, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);
@@ -182,6 +194,7 @@ export const attachmentsApi = {
 
   upload: async (taskId: string, formData: FormData): Promise<AttachmentUploadResponse> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`, {
+      credentials: 'include',
       method: 'POST',
       body: formData,
     });
@@ -190,6 +203,7 @@ export const attachmentsApi = {
 
   delete: async (taskId: string, attachmentId: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments/${attachmentId}`, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);

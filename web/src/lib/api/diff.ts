@@ -44,6 +44,7 @@ export const conflictsApi = {
     const response = await fetch(
       `${API_BASE}/conflicts/${taskId}/resolve?path=${encodeURIComponent(filePath)}`,
       {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resolution, manualContent }),
@@ -54,6 +55,7 @@ export const conflictsApi = {
 
   abort: async (taskId: string): Promise<{ success: boolean }> => {
     const response = await fetch(`${API_BASE}/conflicts/${taskId}/abort`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<{ success: boolean }>(response);
@@ -64,6 +66,7 @@ export const conflictsApi = {
     message?: string
   ): Promise<{ success: boolean; error?: string }> => {
     const response = await fetch(`${API_BASE}/conflicts/${taskId}/continue`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
@@ -80,6 +83,7 @@ export const githubApi = {
 
   createPR: async (input: CreatePRInput): Promise<PRInfo> => {
     const response = await fetch(`${API_BASE}/github/pr`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -89,6 +93,7 @@ export const githubApi = {
 
   openPR: async (taskId: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/github/pr/${taskId}/open`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<void>(response);

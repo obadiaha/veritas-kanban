@@ -13,6 +13,7 @@ export const timeApi = {
   start: async (taskId: string): Promise<Task> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/time/start`, {
       method: 'POST',
+      credentials: 'include',
     });
     return handleResponse<Task>(response);
   },
@@ -20,6 +21,7 @@ export const timeApi = {
   stop: async (taskId: string): Promise<Task> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/time/stop`, {
       method: 'POST',
+      credentials: 'include',
     });
     return handleResponse<Task>(response);
   },
@@ -27,6 +29,7 @@ export const timeApi = {
   addEntry: async (taskId: string, duration: number, description?: string): Promise<Task> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ duration, description }),
     });
@@ -36,6 +39,7 @@ export const timeApi = {
   deleteEntry: async (taskId: string, entryId: string): Promise<Task> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/time/entry/${entryId}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
     return handleResponse<Task>(response);
   },

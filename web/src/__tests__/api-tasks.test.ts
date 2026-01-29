@@ -87,6 +87,7 @@ describe('tasksApi', () => {
     const result = await tasksApi.create(input);
 
     expect(fetch).toHaveBeenCalledWith('http://test-api/tasks', {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -104,6 +105,7 @@ describe('tasksApi', () => {
 
     const result = await tasksApi.update('u1', { status: 'done' });
     expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/u1', {
+      credentials: 'include',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'done' }),
@@ -119,7 +121,10 @@ describe('tasksApi', () => {
     } as unknown as Response);
 
     await tasksApi.delete('d1');
-    expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/d1', { method: 'DELETE' });
+    expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/d1', {
+      credentials: 'include',
+      method: 'DELETE',
+    });
   });
 
   it('archive() calls POST /tasks/:id/archive', async () => {
@@ -130,7 +135,10 @@ describe('tasksApi', () => {
     } as unknown as Response);
 
     await tasksApi.archive('a1');
-    expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/a1/archive', { method: 'POST' });
+    expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/a1/archive', {
+      credentials: 'include',
+      method: 'POST',
+    });
   });
 
   it('reorder() calls POST /tasks/reorder with orderedIds', async () => {
@@ -142,6 +150,7 @@ describe('tasksApi', () => {
 
     const result = await tasksApi.reorder(['a', 'b', 'c']);
     expect(fetch).toHaveBeenCalledWith('http://test-api/tasks/reorder', {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ orderedIds: ['a', 'b', 'c'] }),

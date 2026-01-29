@@ -18,6 +18,7 @@ export const settingsApi = {
 
   updateFeatures: async (patch: Partial<FeatureSettings>): Promise<FeatureSettings> => {
     const response = await fetch(`${API_BASE}/settings/features`, {
+      credentials: 'include',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
@@ -40,6 +41,7 @@ export const configApi = {
 
     add: async (repo: RepoConfig): Promise<AppConfig> => {
       const response = await fetch(`${API_BASE}/config/repos`, {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(repo),
@@ -49,6 +51,7 @@ export const configApi = {
 
     update: async (name: string, updates: Partial<RepoConfig>): Promise<AppConfig> => {
       const response = await fetch(`${API_BASE}/config/repos/${encodeURIComponent(name)}`, {
+        credentials: 'include',
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
@@ -58,6 +61,7 @@ export const configApi = {
 
     remove: async (name: string): Promise<AppConfig> => {
       const response = await fetch(`${API_BASE}/config/repos/${encodeURIComponent(name)}`, {
+        credentials: 'include',
         method: 'DELETE',
       });
       return handleResponse<AppConfig>(response);
@@ -65,6 +69,7 @@ export const configApi = {
 
     validate: async (path: string): Promise<{ valid: boolean; branches: string[] }> => {
       const response = await fetch(`${API_BASE}/config/repos/validate`, {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path }),
@@ -81,6 +86,7 @@ export const configApi = {
   agents: {
     update: async (agents: AgentConfig[]): Promise<AppConfig> => {
       const response = await fetch(`${API_BASE}/config/agents`, {
+        credentials: 'include',
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(agents),
@@ -90,6 +96,7 @@ export const configApi = {
 
     setDefault: async (agent: AgentType): Promise<AppConfig> => {
       const response = await fetch(`${API_BASE}/config/default-agent`, {
+        credentials: 'include',
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agent }),

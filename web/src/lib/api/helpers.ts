@@ -73,6 +73,9 @@ export async function handleResponse<T>(response: Response): Promise<T> {
  * Use this in hooks instead of raw `fetch` + `response.json()`.
  */
 export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, init);
+  const response = await fetch(url, {
+    credentials: 'include',
+    ...init,
+  });
   return handleResponse<T>(response);
 }

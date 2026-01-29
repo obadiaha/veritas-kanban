@@ -7,6 +7,7 @@ import { API_BASE, handleResponse } from './helpers';
 export const worktreeApi = {
   create: async (taskId: string): Promise<WorktreeInfo> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/worktree`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<WorktreeInfo>(response);
@@ -19,6 +20,7 @@ export const worktreeApi = {
 
   delete: async (taskId: string, force: boolean = false): Promise<void> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/worktree?force=${force}`, {
+      credentials: 'include',
       method: 'DELETE',
     });
     return handleResponse<void>(response);
@@ -26,6 +28,7 @@ export const worktreeApi = {
 
   rebase: async (taskId: string): Promise<WorktreeInfo> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/worktree/rebase`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<WorktreeInfo>(response);
@@ -33,6 +36,7 @@ export const worktreeApi = {
 
   merge: async (taskId: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/tasks/${taskId}/worktree/merge`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<void>(response);
@@ -53,6 +57,7 @@ export const agentApi = {
 
   start: async (taskId: string, agent?: AgentType): Promise<AgentStatus> => {
     const response = await fetch(`${API_BASE}/agents/${taskId}/start`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ agent }),
@@ -62,6 +67,7 @@ export const agentApi = {
 
   sendMessage: async (taskId: string, message: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/agents/${taskId}/message`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
@@ -71,6 +77,7 @@ export const agentApi = {
 
   stop: async (taskId: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/agents/${taskId}/stop`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<void>(response);
@@ -108,6 +115,7 @@ export const previewApi = {
 
   start: async (taskId: string): Promise<PreviewServer> => {
     const response = await fetch(`${API_BASE}/preview/${taskId}/start`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<PreviewServer>(response);
@@ -115,6 +123,7 @@ export const previewApi = {
 
   stop: async (taskId: string): Promise<void> => {
     const response = await fetch(`${API_BASE}/preview/${taskId}/stop`, {
+      credentials: 'include',
       method: 'POST',
     });
     return handleResponse<void>(response);
