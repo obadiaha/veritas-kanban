@@ -53,3 +53,4 @@ coverage/
 # Vite generated
 vite.config.d.ts
 vite.config.js
+server/.veritas-kanban/security.json
