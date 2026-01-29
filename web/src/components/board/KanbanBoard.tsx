@@ -5,7 +5,7 @@ import { BoardLoadingSkeleton } from './BoardLoadingSkeleton';
 import { TaskDetailPanel } from '@/components/task/TaskDetailPanel';
 import type { TaskStatus, Task } from '@veritas-kanban/shared';
 import { useFeatureSettings } from '@/hooks/useFeatureSettings';
-import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { TaskCard } from '@/components/task/TaskCard';
 import { useKeyboard } from '@/hooks/useKeyboard';
@@ -99,7 +99,15 @@ export function KanbanBoard() {
   setOnMoveTask(handleMoveTask);
 
   // Drag and drop logic
-  const { activeTask, sensors, handleDragStart, handleDragOver, handleDragEnd } = useBoardDragDrop({
+  const {
+    activeTask,
+    isDragActive,
+    sensors,
+    collisionDetection,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+  } = useBoardDragDrop({
     tasks: filteredTasks,
     tasksByStatus,
     columns: COLUMNS,
@@ -152,7 +160,7 @@ export function KanbanBoard() {
           {featureSettings.board.enableDragAndDrop ? (
             <DndContext
               sensors={sensors}
-              collisionDetection={closestCorners}
+              collisionDetection={collisionDetection}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
@@ -167,6 +175,7 @@ export function KanbanBoard() {
                     allTasks={filteredTasks}
                     onTaskClick={handleTaskClick}
                     selectedTaskId={selectedTaskId}
+                    isDragActive={isDragActive}
                   />
                 ))}
               </div>

@@ -56,6 +56,7 @@ const blockedCategoryInfo: Record<
 interface TaskCardProps {
   task: Task;
   isDragging?: boolean;
+  isDragActive?: boolean;
   onClick?: () => void;
   isSelected?: boolean;
   isBlocked?: boolean;
@@ -72,6 +73,7 @@ interface TaskCardProps {
 function areTaskCardPropsEqual(prev: TaskCardProps, next: TaskCardProps): boolean {
   // Simple scalar/boolean props
   if (prev.isDragging !== next.isDragging) return false;
+  if (prev.isDragActive !== next.isDragActive) return false;
   if (prev.isSelected !== next.isSelected) return false;
   if (prev.isBlocked !== next.isBlocked) return false;
   // onClick is intentionally skipped — always a new closure but functionally equivalent
@@ -140,6 +142,7 @@ const priorityColors: Record<TaskPriority, string> = {
 export const TaskCard = memo(function TaskCard({
   task,
   isDragging,
+  isDragActive,
   onClick,
   isSelected,
   isBlocked,
@@ -223,9 +226,12 @@ export const TaskCard = memo(function TaskCard({
     };
   }, [task.subtasks]);
 
+  // Suppress the outer card tooltip entirely during any drag operation
+  const suppressCardTooltip = isDragActive || isDragging || isCurrentlyDragging;
+
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={500}>
+      <Tooltip delayDuration={500} open={suppressCardTooltip ? false : undefined}>
         <TooltipTrigger asChild>
           <div
             ref={setNodeRef}
