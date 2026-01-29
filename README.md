@@ -351,6 +351,22 @@ pnpm test:e2e   # E2E tests (Playwright)
 
 ---
 
+## 👤 Author
+
+**Brad Groux** — Co-Founder & CEO of [Digital Meld](https://digitalmeld.io) · Host of [Start Small, Think Big](https://podcasts.apple.com/us/podcast/start-small-think-big-a-podcast-and-newsletter/id1802232903)
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-bradgroux-0A66C2?logo=linkedin)](https://www.linkedin.com/in/bradgroux/)
+[![Twitter](https://img.shields.io/badge/Twitter-@BradGroux-1DA1F2?logo=x)](https://twitter.com/BradGroux)
+[![YouTube](https://img.shields.io/badge/YouTube-BradGroux-FF0000?logo=youtube)](https://www.youtube.com/bradgroux)
+
+---
+
+## 🙏 Acknowledgments
+
+Special thanks to [Peter Steinberger](https://github.com/steipete) and [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot) — the platform that inspired this project and made autonomous agent orchestration feel like magic.
+
+---
+
 ## 📜 License
 
 [MIT](LICENSE) © 2026 [Digital Meld](https://digitalmeld.io)
@@ -359,7 +375,7 @@ pnpm test:e2e   # E2E tests (Playwright)
 
 <div align="center">
 
-Built by [Digital Meld](https://digitalmeld.io) — AI-driven enterprise automation.
+Made in Texas with 💜
 
 Originally built for [Moltbot](https://github.com/moltbot/moltbot). Works with any agentic platform.
 
