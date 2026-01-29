@@ -76,7 +76,7 @@ function persistStatus(status: AgentStatus): void {
 let currentStatus: AgentStatus = loadPersistedStatus();
 
 // Timeout configuration (5 minutes default)
-const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 let idleTimeoutHandle: NodeJS.Timeout | null = null;
 
 // WebSocket server reference for broadcasting

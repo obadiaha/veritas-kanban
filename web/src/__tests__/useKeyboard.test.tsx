@@ -7,14 +7,13 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import type { Task, TaskStatus } from '@veritas-kanban/shared';
 import { createMockTask } from './test-utils';
 
-// Mock toast before importing the module under test
-vi.mock('@/hooks/useToast', () => {
-  const toast = vi.fn();
-  return { toast, useToast: () => ({ toast, toasts: [], dismiss: vi.fn() }) };
-});
+// Mock toast — vi.mock is hoisted before imports
+vi.mock('@/hooks/useToast', () => ({
+  toast: vi.fn(),
+  useToast: () => ({ toast: vi.fn(), toasts: [], dismiss: vi.fn() }),
+}));
 
-// Dynamic import after mocks are set
-const { KeyboardProvider, useKeyboard } = await import('@/hooks/useKeyboard');
+import { KeyboardProvider, useKeyboard } from '@/hooks/useKeyboard';
 
 // ── Test Component ───────────────────────────────────────────
 
@@ -29,7 +28,6 @@ function TestConsumer({
 }) {
   const ctx = useKeyboard();
 
-  // Register tasks and callbacks
   React.useEffect(() => {
     ctx.setTasks(tasks);
   }, [tasks, ctx]);
@@ -70,7 +68,6 @@ describe('KeyboardProvider', () => {
   });
 
   it('throws when useKeyboard is used outside provider', () => {
-    // Suppress React error boundary console output
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     function BadConsumer() {
@@ -116,15 +113,12 @@ describe('KeyboardProvider', () => {
 
     renderWithProvider({ tasks });
 
-    // j selects first task
     fireEvent.keyDown(window, { key: 'j' });
     expect(screen.getByTestId('selected').textContent).toBe('a');
 
-    // j again selects next
     fireEvent.keyDown(window, { key: 'j' });
     expect(screen.getByTestId('selected').textContent).toBe('b');
 
-    // k goes back
     fireEvent.keyDown(window, { key: 'k' });
     expect(screen.getByTestId('selected').textContent).toBe('a');
   });
@@ -155,12 +149,10 @@ describe('KeyboardProvider', () => {
 
     renderWithProvider({ tasks });
 
-    // Navigate to last
     fireEvent.keyDown(window, { key: 'j' });
     fireEvent.keyDown(window, { key: 'j' });
     expect(screen.getByTestId('selected').textContent).toBe('last');
 
-    // Next should wrap to first
     fireEvent.keyDown(window, { key: 'j' });
     expect(screen.getByTestId('selected').textContent).toBe('first');
   });
@@ -171,9 +163,7 @@ describe('KeyboardProvider', () => {
 
     renderWithProvider({ tasks, onOpenTask });
 
-    // Select first task
     fireEvent.keyDown(window, { key: 'j' });
-    // Open it
     fireEvent.keyDown(window, { key: 'Enter' });
 
     expect(onOpenTask).toHaveBeenCalledWith(expect.objectContaining({ id: 'enter-test' }));
@@ -185,14 +175,10 @@ describe('KeyboardProvider', () => {
 
     renderWithProvider({ tasks, onMoveTask });
 
-    // Select task
     fireEvent.keyDown(window, { key: 'j' });
-
-    // Move to in-progress (2)
     fireEvent.keyDown(window, { key: '2' });
     expect(onMoveTask).toHaveBeenCalledWith('move-test', 'in-progress');
 
-    // Move to done (4)
     fireEvent.keyDown(window, { key: '4' });
     expect(onMoveTask).toHaveBeenCalledWith('move-test', 'done');
   });
@@ -214,11 +200,9 @@ describe('KeyboardProvider', () => {
 
     const { container } = renderWithProvider({ tasks });
 
-    // Add an input element for the test
     const input = document.createElement('input');
     container.appendChild(input);
 
-    // Fire keydown on the input — should be ignored
     fireEvent.keyDown(input, { key: 'j' });
     expect(screen.getByTestId('selected').textContent).toBe('none');
   });
