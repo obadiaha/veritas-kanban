@@ -158,5 +158,21 @@
     "order": 20,
     "created": "2026-01-29T02:33:21.358Z",
     "updated": "2026-01-29T02:33:21.358Z"
+  },
+  {
+    "label": "Hardening Sprint: Testing, Security, Stability & Scalability",
+    "description": "Addresses remaining gaps in input validation, file safety, observability, load testing, and request resilience.",
+    "id": "hardening-sprint-testing-security-stability-scalability-Nc45zR",
+    "order": 21,
+    "created": "2026-01-29T04:50:15.814Z",
+    "updated": "2026-01-29T04:50:15.814Z"
+  },
+  {
+    "label": "v1.1 Roadmap: Scalability, Observability & Polish",
+    "description": "Post-launch improvements: storage abstraction, observability, load testing, accessibility, and API standardization.",
+    "id": "v1-1-roadmap-scalability-observability-polish-m1tthB",
+    "order": 22,
+    "created": "2026-01-29T06:37:11.252Z",
+    "updated": "2026-01-29T06:37:11.252Z"
   }
 ]

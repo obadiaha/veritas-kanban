@@ -36,59 +36,51 @@ export function Header() {
               <h1 className="text-lg font-semibold">Veritas Kanban</h1>
             </div>
             <div className="h-4 w-px bg-border" aria-hidden="true" />
-            <AgentStatusIndicator />
-            <div className="h-4 w-px bg-border" aria-hidden="true" />
             <WebSocketIndicator />
+            <div className="h-4 w-px bg-border" aria-hidden="true" />
+            <AgentStatusIndicator />
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={() => setCreateOpen(true)}
-            >
+            <Button variant="default" size="sm" onClick={() => setCreateOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               New Task
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={openHelpDialog}
               title="Keyboard shortcuts (?)"
             >
               <Keyboard className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => setActivityOpen(true)}
               title="Activity log"
             >
               <Activity className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => setArchiveOpen(true)}
               title="Archive"
             >
               <Archive className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setSettingsOpen(true)}
-            >
+            <Button variant="ghost" size="icon" onClick={() => setSettingsOpen(true)}>
               <Settings className="h-4 w-4" />
             </Button>
             <UserMenu onOpenSecuritySettings={openSecuritySettings} />
           </div>
         </div>
       </div>
-      
+
       <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
-      <SettingsDialog 
-        open={settingsOpen} 
+      <SettingsDialog
+        open={settingsOpen}
         onOpenChange={(open) => {
           setSettingsOpen(open);
           if (!open) setSettingsTab(undefined);
