@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronRight, Trophy, Zap, DollarSign, Target, Info, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { apiFetch } from '@/lib/api/helpers';
+import {
+  ChevronDown,
+  ChevronRight,
+  Trophy,
+  Zap,
+  DollarSign,
+  Target,
+  Info,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Select,
   SelectContent,
@@ -99,9 +106,7 @@ export function AgentComparison({ project }: AgentComparisonProps) {
     queryFn: async () => {
       const params = new URLSearchParams({ period, minRuns: '3' });
       if (project) params.set('project', project);
-      const res = await fetch(`/api/metrics/agents/comparison?${params}`);
-      if (!res.ok) throw new Error('Failed to fetch agent comparison');
-      return res.json();
+      return apiFetch<AgentComparisonResult>(`/api/metrics/agents/comparison?${params}`);
     },
     refetchInterval: 60000, // Refresh every minute
     staleTime: 30000,
@@ -113,14 +118,20 @@ export function AgentComparison({ project }: AgentComparisonProps) {
     } else {
       setSortField(field);
       // Default direction based on metric (lower is better for cost/duration, higher for others)
-      setSortDirection(field === 'avgDurationMs' || field === 'avgCostPerRun' || field === 'avgTokensPerRun' ? 'asc' : 'desc');
+      setSortDirection(
+        field === 'avgDurationMs' || field === 'avgCostPerRun' || field === 'avgTokensPerRun'
+          ? 'asc'
+          : 'desc'
+      );
     }
   };
 
-  const sortedAgents = data?.agents ? [...data.agents].sort((a, b) => {
-    const multiplier = sortDirection === 'asc' ? 1 : -1;
-    return (a[sortField] - b[sortField]) * multiplier;
-  }) : [];
+  const sortedAgents = data?.agents
+    ? [...data.agents].sort((a, b) => {
+        const multiplier = sortDirection === 'asc' ? 1 : -1;
+        return (a[sortField] - b[sortField]) * multiplier;
+      })
+    : [];
 
   const SortHeader = ({ field, label }: { field: SortField; label: string }) => (
     <button
@@ -129,7 +140,11 @@ export function AgentComparison({ project }: AgentComparisonProps) {
     >
       {label}
       {sortField === field ? (
-        sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+        sortDirection === 'asc' ? (
+          <ArrowUp className="h-3 w-3" />
+        ) : (
+          <ArrowDown className="h-3 w-3" />
+        )
       ) : (
         <ArrowUpDown className="h-3 w-3 opacity-50" />
       )}
@@ -148,7 +163,7 @@ export function AgentComparison({ project }: AgentComparisonProps) {
     };
     const category = categoryMap[field];
     if (!category) return '';
-    const rec = data.recommendations.find(r => r.category === category);
+    const rec = data.recommendations.find((r) => r.category === category);
     if (rec?.agent === agent) {
       return 'font-bold text-primary';
     }
@@ -229,7 +244,9 @@ export function AgentComparison({ project }: AgentComparisonProps) {
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="max-w-[200px]">
                           <p className="text-xs">{rec.reason}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{categoryTooltips[rec.category]}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {categoryTooltips[rec.category]}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     ))}
@@ -255,7 +272,9 @@ export function AgentComparison({ project }: AgentComparisonProps) {
                                 <Info className="h-3 w-3 text-muted-foreground" />
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p className="text-xs">Percentage of runs that completed successfully</p>
+                                <p className="text-xs">
+                                  Percentage of runs that completed successfully
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -285,7 +304,9 @@ export function AgentComparison({ project }: AgentComparisonProps) {
                                 <Info className="h-3 w-3 text-muted-foreground" />
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p className="text-xs">Average tokens per run (lower is more efficient)</p>
+                                <p className="text-xs">
+                                  Average tokens per run (lower is more efficient)
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -312,24 +333,51 @@ export function AgentComparison({ project }: AgentComparisonProps) {
                     {sortedAgents.map((agent) => (
                       <tr key={agent.agent} className="border-b last:border-0 hover:bg-muted/30">
                         <td className="py-2 pr-4 font-medium">{agent.agent}</td>
-                        <td className={cn('py-2 px-2 text-right', getBestHighlight(agent.agent, 'runs'))}>
+                        <td
+                          className={cn(
+                            'py-2 px-2 text-right',
+                            getBestHighlight(agent.agent, 'runs')
+                          )}
+                        >
                           {agent.runs}
                         </td>
-                        <td className={cn('py-2 px-2 text-right', getBestHighlight(agent.agent, 'successRate'))}>
-                          <span className={cn(
-                            agent.successRate >= 90 && 'text-green-500',
-                            agent.successRate < 70 && 'text-red-500',
-                          )}>
+                        <td
+                          className={cn(
+                            'py-2 px-2 text-right',
+                            getBestHighlight(agent.agent, 'successRate')
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              agent.successRate >= 90 && 'text-green-500',
+                              agent.successRate < 70 && 'text-red-500'
+                            )}
+                          >
                             {agent.successRate}%
                           </span>
                         </td>
-                        <td className={cn('py-2 px-2 text-right', getBestHighlight(agent.agent, 'avgDurationMs'))}>
+                        <td
+                          className={cn(
+                            'py-2 px-2 text-right',
+                            getBestHighlight(agent.agent, 'avgDurationMs')
+                          )}
+                        >
                           {formatDuration(agent.avgDurationMs)}
                         </td>
-                        <td className={cn('py-2 px-2 text-right', getBestHighlight(agent.agent, 'avgTokensPerRun'))}>
+                        <td
+                          className={cn(
+                            'py-2 px-2 text-right',
+                            getBestHighlight(agent.agent, 'avgTokensPerRun')
+                          )}
+                        >
                           {formatTokens(agent.avgTokensPerRun)}
                         </td>
-                        <td className={cn('py-2 pl-2 text-right', getBestHighlight(agent.agent, 'avgCostPerRun'))}>
+                        <td
+                          className={cn(
+                            'py-2 pl-2 text-right',
+                            getBestHighlight(agent.agent, 'avgCostPerRun')
+                          )}
+                        >
                           ${agent.avgCostPerRun.toFixed(2)}
                         </td>
                       </tr>
