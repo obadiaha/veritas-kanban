@@ -29,11 +29,29 @@ Complete feature reference for Veritas Kanban. For a quick overview, see the [RE
 
 The Kanban board is the central interface — a drag-and-drop workspace that reflects your project's state in real time.
 
+![Board overview](../assets/demo-overview.gif)
+
+|                                                       |                                                        |
+| ----------------------------------------------------- | ------------------------------------------------------ |
+| ![Main board view](../assets/scr-main_overview_1.png) | ![Board with tasks](../assets/scr-main_overview_2.png) |
+| ![Board columns](../assets/scr-main_overview_3.png)   | ![Board dark mode](../assets/scr-main_overview_4.png)  |
+
 - **Kanban columns** — Four default columns: To Do, In Progress, Blocked, Done
 - **Drag-and-drop** — Move tasks between columns with [@dnd-kit](https://dndkit.com/); reorder within columns; custom collision detection (pointerWithin + rectIntersection fallback) for reliable cross-column moves; tooltips suppressed during drag; local state management for real-time column updates
+
+  ![Drag-and-drop demo](../assets/demo-drag_drop.gif)
+
 - **Task CRUD** — Create, read, update, and delete tasks through the UI or API
 - **Create task dialog** — Quick-create with title, type, priority, project, sprint, and description
+
+  ![New task dialog](../assets/scr-new_task.png)
+
 - **Task detail panel** — Slide-out sheet with tabbed sections: Details, Git, Agent, Diff, Review, Preview, Attachments, Metrics
+
+  ![Task details panel](../assets/scr-task_details.png)
+
+  ![Task details list view](../assets/scr-task_details_list.png)
+
 - **Task types** — Configurable type system with icons and color-coded card borders (code, research, content, automation, and custom types)
 - **Priority levels** — Low, medium, and high with visual indicators on cards
 - **Markdown storage** — Tasks stored as human-readable `.md` files with YAML frontmatter (via [gray-matter](https://github.com/jonschlinkert/gray-matter))
@@ -45,11 +63,23 @@ The Kanban board is the central interface — a drag-and-drop workspace that ref
 - **Blocked column** — Dedicated column for blocked tasks with categorized reasons (waiting on feedback, technical snag, prerequisite, other)
 - **Comments** — Add, edit, and delete comments on tasks with author attribution and relative timestamps
 - **File attachments** — Upload files to tasks with MIME-type icons, file size display, and text extraction for documents
+
+  ![Task attachments](../assets/scr-task_attachments.png)
+
 - **Task templates** — Create reusable templates with variable interpolation; apply templates to new or existing tasks (v1 format with migration from v0)
+
+  ![Apply task template](../assets/scr-apply_task_template.png)
+
 - **Blueprint preview** — Preview template output before applying
 - **Markdown preview** — Live preview panel for task descriptions
 - **Activity log** — Full history of task events (created, updated, status changed, agent started/completed, archived, etc.)
+
+  ![Activity log](../assets/scr-activity_log.png)
+
 - **Archive sidebar** — Searchable archive with filters by project, sprint, and type; paginated (25 per page); one-click restore
+
+  ![Archive sidebar](../assets/scr-archive.png)
+
 - **Archive suggestion banner** — Prompts to archive completed sprint tasks
 
 ---
@@ -107,6 +137,8 @@ Integrated git workflow from branch creation to merge.
 
 First-class support for autonomous coding agents.
 
+![Task workflow demo](../assets/demo-task.gif)
+
 - **Agent orchestration** — Start, stop, and monitor AI agents on code tasks from the UI or API
 - **Multi-agent support** — Ships with Claude Code, Amp, Copilot, Gemini, and Veritas agents; add completely custom agents via Settings → Agents
 - **Agent CRUD management** — Full Add/Edit/Remove for agents in Settings → Agents; add agent form with name, type slug (auto-generated), command, and args; inline edit via pencil icon; remove via trash icon with confirmation (blocked for the default agent); `AgentType` accepts any string slug, not just built-in names
@@ -117,6 +149,9 @@ First-class support for autonomous coding agents.
 - **Time tracking** — Start/stop timer or add manual time entries per task; running timer display with live elapsed counter
 - **Time entry management** — View, add, and delete individual time entries with duration parsing (e.g., "1h 30m")
 - **Agent status indicator** — Header-level indicator showing global agent state (idle, working, sub-agent mode with count)
+
+  ![Agent activity](../assets/scr-menu_agent_activity.png)
+
 - **Running indicator on cards** — Animated spinner on task cards when an agent is actively working
 - **Agent output stream** — Real-time agent output via WebSocket with auto-scroll and clear
 - **Send message to agent** — Send text messages to running agents
@@ -225,6 +260,8 @@ Model Context Protocol server for AI assistant integration (Claude Desktop, etc.
 
 Defense-in-depth security model with multiple authentication methods and hardened defaults.
 
+![Security menu](../assets/scr-menu_security.png)
+
 ### Authentication
 
 - **JWT authentication** — Password-based user login with JWT session tokens
@@ -290,6 +327,11 @@ Optimizations spanning server, frontend, and data lifecycle.
 
 Real-time project metrics and telemetry.
 
+|                                                       |                                                       |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| ![Metrics overview](../assets/scr-metrics_.png)       | ![Token usage](../assets/scr-metrics_token_usage.png) |
+| ![Failed runs](../assets/scr-metrics_failed_runs.png) | ![Export metrics](../assets/scr-export_metrics.png)   |
+
 - **Time period selector** — View metrics for 24h, 7d, 30d, or all-time periods
 - **Project filter** — Drill into metrics for a specific project
 - **Task status overview** — Counts for each column with color-coded metric cards
@@ -308,13 +350,25 @@ Real-time project metrics and telemetry.
 - **Section collapsing** — Dashboard sections apply `overflow-hidden` only when collapsed
 - **Daily digest** — Summary of the day's activity: tasks completed/created, agent runs, token usage, failures and issues
 - **Task-level metrics** — Per-task panel showing attempt history, token counts, duration, cost, and status timeline
+
+  ![Task metrics](../assets/scr-task_metrics.png)
+
 - **Export dialog** — Export dashboard data for external analysis
+
+  ![Export metrics](../assets/scr-export_metrics.png)
 
 ---
 
 ## Settings & Customization
 
 Modular settings system with 8 focused tabs.
+
+|                                                           |                                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------------ |
+| ![General settings](../assets/scr-settings_general.png)   | ![Board settings](../assets/scr-settings_board.png)                |
+| ![Task settings](../assets/scr-settings_tasks.png)        | ![Agent settings](../assets/scr-settings_agents.png)               |
+| ![Data settings](../assets/scr-settings_data.png)         | ![Notification settings](../assets/scr-settings_notifications.png) |
+| ![Security settings](../assets/scr-settings_security.png) | ![Manage settings](../assets/scr-settings_manage.png)              |
 
 | Tab               | What It Controls                                                                                               |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -391,6 +445,9 @@ RESTful API designed for both human and AI agent consumption.
 
 - **WebSocket server** — Real-time task change broadcasts on `ws://localhost:3001`
 - **WebSocket connection indicator** — UI shows connected/disconnected status
+
+  ![WebSocket activity](../assets/scr-menu_websocket_activity.png)
+
 - **Agent output streaming** — Live agent output over WebSocket
 - **Broadcast service** — Centralized WebSocket message dispatch for task changes
 
@@ -499,6 +556,9 @@ Working toward WCAG 2.1 AA compliance.
 - **ARIA labels** — Applied to interactive elements: buttons, dialogs, form controls, navigation
 - **Keyboard navigation** — Full keyboard support: j/k navigation, Enter to open, Esc to close, number keys for column moves
 - **Keyboard shortcuts dialog** — Discoverable via `?` key with grouped shortcut reference
+
+  ![Keyboard shortcuts](../assets/scr-menu_keyboard.png)
+
 - **Focus management** — Focus trapped in dialogs and sheets; restored on close
 - **Screen reader support** — Semantic HTML, ARIA roles, and descriptive labels throughout
 - **Color contrast** — Dark and light mode palettes designed for readability; purple primary (`270° 50% 40%`) buttons with white text in dark mode

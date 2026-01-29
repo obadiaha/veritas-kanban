@@ -14,7 +14,9 @@ Built for developers who want a visual Kanban board that works with autonomous c
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-<!-- TODO: Add hero screenshot / GIF of board in action -->
+![Veritas Kanban — Board Overview](assets/demo-overview.gif)
+
+> 🎬 [Watch the full demo video (MP4)](assets/demo-overview.mp4)
 
 ⭐ **If you find this useful, star the repo — it helps others discover it!**
 
@@ -79,6 +81,8 @@ Open [http://localhost:3000](http://localhost:3000) — that's it.
 
 ### 📋 Core Board
 
+![Drag-and-drop Kanban demo](assets/demo-drag_drop.gif)
+
 - **Drag-and-drop Kanban** — Move tasks across To Do, In Progress, Review, Done
 - **Markdown storage** — Human-readable task files with YAML frontmatter
 - **Dark/light mode** — Toggle between dark and light themes in Settings
@@ -101,6 +105,10 @@ Open [http://localhost:3000](http://localhost:3000) — that's it.
 - **Running indicator** — Visual feedback when agents are working
 
 ### 🗂️ Organization
+
+![Task detail features demo](assets/demo-task.gif)
+
+> 🎬 [Watch the task workflow demo (MP4)](assets/demo-task.mp4)
 
 - **Subtasks** — Break down complex work with progress tracking
 - **Dependencies** — Block tasks until prerequisites complete
@@ -410,6 +418,59 @@ pnpm test:e2e   # E2E tests (Playwright)
 | [Code of Conduct](CODE_OF_CONDUCT.md) | Community guidelines             |
 | [Changelog](CHANGELOG.md)             | Release history                  |
 | [Sprint Docs](docs/)                  | Sprint planning & audit reports  |
+
+---
+
+## 📸 Screenshots
+
+<details>
+<summary><strong>Click to expand screenshots</strong></summary>
+
+### Board Overview
+
+|                                                    |                                                     |
+| -------------------------------------------------- | --------------------------------------------------- |
+| ![Main board view](assets/scr-main_overview_1.png) | ![Board with tasks](assets/scr-main_overview_2.png) |
+| ![Board columns](assets/scr-main_overview_3.png)   | ![Board dark mode](assets/scr-main_overview_4.png)  |
+
+### Task Management
+
+|                                                             |                                                            |
+| ----------------------------------------------------------- | ---------------------------------------------------------- |
+| ![New task dialog](assets/scr-new_task.png)                 | ![Task details panel](assets/scr-task_details.png)         |
+| ![Task details list view](assets/scr-task_details_list.png) | ![Apply task template](assets/scr-apply_task_template.png) |
+
+### Task Extras
+
+|                                              |                                                      |
+| -------------------------------------------- | ---------------------------------------------------- |
+| ![Task metrics](assets/scr-task_metrics.png) | ![Task attachments](assets/scr-task_attachments.png) |
+| ![Activity log](assets/scr-activity_log.png) | ![Archive](assets/scr-archive.png)                   |
+
+### Metrics & Dashboard
+
+|                                                    |                                                    |
+| -------------------------------------------------- | -------------------------------------------------- |
+| ![Metrics overview](assets/scr-metrics_.png)       | ![Token usage](assets/scr-metrics_token_usage.png) |
+| ![Failed runs](assets/scr-metrics_failed_runs.png) | ![Export metrics](assets/scr-export_metrics.png)   |
+
+### Settings
+
+|                                                        |                                                                 |
+| ------------------------------------------------------ | --------------------------------------------------------------- |
+| ![General settings](assets/scr-settings_general.png)   | ![Board settings](assets/scr-settings_board.png)                |
+| ![Task settings](assets/scr-settings_tasks.png)        | ![Agent settings](assets/scr-settings_agents.png)               |
+| ![Data settings](assets/scr-settings_data.png)         | ![Notification settings](assets/scr-settings_notifications.png) |
+| ![Security settings](assets/scr-settings_security.png) | ![Manage settings](assets/scr-settings_manage.png)              |
+
+### Menus & Activity
+
+|                                                       |                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------- |
+| ![Agent activity](assets/scr-menu_agent_activity.png) | ![WebSocket activity](assets/scr-menu_websocket_activity.png) |
+| ![Keyboard shortcuts](assets/scr-menu_keyboard.png)   | ![Security menu](assets/scr-menu_security.png)                |
+
+</details>
 
 ---
 

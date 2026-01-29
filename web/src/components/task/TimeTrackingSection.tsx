@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,6 +60,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
   // Local optimistic state — toggles immediately on click, syncs with server data
   const [optimisticRunning, setOptimisticRunning] = useState<boolean | null>(null);
 
+  const queryClient = useQueryClient();
   const startTimer = useStartTimer();
   const stopTimer = useStopTimer();
   const addTimeEntry = useAddTimeEntry();
@@ -78,7 +80,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     }
   }, [serverRunning, optimisticRunning]);
 
-  const handleStartStop = async () => {
+  const handleStartStop = useCallback(async () => {
     // Toggle immediately for responsive UI
     const newState = !isRunning;
     setOptimisticRunning(newState);
@@ -89,10 +91,12 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
         await startTimer.mutateAsync(task.id);
       }
     } catch {
-      // Revert on error
+      // API rejected — clear optimistic state and force-refresh from server
+      // so the UI reflects the real timer state (not stale cache)
       setOptimisticRunning(null);
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     }
-  };
+  }, [isRunning, task.id, startTimer, stopTimer, queryClient]);
 
   const handleAddEntry = async () => {
     const seconds = parseDuration(durationInput);

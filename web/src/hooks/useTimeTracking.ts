@@ -35,6 +35,9 @@ export function useStartTimer() {
     mutationFn: (taskId) => api.time.start(taskId),
     onSuccess: (task) => {
       patchTaskInList(queryClient, task);
+    },
+    // Always refresh cache — on error the UI may be out of sync with server
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['time', 'summary'] });
     },
@@ -51,6 +54,9 @@ export function useStopTimer() {
     mutationFn: (taskId) => api.time.stop(taskId),
     onSuccess: (task) => {
       patchTaskInList(queryClient, task);
+    },
+    // Always refresh cache — on error the UI may be out of sync with server
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['time', 'summary'] });
     },

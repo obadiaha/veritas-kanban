@@ -17,9 +17,7 @@ export function useTasks() {
   return useQuery({
     queryKey: ['tasks'],
     queryFn: api.tasks.list,
-    refetchInterval: isConnected
-      ? POLL_INTERVAL_WS_CONNECTED
-      : POLL_INTERVAL_WS_DISCONNECTED,
+    refetchInterval: isConnected ? POLL_INTERVAL_WS_CONNECTED : POLL_INTERVAL_WS_DISCONNECTED,
     staleTime: isConnected ? 30_000 : 5_000,
   });
 }
@@ -41,17 +39,17 @@ export function useTask(id: string) {
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (input: CreateTaskInput) => api.tasks.create(input),
     // Optimistic update: immediately add a placeholder task
     onMutate: async (input) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
-      
+
       // Snapshot the previous value
       const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
-      
+
       // Optimistically add new task with temporary ID
       const optimisticTask: Task = {
         id: `temp-${Date.now()}`,
@@ -68,11 +66,11 @@ export function useCreateTask() {
         comments: [],
         reviewComments: [],
       };
-      
-      queryClient.setQueryData<Task[]>(['tasks'], (old) => 
+
+      queryClient.setQueryData<Task[]>(['tasks'], (old) =>
         old ? [optimisticTask, ...old] : [optimisticTask]
       );
-      
+
       return { previousTasks };
     },
     // On error, rollback to previous value
@@ -90,59 +88,19 @@ export function useCreateTask() {
 
 export function useUpdateTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, input }: { id: string; input: UpdateTaskInput }) => 
+    mutationFn: ({ id, input }: { id: string; input: UpdateTaskInput }) =>
       api.tasks.update(id, input),
-    // Optimistic update: immediately apply the changes
-    onMutate: async ({ id, input }) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['tasks'] });
-      await queryClient.cancelQueries({ queryKey: ['tasks', id] });
-      
-      // Snapshot the previous values
-      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
-      const previousTask = queryClient.getQueryData<Task>(['tasks', id]);
-      
-      // Optimistically update the task in the list (merge only defined fields)
-      queryClient.setQueryData<Task[]>(['tasks'], (old) => 
-        old?.map(task => {
-          if (task.id !== id) return task;
-          // Only apply defined fields from input
-          const updates: Partial<Task> = { updated: new Date().toISOString() };
-          Object.entries(input).forEach(([key, value]) => {
-            if (value !== undefined) {
-              (updates as Record<string, unknown>)[key] = value;
-            }
-          });
-          return { ...task, ...updates } as Task;
-        })
-      );
-      
-      // Also update the individual task query
-      if (previousTask) {
-        const updates: Partial<Task> = { updated: new Date().toISOString() };
-        Object.entries(input).forEach(([key, value]) => {
-          if (value !== undefined) {
-            (updates as Record<string, unknown>)[key] = value;
-          }
-        });
-        queryClient.setQueryData<Task>(['tasks', id], { ...previousTask, ...updates } as Task);
-      }
-      
-      return { previousTasks, previousTask };
-    },
-    // On error, rollback to previous values
-    onError: (_err, { id }, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(['tasks'], context.previousTasks);
-      }
-      if (context?.previousTask) {
-        queryClient.setQueryData(['tasks', id], context.previousTask);
-      }
-    },
-    // On success, update with actual server response
+    // On success, patch the cache with the server response (authoritative)
+    // No optimistic update here — useDebouncedSave provides instant UI feedback
+    // via localTask, and optimistic updates were causing race conditions with
+    // timer start/stop mutations (cancelQueries would abort their cache patches).
     onSuccess: (task) => {
+      // Patch both the list and individual caches with the real server response
+      queryClient.setQueryData<Task[]>(['tasks'], (old) =>
+        old ? old.map((t) => (t.id === task.id ? task : t)) : old
+      );
       queryClient.setQueryData(['tasks', task.id], task);
     },
     // Always refetch to sync with server
@@ -154,7 +112,7 @@ export function useUpdateTask() {
 
 export function useDeleteTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => api.tasks.delete(id),
     onSuccess: () => {
@@ -165,7 +123,7 @@ export function useDeleteTask() {
 
 export function useArchiveTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => api.tasks.archive(id),
     onSuccess: () => {
@@ -177,7 +135,7 @@ export function useArchiveTask() {
 
 export function useBulkArchive() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (sprint: string) => api.tasks.bulkArchive(sprint),
     onSuccess: () => {
@@ -189,7 +147,7 @@ export function useBulkArchive() {
 
 export function useRestoreTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => api.tasks.restore(id),
     onSuccess: () => {
@@ -201,9 +159,9 @@ export function useRestoreTask() {
 
 export function useAddSubtask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, title }: { taskId: string; title: string }) => 
+    mutationFn: ({ taskId, title }: { taskId: string; title: string }) =>
       api.tasks.addSubtask(taskId, title),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -214,12 +172,16 @@ export function useAddSubtask() {
 
 export function useUpdateSubtask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, subtaskId, updates }: { 
-      taskId: string; 
-      subtaskId: string; 
-      updates: { title?: string; completed?: boolean } 
+    mutationFn: ({
+      taskId,
+      subtaskId,
+      updates,
+    }: {
+      taskId: string;
+      subtaskId: string;
+      updates: { title?: string; completed?: boolean };
     }) => api.tasks.updateSubtask(taskId, subtaskId, updates),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -230,9 +192,9 @@ export function useUpdateSubtask() {
 
 export function useDeleteSubtask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, subtaskId }: { taskId: string; subtaskId: string }) => 
+    mutationFn: ({ taskId, subtaskId }: { taskId: string; subtaskId: string }) =>
       api.tasks.deleteSubtask(taskId, subtaskId),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -243,9 +205,9 @@ export function useDeleteSubtask() {
 
 export function useAddComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, author, text }: { taskId: string; author: string; text: string }) => 
+    mutationFn: ({ taskId, author, text }: { taskId: string; author: string; text: string }) =>
       api.tasks.addComment(taskId, author, text),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -256,10 +218,17 @@ export function useAddComment() {
 
 export function useEditComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, commentId, text }: { taskId: string; commentId: string; text: string }) => 
-      api.tasks.editComment(taskId, commentId, text),
+    mutationFn: ({
+      taskId,
+      commentId,
+      text,
+    }: {
+      taskId: string;
+      commentId: string;
+      text: string;
+    }) => api.tasks.editComment(taskId, commentId, text),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.setQueryData(['tasks', task.id], task);
@@ -269,9 +238,9 @@ export function useEditComment() {
 
 export function useDeleteComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ taskId, commentId }: { taskId: string; commentId: string }) => 
+    mutationFn: ({ taskId, commentId }: { taskId: string; commentId: string }) =>
       api.tasks.deleteComment(taskId, commentId),
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -312,26 +281,26 @@ export function useTasksByStatus(tasks: Task[] | undefined) {
   }
 
   return {
-    todo: sortByPosition(tasks.filter(t => t.status === 'todo')),
-    'in-progress': sortByPosition(tasks.filter(t => t.status === 'in-progress')),
-    blocked: sortByPosition(tasks.filter(t => t.status === 'blocked')),
-    done: sortByPosition(tasks.filter(t => t.status === 'done')),
+    todo: sortByPosition(tasks.filter((t) => t.status === 'todo')),
+    'in-progress': sortByPosition(tasks.filter((t) => t.status === 'in-progress')),
+    blocked: sortByPosition(tasks.filter((t) => t.status === 'blocked')),
+    done: sortByPosition(tasks.filter((t) => t.status === 'done')),
   };
 }
 
 // Check if a task is blocked by incomplete dependencies
 export function isTaskBlocked(task: Task, allTasks: Task[]): boolean {
   if (!task.blockedBy?.length) return false;
-  
-  const blockingTasks = allTasks.filter(t => task.blockedBy?.includes(t.id));
-  return blockingTasks.some(t => t.status !== 'done');
+
+  const blockingTasks = allTasks.filter((t) => task.blockedBy?.includes(t.id));
+  return blockingTasks.some((t) => t.status !== 'done');
 }
 
 // Get the blockers for a task
 export function getTaskBlockers(task: Task, allTasks: Task[]): Task[] {
   if (!task.blockedBy?.length) return [];
-  
-  return allTasks.filter(t => task.blockedBy?.includes(t.id) && t.status !== 'done');
+
+  return allTasks.filter((t) => task.blockedBy?.includes(t.id) && t.status !== 'done');
 }
 
 // Archive suggestions - sprints where all tasks are done
@@ -348,7 +317,7 @@ export function useArchiveSuggestions() {
 
 export function useArchiveSprint() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (sprint: string) => api.tasks.archiveSprint(sprint),
     onSuccess: () => {
