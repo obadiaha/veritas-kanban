@@ -16,6 +16,7 @@ interface KanbanColumnProps {
   allTasks: Task[];
   onTaskClick?: (task: Task) => void;
   selectedTaskId?: string | null;
+  isDragActive?: boolean;
 }
 
 const columnColors: Record<TaskStatus, string> = {
@@ -32,6 +33,7 @@ export function KanbanColumn({
   allTasks,
   onTaskClick,
   selectedTaskId,
+  isDragActive,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
   const { settings: featureSettings } = useFeatureSettings();
@@ -97,6 +99,7 @@ export function KanbanColumn({
                     isBlocked={blocked}
                     blockerTitles={blockers.map((b) => b.title)}
                     cardMetrics={taskMetrics}
+                    isDragActive={isDragActive}
                   />
                 </ErrorBoundary>
               );
