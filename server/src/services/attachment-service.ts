@@ -5,6 +5,8 @@ import mime from 'mime-types';
 import type { Attachment, AttachmentLimits } from '@veritas-kanban/shared';
 import { DEFAULT_ATTACHMENT_LIMITS, ALLOWED_MIME_TYPES } from '@veritas-kanban/shared';
 import { validateMimeType, getAllowedTypesDescription } from './mime-validation.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('attachment-service');
 
 // Default paths - resolve to project root (one level up from server/)
 const DEFAULT_PROJECT_ROOT = path.resolve(process.cwd(), '..');
@@ -67,7 +69,7 @@ export class AttachmentService {
       !normalizedPath.startsWith(normalizedBase + path.sep) &&
       normalizedPath !== normalizedBase
     ) {
-      console.error(`Path traversal attempt blocked: ${context}`, { resolvedPath, baseDir });
+      log.error({ err: { resolvedPath, baseDir } }, `Path traversal attempt blocked: ${context}`);
       throw new Error('Invalid path: access denied');
     }
   }
@@ -257,7 +259,7 @@ export class AttachmentService {
     try {
       await fs.unlink(filepath);
     } catch (err) {
-      console.error(`Failed to delete attachment file: ${filepath}`, err);
+      log.error({ err: err }, `Failed to delete attachment file: ${filepath}`);
     }
 
     // Delete extracted text
@@ -318,7 +320,7 @@ export class AttachmentService {
     } catch (err) {
       // Ignore if source doesn't exist
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-        console.error(`Failed to archive attachments for task ${taskId}:`, err);
+        log.error({ err: err }, `Failed to archive attachments for task ${taskId}`);
       }
     }
   }
@@ -342,7 +344,7 @@ export class AttachmentService {
     } catch (err) {
       // Ignore if source doesn't exist
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-        console.error(`Failed to restore attachments for task ${taskId}:`, err);
+        log.error({ err: err }, `Failed to restore attachments for task ${taskId}`);
       }
     }
   }
@@ -356,7 +358,7 @@ export class AttachmentService {
     try {
       await fs.rm(taskDir, { recursive: true, force: true });
     } catch (err) {
-      console.error(`Failed to delete attachments directory for task ${taskId}:`, err);
+      log.error({ err: err }, `Failed to delete attachments directory for task ${taskId}`);
     }
   }
 

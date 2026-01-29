@@ -1,6 +1,8 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { TemplateService } from '../services/template-service.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('templates');
 
 const router: RouterType = Router();
 const templateService = new TemplateService();
@@ -44,13 +46,15 @@ const updateTemplateSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   category: z.string().optional(),
-  taskDefaults: z.object({
-    type: z.string().optional(),
-    priority: z.enum(['low', 'medium', 'high']).optional(),
-    project: z.string().optional(),
-    descriptionTemplate: z.string().optional(),
-    agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']).optional(),
-  }).optional(),
+  taskDefaults: z
+    .object({
+      type: z.string().optional(),
+      priority: z.enum(['low', 'medium', 'high']).optional(),
+      project: z.string().optional(),
+      descriptionTemplate: z.string().optional(),
+      agent: z.enum(['claude-code', 'amp', 'copilot', 'gemini', 'veritas']).optional(),
+    })
+    .optional(),
   subtaskTemplates: z.array(subtaskTemplateSchema).optional(),
   blueprint: z.array(blueprintTaskSchema).optional(),
 });
@@ -61,7 +65,7 @@ router.get('/', async (_req, res) => {
     const templates = await templateService.getTemplates();
     res.json(templates);
   } catch (error) {
-    console.error('Error listing templates:', error);
+    log.error({ err: error }, 'Error listing templates');
     res.status(500).json({ error: 'Failed to list templates' });
   }
 });
@@ -75,7 +79,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(template);
   } catch (error) {
-    console.error('Error getting template:', error);
+    log.error({ err: error }, 'Error getting template');
     res.status(500).json({ error: 'Failed to get template' });
   }
 });
@@ -90,7 +94,7 @@ router.post('/', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error creating template:', error);
+    log.error({ err: error }, 'Error creating template');
     res.status(500).json({ error: 'Failed to create template' });
   }
 });
@@ -108,7 +112,7 @@ router.patch('/:id', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error updating template:', error);
+    log.error({ err: error }, 'Error updating template');
     res.status(500).json({ error: 'Failed to update template' });
   }
 });
@@ -122,7 +126,7 @@ router.delete('/:id', async (req, res) => {
     }
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting template:', error);
+    log.error({ err: error }, 'Error deleting template');
     res.status(500).json({ error: 'Failed to delete template' });
   }
 });

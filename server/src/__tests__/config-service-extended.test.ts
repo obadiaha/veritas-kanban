@@ -31,7 +31,11 @@ describe('ConfigService', () => {
   describe('getConfig', () => {
     it('should return default config when no file exists', async () => {
       // Remove the file if it exists
-      try { await fs.unlink(configFile); } catch {}
+      try {
+        await fs.unlink(configFile);
+      } catch {
+        /* file may not exist */
+      }
       const config = await service.getConfig();
       expect(config).toBeDefined();
       expect(config.repos).toEqual([]);
@@ -41,7 +45,10 @@ describe('ConfigService', () => {
 
     it('should create config file with defaults when missing', async () => {
       await service.getConfig();
-      const exists = await fs.access(configFile).then(() => true).catch(() => false);
+      const exists = await fs
+        .access(configFile)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
     });
 
@@ -67,11 +74,14 @@ describe('ConfigService', () => {
 
     it('should merge feature defaults for backward compat', async () => {
       // Write config without features
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [],
-        agents: [],
-        defaultAgent: 'claude-code',
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [],
+          agents: [],
+          defaultAgent: 'claude-code',
+        })
+      );
 
       const config = await service.getConfig();
       expect(config.features).toBeDefined();
@@ -99,7 +109,10 @@ describe('ConfigService', () => {
         defaultAgent: 'claude-code',
       } as any);
 
-      const exists = await fs.access(newFile).then(() => true).catch(() => false);
+      const exists = await fs
+        .access(newFile)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
       newService.dispose();
     });
@@ -123,10 +136,13 @@ describe('ConfigService', () => {
   describe('addRepo', () => {
     it('should reject duplicate repo names', async () => {
       // Write a config with one repo
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [{ name: 'existing', path: '/tmp' }],
-        agents: [],
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [{ name: 'existing', path: '/tmp' }],
+          agents: [],
+        })
+      );
 
       await expect(
         service.addRepo({ name: 'existing', path: '/tmp/other' } as any)
@@ -136,26 +152,32 @@ describe('ConfigService', () => {
 
   describe('updateRepo', () => {
     it('should reject update for non-existent repo', async () => {
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [],
-        agents: [],
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [],
+          agents: [],
+        })
+      );
 
-      await expect(
-        service.updateRepo('nonexistent', { path: '/new/path' })
-      ).rejects.toThrow('not found');
+      await expect(service.updateRepo('nonexistent', { path: '/new/path' })).rejects.toThrow(
+        'not found'
+      );
     });
   });
 
   describe('removeRepo', () => {
     it('should remove existing repo', async () => {
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [
-          { name: 'keep', path: '/tmp/keep' },
-          { name: 'remove', path: '/tmp/remove' },
-        ],
-        agents: [],
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [
+            { name: 'keep', path: '/tmp/keep' },
+            { name: 'remove', path: '/tmp/remove' },
+          ],
+          agents: [],
+        })
+      );
 
       const config = await service.removeRepo('remove');
       expect(config.repos).toHaveLength(1);
@@ -163,10 +185,13 @@ describe('ConfigService', () => {
     });
 
     it('should reject removal of non-existent repo', async () => {
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [],
-        agents: [],
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [],
+          agents: [],
+        })
+      );
 
       await expect(service.removeRepo('ghost')).rejects.toThrow('not found');
     });
@@ -212,11 +237,14 @@ describe('ConfigService', () => {
     it('should safely handle config files without prototype pollution', async () => {
       // JSON.parse produces a plain object even with __proto__ key
       // The deep merge function has defense-in-depth checks
-      await fs.writeFile(configFile, JSON.stringify({
-        repos: [],
-        agents: [],
-        defaultAgent: 'claude-code',
-      }));
+      await fs.writeFile(
+        configFile,
+        JSON.stringify({
+          repos: [],
+          agents: [],
+          defaultAgent: 'claude-code',
+        })
+      );
 
       const config = await service.getConfig();
       // Verify no prototype pollution occurred

@@ -18,6 +18,8 @@ import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
 import { getBreaker } from './circuit-registry.js';
 import type { Task, AgentType, TaskAttempt, AttemptStatus } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('clawdbot-agent-service');
 
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 const LOGS_DIR = path.join(PROJECT_ROOT, '.veritas-kanban', 'logs');
@@ -189,8 +191,8 @@ export class ClawdbotAgentService {
       )
     );
 
-    console.log(`[ClawdbotAgent] Wrote agent request for task ${taskId} to ${requestFile}`);
-    console.log(
+    log.info(`[ClawdbotAgent] Wrote agent request for task ${taskId} to ${requestFile}`);
+    log.info(
       `[ClawdbotAgent] Veritas should pick this up on next heartbeat or you can trigger manually`
     );
   }
@@ -204,7 +206,7 @@ export class ClawdbotAgentService {
   ): Promise<void> {
     const pending = pendingAgents.get(taskId);
     if (!pending) {
-      console.warn(`[ClawdbotAgent] Received completion for unknown task ${taskId}`);
+      log.warn(`[ClawdbotAgent] Received completion for unknown task ${taskId}`);
       return;
     }
 
@@ -248,7 +250,7 @@ export class ClawdbotAgentService {
       // Ignore if already deleted
     }
 
-    console.log(`[ClawdbotAgent] Task ${taskId} completed with status: ${status}`);
+    log.info(`[ClawdbotAgent] Task ${taskId} completed with status: ${status}`);
   }
 
   /**

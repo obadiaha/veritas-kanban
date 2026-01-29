@@ -2,6 +2,8 @@ import { resolve } from 'path';
 import type { ProjectConfig } from '@veritas-kanban/shared';
 import { ManagedListService } from './managed-list-service.js';
 import { TaskService } from './task-service.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('project-service');
 
 // Color palette for auto-seeded projects
 const PROJECT_COLORS = [
@@ -23,7 +25,7 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
 
   constructor(taskService: TaskService) {
     const configDir = resolve(process.cwd(), '..', '.veritas-kanban');
-    
+
     super({
       filename: 'projects.json',
       configDir,
@@ -59,7 +61,7 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
   private async seedProjectsFromTasks(): Promise<void> {
     const configDir = resolve(process.cwd(), '..', '.veritas-kanban');
     const projectsFile = resolve(configDir, 'projects.json');
-    
+
     // Only seed if the file is empty or has no items
     const existingProjects = await this.list(true);
     if (existingProjects.length > 0) {
@@ -75,7 +77,7 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
     const allTasks = [...activeTasks, ...archivedTasks];
     const projectStrings = new Set<string>();
 
-    allTasks.forEach(task => {
+    allTasks.forEach((task) => {
       if (task.project) {
         projectStrings.add(task.project);
       }
@@ -86,13 +88,13 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
     // (tasks store project as a plain string that must match the project ID)
     const projectArray = Array.from(projectStrings).sort();
     const now = new Date().toISOString();
-    
+
     for (let i = 0; i < projectArray.length; i++) {
       const projectName = projectArray[i];
       const color = PROJECT_COLORS[i % PROJECT_COLORS.length];
-      
+
       await this.seedItem({
-        id: projectName,  // Must match existing task.project values
+        id: projectName, // Must match existing task.project values
         label: projectName,
         color,
         order: i,
@@ -101,6 +103,6 @@ export class ProjectService extends ManagedListService<ProjectConfig> {
       } as ProjectConfig);
     }
 
-    console.log(`✅ Seeded ${projectArray.length} projects from existing tasks`);
+    log.info(`✅ Seeded ${projectArray.length} projects from existing tasks`);
   }
 }

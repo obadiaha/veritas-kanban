@@ -9,6 +9,8 @@ import {
   statusHistoryService,
   type AgentStatusState as HistoryStatusState,
 } from '../services/status-history-service.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('agent-status');
 
 const router: RouterType = Router();
 
@@ -41,14 +43,14 @@ function loadPersistedStatus(): AgentStatus {
       const parsed = JSON.parse(raw) as AgentStatus;
       // Validate it has the expected shape
       if (parsed.status && typeof parsed.subAgentCount === 'number') {
-        console.log(
+        log.info(
           `[AgentStatus] Restored persisted status: ${parsed.status} (subAgents: ${parsed.subAgentCount})`
         );
         return parsed;
       }
     }
   } catch {
-    console.warn('[AgentStatus] Could not load persisted status, starting fresh');
+    log.warn('[AgentStatus] Could not load persisted status, starting fresh');
   }
   return {
     status: 'idle',
@@ -68,7 +70,7 @@ function persistStatus(status: AgentStatus): void {
     }
     fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2), 'utf-8');
   } catch (err) {
-    console.warn('[AgentStatus] Failed to persist status:', err);
+    log.warn({ data: err }, '[AgentStatus] Failed to persist status');
   }
 }
 
@@ -130,7 +132,7 @@ function resetIdleTimeout(): void {
     };
     persistStatus(currentStatus);
     broadcastAgentStatusChange();
-    console.log('[AgentStatus] Auto-reset to idle after timeout');
+    log.info('[AgentStatus] Auto-reset to idle after timeout');
   }, IDLE_TIMEOUT_MS);
 }
 
@@ -157,7 +159,7 @@ export function updateAgentStatus(update: Partial<AgentStatus>): AgentStatus {
         update.subAgentCount ?? currentStatus.subAgentCount
       )
       .catch((err) => {
-        console.error('[AgentStatus] Failed to log status change:', err);
+        log.error({ err: err }, '[AgentStatus] Failed to log status change');
       });
   }
 

@@ -2,6 +2,8 @@ import { resolve } from 'path';
 import type { SprintConfig } from '@veritas-kanban/shared';
 import { ManagedListService } from './managed-list-service.js';
 import { TaskService } from './task-service.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('sprint-service');
 
 export class SprintService extends ManagedListService<SprintConfig> {
   private taskService: TaskService;
@@ -9,7 +11,7 @@ export class SprintService extends ManagedListService<SprintConfig> {
 
   constructor(taskService: TaskService) {
     const configDir = resolve(process.cwd(), '..', '.veritas-kanban');
-    
+
     super({
       filename: 'sprints.json',
       configDir,
@@ -45,7 +47,7 @@ export class SprintService extends ManagedListService<SprintConfig> {
   private async seedSprintsFromTasks(): Promise<void> {
     const configDir = resolve(process.cwd(), '..', '.veritas-kanban');
     const sprintsFile = resolve(configDir, 'sprints.json');
-    
+
     // Only seed if the file is empty or has no items
     const existingSprints = await this.list(true);
     if (existingSprints.length > 0) {
@@ -61,7 +63,7 @@ export class SprintService extends ManagedListService<SprintConfig> {
     const allTasks = [...activeTasks, ...archivedTasks];
     const sprintStrings = new Set<string>();
 
-    allTasks.forEach(task => {
+    allTasks.forEach((task) => {
       if (task.sprint) {
         sprintStrings.add(task.sprint);
       }
@@ -72,12 +74,12 @@ export class SprintService extends ManagedListService<SprintConfig> {
     // (tasks store sprint as a plain string that must match the sprint ID)
     const sprintArray = Array.from(sprintStrings).sort();
     const now = new Date().toISOString();
-    
+
     for (let i = 0; i < sprintArray.length; i++) {
       const sprintName = sprintArray[i];
-      
+
       await this.seedItem({
-        id: sprintName,  // Must match existing task.sprint values
+        id: sprintName, // Must match existing task.sprint values
         label: sprintName,
         order: i,
         created: now,
@@ -85,6 +87,6 @@ export class SprintService extends ManagedListService<SprintConfig> {
       } as SprintConfig);
     }
 
-    console.log(`✅ Seeded ${sprintArray.length} sprints from existing tasks`);
+    log.info(`✅ Seeded ${sprintArray.length} sprints from existing tasks`);
   }
 }

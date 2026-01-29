@@ -12,6 +12,8 @@ import type {
   DurationMetrics,
   FailedRunDetails,
 } from './types.js';
+import { createLogger } from '../../lib/logger.js';
+const log = createLogger('run-metrics');
 
 /**
  * Get run metrics (error rate, success rate) with per-agent breakdown
@@ -221,7 +223,7 @@ export async function computeFailedRuns(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }

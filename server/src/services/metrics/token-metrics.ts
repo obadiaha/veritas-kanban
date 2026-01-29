@@ -5,6 +5,8 @@ import type { TokenTelemetryEvent, AnyTelemetryEvent } from '@veritas-kanban/sha
 import { getPeriodStart, percentile } from './helpers.js';
 import { getEventFiles, streamEvents, createLineReader } from './telemetry-reader.js';
 import type { MetricsPeriod, TokenMetrics, TokenAccumulator, BudgetMetrics } from './types.js';
+import { createLogger } from '../../lib/logger.js';
+const log = createLogger('token-metrics');
 
 /**
  * Get token metrics with per-agent breakdown
@@ -155,7 +157,7 @@ export async function computeBudgetMetrics(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }

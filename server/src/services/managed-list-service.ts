@@ -3,6 +3,8 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { nanoid } from 'nanoid';
 import type { ManagedListItem } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('managed-list-service');
 
 export interface ManagedListServiceConfig<T extends ManagedListItem> {
   filename: string;
@@ -50,7 +52,7 @@ export class ManagedListService<T extends ManagedListItem> {
       const content = await readFile(this.filePath, 'utf-8');
       this.items = JSON.parse(content);
     } catch (err) {
-      console.error('Error loading managed list:', err);
+      log.error({ err: err }, 'Error loading managed list');
       this.items = [...this.defaults];
     }
   }

@@ -2,6 +2,8 @@ import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { ConfigService } from '../services/config-service.js';
 import type { RepoConfig, AgentConfig, AgentType } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('config');
 
 const router: RouterType = Router();
 const configService = new ConfigService();
@@ -39,7 +41,7 @@ router.get('/', async (_req, res) => {
     const config = await configService.getConfig();
     res.json(config);
   } catch (error) {
-    console.error('Error getting config:', error);
+    log.error({ err: error }, 'Error getting config');
     res.status(500).json({ error: 'Failed to get config' });
   }
 });
@@ -50,7 +52,7 @@ router.get('/repos', async (_req, res) => {
     const config = await configService.getConfig();
     res.json(config.repos);
   } catch (error) {
-    console.error('Error listing repos:', error);
+    log.error({ err: error }, 'Error listing repos');
     res.status(500).json({ error: 'Failed to list repos' });
   }
 });
@@ -65,7 +67,7 @@ router.post('/repos', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error adding repo:', error);
+    log.error({ err: error }, 'Error adding repo');
     res.status(400).json({ error: error.message || 'Failed to add repo' });
   }
 });
@@ -80,7 +82,7 @@ router.patch('/repos/:name', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error updating repo:', error);
+    log.error({ err: error }, 'Error updating repo');
     res.status(400).json({ error: error.message || 'Failed to update repo' });
   }
 });
@@ -91,7 +93,7 @@ router.delete('/repos/:name', async (req, res) => {
     const config = await configService.removeRepo(req.params.name);
     res.json(config);
   } catch (error: any) {
-    console.error('Error removing repo:', error);
+    log.error({ err: error }, 'Error removing repo');
     res.status(400).json({ error: error.message || 'Failed to remove repo' });
   }
 });
@@ -116,7 +118,7 @@ router.get('/repos/:name/branches', async (req, res) => {
     const branches = await configService.getRepoBranches(req.params.name);
     res.json(branches);
   } catch (error: any) {
-    console.error('Error getting branches:', error);
+    log.error({ err: error }, 'Error getting branches');
     res.status(400).json({ error: error.message || 'Failed to get branches' });
   }
 });
@@ -127,7 +129,7 @@ router.get('/agents', async (_req, res) => {
     const config = await configService.getConfig();
     res.json(config.agents);
   } catch (error) {
-    console.error('Error listing agents:', error);
+    log.error({ err: error }, 'Error listing agents');
     res.status(500).json({ error: 'Failed to list agents' });
   }
 });
@@ -142,7 +144,7 @@ router.put('/agents', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error updating agents:', error);
+    log.error({ err: error }, 'Error updating agents');
     res.status(500).json({ error: 'Failed to update agents' });
   }
 });
@@ -157,7 +159,7 @@ router.put('/default-agent', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
-    console.error('Error setting default agent:', error);
+    log.error({ err: error }, 'Error setting default agent');
     res.status(500).json({ error: 'Failed to set default agent' });
   }
 });

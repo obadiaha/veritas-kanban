@@ -6,6 +6,8 @@ import { TaskService } from '../services/task-service.js';
 import { getAttachmentService } from '../services/attachment-service.js';
 import { getTextExtractionService } from '../services/text-extraction-service.js';
 import type { Attachment } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('attachments');
 
 const router: RouterType = Router();
 const taskService = new TaskService();
@@ -47,15 +49,17 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
     for (const file of files) {
       try {
         // Save attachment (includes magic-byte MIME validation)
-        const attachment = await attachmentService.saveAttachment(
-          taskId,
-          file,
-          [...currentAttachments, ...newAttachments]
-        );
+        const attachment = await attachmentService.saveAttachment(taskId, file, [
+          ...currentAttachments,
+          ...newAttachments,
+        ]);
 
         // Extract text using the validated MIME type
         const filepath = attachmentService.getAttachmentPath(taskId, attachment.filename);
-        const extractedText = await textExtractionService.extractText(filepath, attachment.mimeType);
+        const extractedText = await textExtractionService.extractText(
+          filepath,
+          attachment.mimeType
+        );
 
         // Save extracted text if available
         if (extractedText) {
@@ -65,7 +69,7 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
         newAttachments.push(attachment);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
-        console.error(`Rejected file "${file.originalname}":`, message);
+        log.error({ err: message }, `Rejected file "${file.originalname}"`);
         rejectedFiles.push({ filename: file.originalname, error: message });
         // Continue with other files
       }
@@ -92,7 +96,7 @@ router.post('/:id/attachments', upload.array('files', 20), async (req: Request, 
       ...(rejectedFiles.length > 0 && { rejected: rejectedFiles }),
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    log.error({ err: error }, 'Upload error');
     res.status(500).json({ error: 'Failed to upload attachments' });
   }
 });
@@ -112,7 +116,7 @@ router.get('/:id/attachments', async (req: Request, res: Response) => {
 
     res.json(task.attachments || []);
   } catch (error) {
-    console.error('List attachments error:', error);
+    log.error({ err: error }, 'List attachments error');
     res.status(500).json({ error: 'Failed to list attachments' });
   }
 });
@@ -138,7 +142,7 @@ router.get('/:id/attachments/:attId', async (req: Request, res: Response) => {
 
     res.json(attachment);
   } catch (error) {
-    console.error('Get attachment error:', error);
+    log.error({ err: error }, 'Get attachment error');
     res.status(500).json({ error: 'Failed to get attachment' });
   }
 });
@@ -163,12 +167,15 @@ router.get('/:id/attachments/:attId/download', async (req: Request, res: Respons
     }
 
     const filepath = attachmentService.getAttachmentPath(taskId, attachment.filename);
-    
+
     res.setHeader('Content-Type', attachment.mimeType);
-    res.setHeader('Content-Disposition', contentDisposition(attachment.originalName, { type: 'attachment' }));
+    res.setHeader(
+      'Content-Disposition',
+      contentDisposition(attachment.originalName, { type: 'attachment' })
+    );
     res.sendFile(filepath);
   } catch (error) {
-    console.error('Download error:', error);
+    log.error({ err: error }, 'Download error');
     res.status(500).json({ error: 'Failed to download attachment' });
   }
 });
@@ -193,14 +200,14 @@ router.get('/:id/attachments/:attId/text', async (req: Request, res: Response) =
     }
 
     const text = await attachmentService.getExtractedText(taskId, attId);
-    
+
     res.json({
       attachmentId: attId,
       text,
       hasText: text !== null,
     });
   } catch (error) {
-    console.error('Get text error:', error);
+    log.error({ err: error }, 'Get text error');
     res.status(500).json({ error: 'Failed to get extracted text' });
   }
 });
@@ -235,7 +242,7 @@ router.delete('/:id/attachments/:attId', async (req: Request, res: Response) => 
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Delete attachment error:', error);
+    log.error({ err: error }, 'Delete attachment error');
     res.status(500).json({ error: 'Failed to delete attachment' });
   }
 });

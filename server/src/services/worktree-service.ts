@@ -6,6 +6,8 @@ import { TaskService } from './task-service.js';
 import type { Task } from '@veritas-kanban/shared';
 import { spawn } from 'child_process';
 import { promisify } from 'util';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('worktree-service');
 
 // Default paths
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
@@ -151,7 +153,7 @@ export class WorktreeService {
       await this.execGitWithTimeout(repoPath, ['fetch']);
     } catch (e: any) {
       // Ignore fetch errors (might be offline)
-      console.warn('Could not fetch from remote:', e.message);
+      log.warn('Could not fetch from remote:', e.message);
     }
 
     // Check if branch already exists
@@ -215,7 +217,7 @@ export class WorktreeService {
       const [behind, ahead] = log.trim().split('\t').map(Number);
       aheadBehind = { ahead: ahead || 0, behind: behind || 0 };
     } catch (e: any) {
-      console.warn('Could not get ahead/behind info:', e.message);
+      log.warn('Could not get ahead/behind info:', e.message);
     }
 
     return {

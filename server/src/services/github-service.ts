@@ -3,6 +3,8 @@ import { promisify } from 'util';
 import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
 import { getBreaker } from './circuit-registry.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('github-service');
 
 const execAsync = promisify(exec);
 const execFileAsync = promisify(execFile);
@@ -165,7 +167,7 @@ export class GitHubService {
     } catch (error: any) {
       // Ignore if already pushed
       if (!error.message?.includes('Everything up-to-date')) {
-        console.warn('Push warning:', error.message);
+        log.warn('Push warning:', error.message);
       }
     }
 

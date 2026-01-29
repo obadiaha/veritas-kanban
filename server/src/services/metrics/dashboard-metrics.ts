@@ -35,6 +35,8 @@ import type {
   AgentRecommendation,
   AgentComparisonResult,
 } from './types.js';
+import { createLogger } from '../../lib/logger.js';
+const log = createLogger('dashboard-metrics');
 
 /**
  * Get all metrics in one call (for dashboard).
@@ -156,7 +158,7 @@ export async function computeAllMetrics(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }
@@ -300,7 +302,7 @@ export async function computeAllMetrics(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }
@@ -424,7 +426,7 @@ export async function computeTrends(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }
@@ -574,7 +576,7 @@ export async function computeAgentComparison(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }

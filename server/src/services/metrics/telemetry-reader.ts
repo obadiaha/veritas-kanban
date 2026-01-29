@@ -8,6 +8,8 @@ import path from 'path';
 import readline from 'readline';
 import { createGunzip } from 'zlib';
 import type { AnyTelemetryEvent, TelemetryEventType, StreamEventHandler } from './types.js';
+import { createLogger } from '../../lib/logger.js';
+const log = createLogger('telemetry-reader');
 
 /**
  * Get list of event files within a date range (includes .ndjson and .ndjson.gz)
@@ -90,7 +92,7 @@ export async function streamEvents<T>(
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error(`[Metrics] Error reading ${filePath}:`, error.message);
+        log.error(`[Metrics] Error reading ${filePath}:`, error.message);
       }
     }
   }

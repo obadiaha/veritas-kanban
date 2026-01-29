@@ -3,6 +3,8 @@ import path from 'path';
 import { extractText as unpdfExtract } from 'unpdf';
 import mammoth from 'mammoth';
 import ExcelJS from 'exceljs';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('text-extraction-service');
 
 export interface TextExtractionResult {
   text: string | null;
@@ -59,8 +61,12 @@ export class TextExtractionService {
       }
 
       // XML/YAML
-      if (mimeType === 'application/xml' || mimeType === 'text/xml' || 
-          mimeType === 'application/yaml' || mimeType === 'text/yaml') {
+      if (
+        mimeType === 'application/xml' ||
+        mimeType === 'text/xml' ||
+        mimeType === 'application/yaml' ||
+        mimeType === 'text/yaml'
+      ) {
         return await this.extractPlainText(filepath);
       }
 
@@ -72,7 +78,7 @@ export class TextExtractionService {
       // Unknown type
       return null;
     } catch (error) {
-      console.error(`Text extraction failed for ${filepath}:`, error);
+      log.error({ err: error }, `Text extraction failed for ${filepath}`);
       return null;
     }
   }
@@ -94,7 +100,7 @@ export class TextExtractionService {
       const { text } = await unpdfExtract(buffer, { mergePages: true });
       return text || null;
     } catch (error) {
-      console.error('PDF extraction error:', error);
+      log.error({ err: error }, 'PDF extraction error');
       return null;
     }
   }
@@ -108,7 +114,7 @@ export class TextExtractionService {
       const result = await mammoth.extractRawText({ buffer });
       return result.value || null;
     } catch (error) {
-      console.error('DOCX extraction error:', error);
+      log.error({ err: error }, 'DOCX extraction error');
       return null;
     }
   }
@@ -120,23 +126,23 @@ export class TextExtractionService {
   private async extractXLSX(filepath: string): Promise<string | null> {
     try {
       const workbook = new ExcelJS.Workbook();
-      
+
       // Read the workbook directly from file
       await workbook.xlsx.readFile(filepath);
-      
+
       // Extract all sheets
       const sheets: string[] = [];
-      
+
       workbook.eachSheet((worksheet, sheetId) => {
         const rows: string[] = [];
-        
+
         worksheet.eachRow((row, rowNumber) => {
           const values: string[] = [];
-          
+
           row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
             // Get cell value as string
             const value = cell.value;
-            
+
             // Handle different value types
             if (value === null || value === undefined) {
               values.push('');
@@ -150,18 +156,18 @@ export class TextExtractionService {
               values.push(value.toString());
             }
           });
-          
+
           rows.push(values.join(','));
         });
-        
+
         if (rows.length > 0) {
           sheets.push(`=== Sheet: ${worksheet.name} ===\n${rows.join('\n')}`);
         }
       });
-      
+
       return sheets.length > 0 ? sheets.join('\n\n') : null;
     } catch (error) {
-      console.error('XLSX extraction error:', error);
+      log.error({ err: error }, 'XLSX extraction error');
       return null;
     }
   }
@@ -172,7 +178,7 @@ export class TextExtractionService {
   private async extractHTML(filepath: string): Promise<string | null> {
     try {
       const html = await fs.readFile(filepath, 'utf-8');
-      
+
       // Simple tag stripping (for more complex HTML, consider using a library like cheerio)
       const text = html
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -180,10 +186,10 @@ export class TextExtractionService {
         .replace(/<[^>]+>/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-      
+
       return text || null;
     } catch (error) {
-      console.error('HTML extraction error:', error);
+      log.error({ err: error }, 'HTML extraction error');
       return null;
     }
   }
@@ -197,7 +203,7 @@ export class TextExtractionService {
       const json = JSON.parse(content);
       return JSON.stringify(json, null, 2);
     } catch (error) {
-      console.error('JSON extraction error:', error);
+      log.error({ err: error }, 'JSON extraction error');
       return null;
     }
   }

@@ -1,5 +1,7 @@
 import { TaskService } from './task-service.js';
 import type { TaskStatus } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('migration-service');
 
 /**
  * One-time data migrations that run on server startup.
@@ -21,11 +23,11 @@ export class MigrationService {
 
   /**
    * Migrate tasks with status "review" to "blocked"
-   * 
+   *
    * Background: The "review" status was removed from the workflow.
    * Any existing tasks with that status should be converted to "blocked"
    * so they remain visible and actionable.
-   * 
+   *
    * This migration is idempotent - if no tasks have status "review",
    * it does nothing.
    */
@@ -34,8 +36,7 @@ export class MigrationService {
 
     // Cast to string for comparison since "review" is no longer in TaskStatus type
     // but may exist in legacy data
-    const isReviewStatus = (status: TaskStatus): boolean => 
-      (status as string) === 'review';
+    const isReviewStatus = (status: TaskStatus): boolean => (status as string) === 'review';
 
     // Migrate active tasks
     const activeTasks = await this.taskService.listTasks();
@@ -58,7 +59,7 @@ export class MigrationService {
     }
 
     if (migratedCount > 0) {
-      console.log(`Migrated ${migratedCount} tasks from review → blocked`);
+      log.info(`Migrated ${migratedCount} tasks from review → blocked`);
     }
   }
 
@@ -74,10 +75,10 @@ export class MigrationService {
 
     // Temporarily restore
     await this.taskService.restoreTask(taskId);
-    
+
     // Update status (restoreTask sets status to 'done', so we need to correct it)
     await this.taskService.updateTask(taskId, { status: 'blocked' });
-    
+
     // Re-archive
     await this.taskService.archiveTask(taskId);
   }

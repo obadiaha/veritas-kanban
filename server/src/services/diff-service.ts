@@ -1,6 +1,8 @@
 import { simpleGit } from 'simple-git';
 import { TaskService } from './task-service.js';
 import type { Task } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('diff-service');
 
 export interface FileChange {
   path: string;
@@ -55,36 +57,41 @@ export class DiffService {
   private getLanguageFromPath(filePath: string): string {
     const ext = filePath.split('.').pop()?.toLowerCase() || '';
     const langMap: Record<string, string> = {
-      'ts': 'typescript',
-      'tsx': 'tsx',
-      'js': 'javascript',
-      'jsx': 'jsx',
-      'json': 'json',
-      'md': 'markdown',
-      'css': 'css',
-      'scss': 'scss',
-      'html': 'html',
-      'py': 'python',
-      'rs': 'rust',
-      'go': 'go',
-      'rb': 'ruby',
-      'java': 'java',
-      'sh': 'bash',
-      'yaml': 'yaml',
-      'yml': 'yaml',
-      'toml': 'toml',
-      'sql': 'sql',
+      ts: 'typescript',
+      tsx: 'tsx',
+      js: 'javascript',
+      jsx: 'jsx',
+      json: 'json',
+      md: 'markdown',
+      css: 'css',
+      scss: 'scss',
+      html: 'html',
+      py: 'python',
+      rs: 'rust',
+      go: 'go',
+      rb: 'ruby',
+      java: 'java',
+      sh: 'bash',
+      yaml: 'yaml',
+      yml: 'yaml',
+      toml: 'toml',
+      sql: 'sql',
     };
     return langMap[ext] || 'plaintext';
   }
 
   private parseStatusCode(code: string): FileChange['status'] {
     switch (code[0]) {
-      case 'A': return 'added';
-      case 'M': return 'modified';
-      case 'D': return 'deleted';
-      case 'R': return 'renamed';
-      default: return 'modified';
+      case 'A':
+        return 'added';
+      case 'M':
+        return 'modified';
+      case 'D':
+        return 'deleted';
+      case 'R':
+        return 'renamed';
+      default:
+        return 'modified';
     }
   }
 
@@ -99,21 +106,24 @@ export class DiffService {
 
     // Get diff against base branch
     const baseBranch = task.git.baseBranch || 'main';
-    
+
     // Get list of changed files with stats
     const diffStat = await git.diffSummary([baseBranch]);
-    
-    const files: FileChange[] = diffStat.files.map(file => {
+
+    const files: FileChange[] = diffStat.files.map((file) => {
       const additions = 'insertions' in file ? file.insertions : 0;
       const deletions = 'deletions' in file ? file.deletions : 0;
       const isBinary = 'binary' in file && file.binary;
-      
+
       return {
         path: file.file,
-        status: isBinary ? 'modified' as const : (
-          additions > 0 && deletions === 0 ? 'added' as const :
-          deletions > 0 && additions === 0 ? 'deleted' as const : 'modified' as const
-        ),
+        status: isBinary
+          ? ('modified' as const)
+          : additions > 0 && deletions === 0
+            ? ('added' as const)
+            : deletions > 0 && additions === 0
+              ? ('deleted' as const)
+              : ('modified' as const),
         additions,
         deletions,
       };
@@ -139,7 +149,7 @@ export class DiffService {
 
     // Get unified diff for the file
     const diffOutput = await git.diff([baseBranch, '--', filePath]);
-    
+
     // Get file stats
     const diffStat = await git.diffSummary([baseBranch, '--', filePath]);
     const fileStat = diffStat.files[0];
@@ -151,7 +161,7 @@ export class DiffService {
     let status: FileChange['status'] = 'modified';
     let additions = 0;
     let deletions = 0;
-    
+
     if (fileStat && 'insertions' in fileStat) {
       additions = fileStat.insertions;
       deletions = fileStat.deletions;
@@ -172,7 +182,7 @@ export class DiffService {
   private parseUnifiedDiff(diffOutput: string): DiffHunk[] {
     const hunks: DiffHunk[] = [];
     const lines = diffOutput.split('\n');
-    
+
     let currentHunk: DiffHunk | null = null;
     let oldLineNum = 0;
     let newLineNum = 0;
@@ -180,15 +190,15 @@ export class DiffService {
     for (const line of lines) {
       // Match hunk header: @@ -start,count +start,count @@
       const hunkMatch = line.match(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/);
-      
+
       if (hunkMatch) {
         if (currentHunk) {
           hunks.push(currentHunk);
         }
-        
+
         oldLineNum = parseInt(hunkMatch[1], 10);
         newLineNum = parseInt(hunkMatch[3], 10);
-        
+
         currentHunk = {
           oldStart: oldLineNum,
           oldLines: parseInt(hunkMatch[2] || '1', 10),
@@ -202,11 +212,13 @@ export class DiffService {
       if (!currentHunk) continue;
 
       // Skip diff metadata lines
-      if (line.startsWith('diff --git') || 
-          line.startsWith('index ') || 
-          line.startsWith('---') || 
-          line.startsWith('+++') ||
-          line.startsWith('\\')) {
+      if (
+        line.startsWith('diff --git') ||
+        line.startsWith('index ') ||
+        line.startsWith('---') ||
+        line.startsWith('+++') ||
+        line.startsWith('\\')
+      ) {
         continue;
       }
 
@@ -249,7 +261,7 @@ export class DiffService {
         diffs.push(diff);
       } catch (e) {
         // Skip files that can't be diffed (binary, etc.)
-        console.warn(`Could not get diff for ${file.path}:`, e);
+        log.warn({ data: e }, `Could not get diff for ${file.path}`);
       }
     }
 

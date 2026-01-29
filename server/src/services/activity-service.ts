@@ -1,6 +1,8 @@
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('activity-service');
 
 export type ActivityType =
   | 'task_created'
@@ -94,7 +96,7 @@ export class ActivityService {
     activities = [activity, ...activities].slice(0, this.MAX_ACTIVITIES);
 
     if (activities.length >= this.MAX_ACTIVITIES) {
-      console.warn(
+      log.warn(
         `[Activity] Activity limit reached (${this.MAX_ACTIVITIES}), trimming oldest entries`
       );
     }

@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('security');
 
 // Security config file location
 const DATA_DIR = process.env.VERITAS_DATA_DIR || path.join(process.cwd(), '.veritas-kanban');
@@ -71,7 +73,7 @@ export function getSecurityConfig(): SecurityConfig {
       return cachedConfig!;
     }
   } catch (err) {
-    console.error('Error loading security config:', err);
+    log.error({ err: err }, 'Error loading security config');
   }
 
   // Default config
@@ -113,7 +115,7 @@ export function getJwtSecret(): string {
   // 4. Runtime-generated (ephemeral — sessions won't survive restart)
   if (!runtimeJwtSecret) {
     runtimeJwtSecret = crypto.randomBytes(64).toString('hex');
-    console.warn(
+    log.warn(
       'JWT secret generated at runtime. Set VERITAS_JWT_SECRET env var for persistence across restarts.'
     );
   }
@@ -233,9 +235,7 @@ export function rotateJwtSecret(gracePeriodMs: number = SECRET_GRACE_PERIOD_MS):
   };
   saveSecurityConfig(updatedConfig);
 
-  console.log(
-    `JWT secret rotated to version ${newVersion}. ${prunedCount} expired secret(s) pruned.`
-  );
+  log.info(`JWT secret rotated to version ${newVersion}. ${prunedCount} expired secret(s) pruned.`);
 
   return {
     success: true,
@@ -305,9 +305,9 @@ export function saveSecurityConfig(config: SecurityConfig): void {
     cachedConfig = config;
     lastLoadTime = Date.now();
 
-    console.log('Security config saved');
+    log.info('Security config saved');
   } catch (err) {
-    console.error('Error saving security config:', err);
+    log.error({ err: err }, 'Error saving security config');
     throw err;
   }
 }
@@ -353,7 +353,7 @@ export function resetSecurityConfig(): void {
   };
   saveSecurityConfig(newConfig);
   runtimeJwtSecret = null;
-  console.log('Security config reset. Next load will show setup screen.');
+  log.info('Security config reset. Next load will show setup screen.');
 }
 
 /** Warning about JWT secret configuration */

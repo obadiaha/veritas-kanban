@@ -1,6 +1,8 @@
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('status-history-service');
 
 export type AgentStatusState = 'idle' | 'working' | 'thinking' | 'sub-agent' | 'error';
 
@@ -129,7 +131,7 @@ export class StatusHistoryService {
 
     this.lastEntry = entry;
 
-    console.log(
+    log.info(
       `[StatusHistory] ${previousStatus} → ${newStatus}${taskId ? ` (task: ${taskId})` : ''}`
     );
 

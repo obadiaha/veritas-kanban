@@ -11,6 +11,8 @@ import type {
   TelemetryQueryOptions,
   AnyTelemetryEvent,
 } from '@veritas-kanban/shared';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('telemetry-service');
 
 // Default paths - resolve to project root
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
@@ -125,9 +127,9 @@ export class TelemetryService {
     this.pendingWrites.push(fullEvent);
     if (this.pendingWrites.length > this.MAX_QUEUE_SIZE) {
       const dropped = this.pendingWrites.shift();
-      console.warn(
-        `[Telemetry] Queue size exceeded (${this.MAX_QUEUE_SIZE}), dropped event:`,
-        dropped?.type
+      log.warn(
+        { droppedType: dropped?.type },
+        `[Telemetry] Queue size exceeded (${this.MAX_QUEUE_SIZE}), dropped event`
       );
     }
 
@@ -140,7 +142,7 @@ export class TelemetryService {
         }
       })
       .catch((err) => {
-        console.error('[Telemetry] Failed to write event:', err);
+        log.error({ err: err }, '[Telemetry] Failed to write event');
       });
 
     this.writeQueue = writePromise;
@@ -407,7 +409,7 @@ export class TelemetryService {
           try {
             return JSON.parse(line) as AnyTelemetryEvent;
           } catch {
-            console.error('[Telemetry] Failed to parse line:', line);
+            log.error({ err: line }, '[Telemetry] Failed to parse line');
             return null;
           }
         })
@@ -497,13 +499,13 @@ export class TelemetryService {
           await this.compressFile(filepath);
           compressed++;
         } catch (err) {
-          console.error(`[Telemetry] Failed to compress ${filename}:`, err);
+          log.error({ err: err }, `[Telemetry] Failed to compress ${filename}`);
         }
       }
     }
 
     if (deleted > 0 || compressed > 0) {
-      console.log(
+      log.info(
         `[Telemetry] Cleanup: deleted ${deleted} expired file(s), compressed ${compressed} file(s) ` +
           `(retention=${this.config.retention}d, compress=${this.compressAfterDays}d)`
       );

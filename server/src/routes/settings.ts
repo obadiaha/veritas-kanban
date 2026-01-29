@@ -7,6 +7,8 @@ import { FeatureSettingsPatchSchema } from '../schemas/feature-settings-schema.j
 import { strictRateLimit } from '../middleware/rate-limit.js';
 import { auditLog } from '../services/audit-service.js';
 import type { AuthenticatedRequest } from '../middleware/auth.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('settings');
 
 const router: RouterType = Router();
 const configService = new ConfigService();
@@ -39,7 +41,7 @@ router.get('/features', async (_req, res) => {
     const features = await configService.getFeatureSettings();
     res.json(features);
   } catch (error) {
-    console.error('Error getting feature settings:', error);
+    log.error({ err: error }, 'Error getting feature settings');
     res.status(500).json({ error: 'Failed to get feature settings' });
   }
 });
@@ -76,7 +78,7 @@ router.patch('/features', strictRateLimit, async (req, res) => {
 
     res.json(updated);
   } catch (error) {
-    console.error('Error updating feature settings:', error);
+    log.error({ err: error }, 'Error updating feature settings');
     res.status(500).json({ error: 'Failed to update feature settings' });
   }
 });

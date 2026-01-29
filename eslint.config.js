@@ -51,6 +51,19 @@ export default [
     },
   },
 
+  // k6 load-test files (ES module syntax, k6 globals)
+  {
+    files: ['load-tests/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        __ENV: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+
   // React/TypeScript files (web)
   {
     files: ['web/src/**/*.tsx', 'web/src/**/*.ts'],

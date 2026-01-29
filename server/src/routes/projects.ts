@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { ProjectService } from '../services/project-service.js';
 import { TaskService } from '../services/task-service.js';
 import { createManagedListRouter } from './managed-list-routes.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('projects');
 
 // Validation schemas
 const createProjectSchema = z.object({
@@ -23,15 +25,11 @@ const taskService = new TaskService();
 const projectService = new ProjectService(taskService);
 
 // Initialize service
-projectService.init().catch(err => {
-  console.error('Failed to initialize ProjectService:', err);
+projectService.init().catch((err) => {
+  log.error('Failed to initialize ProjectService:', err);
 });
 
 // Create router using the generic factory
-const router = createManagedListRouter(
-  projectService,
-  createProjectSchema,
-  updateProjectSchema
-);
+const router = createManagedListRouter(projectService, createProjectSchema, updateProjectSchema);
 
 export default router;

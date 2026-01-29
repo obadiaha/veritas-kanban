@@ -1,9 +1,9 @@
 /**
  * Failure Alert Service
- * 
+ *
  * Automatically notifies Teams when agent runs fail.
  * Detects run.error and run.completed with success:false telemetry events.
- * 
+ *
  * Features:
  * - Configurable on/off (default off)
  * - Deduplication: won't spam for same task retries within 5 min
@@ -61,7 +61,7 @@ export class FailureAlertService {
   isRecentlyAlerted(taskId: string): boolean {
     const lastAlert = recentAlerts.get(taskId);
     if (!lastAlert) return false;
-    
+
     const elapsed = Date.now() - lastAlert;
     return elapsed < this.dedupWindowMs;
   }
@@ -71,7 +71,7 @@ export class FailureAlertService {
    */
   private recordAlert(taskId: string): void {
     recentAlerts.set(taskId, Date.now());
-    
+
     // Clean up old entries periodically
     if (recentAlerts.size > 100) {
       const cutoff = Date.now() - this.dedupWindowMs;
@@ -122,14 +122,14 @@ export class FailureAlertService {
       // Check if notifications are enabled
       const features = await this.configService.getFeatureSettings();
       const notifSettings = features.notifications;
-      
+
       if (!notifSettings.enabled || !notifSettings.onAgentFailure) {
         return { sent: false, reason: 'disabled' };
       }
 
       // Check deduplication
       if (this.isRecentlyAlerted(event.taskId)) {
-        console.log(`[FailureAlert] Skipping duplicate alert for task ${event.taskId}`);
+        log.info(`[FailureAlert] Skipping duplicate alert for task ${event.taskId}`);
         return { sent: false, reason: 'deduplicated' };
       }
 
@@ -163,13 +163,13 @@ export class FailureAlertService {
       });
 
       // Log success
-      console.log(`[FailureAlert] Created notification ${notification.id} for task ${event.taskId}`);
+      log.info(`[FailureAlert] Created notification ${notification.id} for task ${event.taskId}`);
 
       return { sent: true, notificationId: notification.id };
     } catch (err) {
       // Graceful failure: log but don't crash
       const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error(`[FailureAlert] Failed to send alert: ${errorMsg}`);
+      log.error(`[FailureAlert] Failed to send alert: ${errorMsg}`);
       return { sent: false, reason: 'error', error: errorMsg };
     }
   }
@@ -198,7 +198,7 @@ export class FailureAlertService {
     try {
       const features = await this.configService.getFeatureSettings();
       const webhookUrl = features.notifications.webhookUrl;
-      
+
       if (!webhookUrl) {
         // No webhook configured - notification will be available via polling
         return false;
@@ -213,14 +213,14 @@ export class FailureAlertService {
       });
 
       if (!response.ok) {
-        console.warn(`[FailureAlert] Webhook delivery failed: ${response.status}`);
+        log.warn(`[FailureAlert] Webhook delivery failed: ${response.status}`);
         return false;
       }
 
-      console.log('[FailureAlert] Webhook delivery successful');
+      log.info('[FailureAlert] Webhook delivery successful');
       return true;
     } catch (err) {
-      console.warn('[FailureAlert] Webhook error:', err instanceof Error ? err.message : err);
+      log.warn({ data: err instanceof Error ? err.message : err }, '[FailureAlert] Webhook error');
       return false;
     }
   }
@@ -264,3 +264,5 @@ export function getFailureAlertService(): FailureAlertService {
 
 // Re-export ConfigService getter for completeness
 export { getConfigService } from './config-service.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('failure-alert-service');

@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { TaskTypeService } from '../services/task-type-service.js';
 import { TaskService } from '../services/task-service.js';
 import { createManagedListRouter } from './managed-list-routes.js';
+import { createLogger } from '../lib/logger.js';
+const log = createLogger('task-types');
 
 // Validation schemas
 const createTaskTypeSchema = z.object({
@@ -23,15 +25,11 @@ const taskService = new TaskService();
 const taskTypeService = new TaskTypeService(taskService);
 
 // Initialize service
-taskTypeService.init().catch(err => {
-  console.error('Failed to initialize TaskTypeService:', err);
+taskTypeService.init().catch((err) => {
+  log.error('Failed to initialize TaskTypeService:', err);
 });
 
 // Create router using the generic factory
-const router = createManagedListRouter(
-  taskTypeService,
-  createTaskTypeSchema,
-  updateTaskTypeSchema
-);
+const router = createManagedListRouter(taskTypeService, createTaskTypeSchema, updateTaskTypeSchema);
 
 export default router;
