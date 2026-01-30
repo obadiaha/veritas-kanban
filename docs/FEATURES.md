@@ -155,7 +155,7 @@ First-class support for autonomous coding agents.
 - **Running indicator on cards** — Animated spinner on task cards when an agent is actively working
 - **Agent output stream** — Real-time agent output via WebSocket with auto-scroll and clear
 - **Send message to agent** — Send text messages to running agents
-- **Moltbot native support** — Built-in integration with [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot) via gateway URL; sub-agent spawning via `sessions_spawn`
+- **OpenClaw native support** — Built-in integration with [OpenClaw](https://github.com/openclaw/openclaw) (formerly Clawdbot/Moltbot) via gateway URL; sub-agent spawning via `sessions_spawn`
 - **Platform-agnostic REST API** — Any platform that can make HTTP calls can drive the full agent lifecycle
 - **Automation tasks** — Separate automation task type with pending/running/complete lifecycle, session key tracking, and sub-agent spawning
 - **Failure alerts** — Dedicated failure alert service for agent run failures

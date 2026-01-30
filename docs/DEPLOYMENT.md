@@ -356,7 +356,7 @@ All variables are set in `server/.env` (or passed as environment variables in Do
 
 | Variable           | Default                  | Description                                     |
 | ------------------ | ------------------------ | ----------------------------------------------- |
-| `CLAWDBOT_GATEWAY` | `http://127.0.0.1:18789` | Clawdbot gateway URL for AI agent orchestration |
+| `CLAWDBOT_GATEWAY` | `http://127.0.0.1:18789` | OpenClaw gateway URL for AI agent orchestration |
 
 ### Frontend (web/.env)
 
