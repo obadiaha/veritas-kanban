@@ -1,6 +1,6 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
-import { TaskService } from '../services/task-service.js';
+import { getTaskService } from '../services/task-service.js';
 import { activityService } from '../services/activity-service.js';
 import { broadcastTaskChange } from '../services/broadcast-service.js';
 import { asyncHandler } from '../middleware/async-handler.js';
@@ -9,7 +9,7 @@ import { auditLog } from '../services/audit-service.js';
 import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router: RouterType = Router();
-const taskService = new TaskService();
+const taskService = getTaskService();
 
 // Validation schemas
 const bulkArchiveSchema = z.object({

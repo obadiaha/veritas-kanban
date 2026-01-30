@@ -1,11 +1,11 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
-import { TaskService } from '../services/task-service.js';
+import { getTaskService } from '../services/task-service.js';
 import { asyncHandler } from '../middleware/async-handler.js';
 import { ValidationError } from '../middleware/error-handler.js';
 
 const router: RouterType = Router();
-const taskService = new TaskService();
+const taskService = getTaskService();
 
 // Validation schemas
 const addTimeEntrySchema = z.object({

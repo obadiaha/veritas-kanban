@@ -21,6 +21,7 @@ const { mockTaskService, mockActivityService } = vi.hoisted(() => ({
 }));
 
 vi.mock('../../services/task-service.js', () => ({
+  getTaskService: () => mockTaskService,
   TaskService: function () {
     return mockTaskService;
   },
