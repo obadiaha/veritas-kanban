@@ -65,7 +65,7 @@ const ws = new WebSocket('ws://localhost:3001/ws?api_key=your-api-key');
 ### Role Details
 
 - **admin**: Full access to all endpoints including sensitive operations
-- **agent**: Can read/write tasks, run agents, manage worktrees. Intended for AI agents like [Moltbot](https://github.com/moltbot/moltbot)
+- **agent**: Can read/write tasks, run agents, manage worktrees. Intended for AI agents like [OpenClaw](https://github.com/openclaw/openclaw)
 - **read-only**: Can only perform GET requests. Suitable for dashboards and monitoring
 
 ## Configuration Reference

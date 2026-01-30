@@ -103,7 +103,7 @@ Open [http://localhost:3000](http://localhost:3000) — that's it. The board aut
 - **Agent orchestration** — Spawn autonomous coding agents on tasks
 - **Custom agents** — Add your own agents with any name and command; not limited to built-in types
 - **Platform-agnostic API** — REST endpoints work with any agentic platform
-- **Built-in Moltbot support** — Native integration with [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot)
+- **Built-in OpenClaw support** — Native integration with [OpenClaw](https://github.com/openclaw/openclaw) (formerly Clawdbot/Moltbot)
 - **Multiple attempts** — Retry with different agents, preserve history
 - **Running indicator** — Visual feedback when agents are working
 
@@ -292,7 +292,7 @@ vk notify:pending                # Check notifications
 
 Veritas Kanban works with any agentic platform that can make HTTP calls. The REST API covers the full task lifecycle — create, update, track time, complete.
 
-Built and tested with [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot), which provides native orchestration via `sessions_spawn`. The built-in agent service targets Moltbot — PRs welcome for adapters to other platforms.
+Built and tested with [OpenClaw](https://github.com/openclaw/openclaw) (formerly Clawdbot/Moltbot), which provides native orchestration via `sessions_spawn`. The built-in agent service targets OpenClaw — PRs welcome for adapters to other platforms.
 
 ### How It Works
 
@@ -323,13 +323,13 @@ curl -X POST http://localhost:3001/api/agents/<id>/complete \
   -d '{"success": true, "summary": "What was done"}'
 ```
 
-### Moltbot (Native)
+### OpenClaw (Native)
 
 ```bash
 # Check for pending agent requests
 vk agents:pending
 
-# Moltbot sub-agents use sessions_spawn to execute work,
+# OpenClaw sub-agents use sessions_spawn to execute work,
 # then call the completion endpoint automatically.
 ```
 
@@ -505,7 +505,7 @@ All support and feature requests go through GitHub:
 
 ## 🙏 Acknowledgments
 
-Special thanks to [Peter Steinberger](https://github.com/steipete) and [Moltbot](https://github.com/moltbot/moltbot) (formerly Clawdbot) — the platform that inspired this project and made autonomous agent orchestration feel like magic.
+Special thanks to [Peter Steinberger](https://github.com/steipete) and [OpenClaw](https://github.com/openclaw/openclaw) (formerly Clawdbot/Moltbot) — the platform that inspired this project and made autonomous agent orchestration feel like magic.
 
 ---
 
@@ -519,6 +519,6 @@ Special thanks to [Peter Steinberger](https://github.com/steipete) and [Moltbot]
 
 Made in Texas with 💜
 
-Originally built for [Moltbot](https://github.com/moltbot/moltbot). Works with any agentic platform.
+Originally built for [OpenClaw](https://github.com/openclaw/openclaw). Works with any agentic platform.
 
 </div>
