@@ -2,6 +2,7 @@ import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { ClawdbotAgentService, clawdbotAgentService } from '../services/clawdbot-agent-service.js';
 import { getTelemetryService } from '../services/telemetry-service.js';
+import { getTaskService } from '../services/task-service.js';
 import type { AgentType, TokenTelemetryEvent } from '@veritas-kanban/shared';
 import { asyncHandler } from '../middleware/async-handler.js';
 import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
@@ -152,8 +153,7 @@ router.post(
     const taskId = req.params.taskId as string;
 
     // Get task to find project and current attempt
-    const { TaskService } = await import('../services/task-service.js');
-    const taskService = new TaskService();
+    const taskService = getTaskService();
     const task = await taskService.getTask(taskId);
 
     if (!task) {

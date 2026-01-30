@@ -1,6 +1,6 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
-import { TaskService } from '../services/task-service.js';
+import { getTaskService } from '../services/task-service.js';
 import { WorktreeService } from '../services/worktree-service.js';
 import { activityService } from '../services/activity-service.js';
 import { getBlockingService } from '../services/blocking-service.js';
@@ -14,7 +14,7 @@ import { auditLog } from '../services/audit-service.js';
 import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router: RouterType = Router();
-const taskService = new TaskService();
+const taskService = getTaskService();
 const worktreeService = new WorktreeService();
 const blockingService = getBlockingService();
 

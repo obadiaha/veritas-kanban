@@ -35,6 +35,7 @@ const { mockTaskService, mockWorktreeService, mockBlockingService, mockActivityS
   }));
 
 vi.mock('../../services/task-service.js', () => ({
+  getTaskService: () => mockTaskService,
   TaskService: function () {
     return mockTaskService;
   },

@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import type { Router as RouterType } from 'express';
 import multer from 'multer';
 import contentDisposition from 'content-disposition';
-import { TaskService } from '../services/task-service.js';
+import { getTaskService } from '../services/task-service.js';
 import { getAttachmentService } from '../services/attachment-service.js';
 import { getTextExtractionService } from '../services/text-extraction-service.js';
 import type { Attachment } from '@veritas-kanban/shared';
@@ -10,7 +10,7 @@ import { createLogger } from '../lib/logger.js';
 const log = createLogger('attachments');
 
 const router: RouterType = Router();
-const taskService = new TaskService();
+const taskService = getTaskService();
 const attachmentService = getAttachmentService();
 const textExtractionService = getTextExtractionService();
 
