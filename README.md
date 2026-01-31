@@ -20,7 +20,7 @@ Built for developers who want a visual Kanban board that works with autonomous c
 
 ⭐ **If you find this useful, star the repo — it helps others discover it!**
 
-[Quickstart](#-quickstart) · [Features](#-feature-highlights) · [All Features](docs/FEATURES.md) · [Docs](docs/) · [API](#-api-versioning) · [Agent Integration](#-agent-integration) · [MCP Server](#-mcp-server) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+[Quickstart](#-quickstart) · [Features](#-feature-highlights) · [All Features](docs/FEATURES.md) · [Docs](docs/) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [API](#-api-versioning) · [Agent Integration](#-agent-integration) · [MCP Server](#-mcp-server) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -413,15 +413,16 @@ pnpm test:e2e   # E2E tests (Playwright)
 
 ## 📚 Documentation
 
-| Document                              | Description                      |
-| ------------------------------------- | -------------------------------- |
-| [Features](docs/FEATURES.md)          | Complete feature reference       |
-| [Deployment](docs/DEPLOYMENT.md)      | Docker, bare metal, env config   |
-| [Contributing](CONTRIBUTING.md)       | How to contribute, PR guidelines |
-| [Security Policy](SECURITY.md)        | Vulnerability reporting          |
-| [Code of Conduct](CODE_OF_CONDUCT.md) | Community guidelines             |
-| [Changelog](CHANGELOG.md)             | Release history                  |
-| [Sprint Docs](docs/)                  | Sprint planning & audit reports  |
+| Document                                   | Description                      |
+| ------------------------------------------ | -------------------------------- |
+| [Features](docs/FEATURES.md)               | Complete feature reference       |
+| [Deployment](docs/DEPLOYMENT.md)           | Docker, bare metal, env config   |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues & solutions        |
+| [Contributing](CONTRIBUTING.md)            | How to contribute, PR guidelines |
+| [Security Policy](SECURITY.md)             | Vulnerability reporting          |
+| [Code of Conduct](CODE_OF_CONDUCT.md)      | Community guidelines             |
+| [Changelog](CHANGELOG.md)                  | Release history                  |
+| [Sprint Docs](docs/)                       | Sprint planning & audit reports  |
 
 ---
 
