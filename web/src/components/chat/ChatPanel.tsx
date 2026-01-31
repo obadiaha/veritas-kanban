@@ -1,12 +1,33 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Send, ChevronDown, ChevronRight, Loader2, Bot, User } from 'lucide-react';
+import {
+  MessageSquare,
+  Send,
+  ChevronDown,
+  ChevronRight,
+  Loader2,
+  Bot,
+  User,
+  Trash2,
+} from 'lucide-react';
 import {
   useChatSession,
   useSendChatMessage,
+  useDeleteChatSession,
   useChatStream,
   useChatSessions,
 } from '@/hooks/useChat';
@@ -27,6 +48,7 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
   const { data: sessions = [] } = useChatSessions();
   const { data: session } = useChatSession(currentSessionId);
   const { mutate: sendChatMessage, isPending } = useSendChatMessage();
+  const { mutate: deleteChatSession } = useDeleteChatSession();
   const { streamingMessage } = useChatStream(currentSessionId);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -100,10 +122,55 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
       >
         {/* Header */}
         <SheetHeader className="border-b border-border px-4 py-3 pr-10 flex-shrink-0">
-          <SheetTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5" />
-            Agent Chat
-          </SheetTitle>
+          <div className="flex items-center justify-between">
+            <SheetTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              {taskId ? 'Task Chat' : 'Board Chat'}
+            </SheetTitle>
+            {currentSessionId && session?.messages && session.messages.length > 0 && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear chat history?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete all messages in this chat. This action cannot be
+                      undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        if (currentSessionId) {
+                          deleteChatSession(currentSessionId, {
+                            onSuccess: () => {
+                              setCurrentSessionId(undefined);
+                              // Re-set for task-scoped chats (creates fresh on next send)
+                              if (taskId) {
+                                setTimeout(() => setCurrentSessionId(`task_${taskId}`), 100);
+                              }
+                            },
+                          });
+                        }
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Clear History
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
           {taskId && task && (
             <div className="text-xs text-muted-foreground flex items-center gap-2 pt-2 border-t border-border/50 mt-2">
               <MessageSquare className="h-3 w-3" />
