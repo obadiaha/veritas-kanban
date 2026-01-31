@@ -100,14 +100,19 @@ export class ManagedListService<T extends ManagedListItem> {
   /**
    * Create a new item
    */
-  async create(input: Omit<T, 'id' | 'order' | 'created' | 'updated'>): Promise<T> {
+  async create(input: Omit<T, 'order' | 'created' | 'updated'> & { id?: string }): Promise<T> {
     await this.init();
 
     const now = new Date().toISOString();
-    // T extends ManagedListItem which has 'label'; Omit preserves it
-    const slug = this.slugify((input as Pick<ManagedListItem, 'label'>).label);
-    const shortId = nanoid(6);
-    const id = `${slug}-${shortId}`;
+    // Use provided id if given (clean, deterministic), otherwise generate one
+    const id =
+      (input as { id?: string }).id ||
+      `${this.slugify((input as Pick<ManagedListItem, 'label'>).label)}-${nanoid(6)}`;
+
+    // Reject duplicate IDs
+    if (this.items.some((item) => item.id === id)) {
+      throw new Error(`Item with id '${id}' already exists`);
+    }
 
     // Calculate order as max + 1
     const maxOrder = this.items.length > 0 ? Math.max(...this.items.map((item) => item.order)) : -1;
