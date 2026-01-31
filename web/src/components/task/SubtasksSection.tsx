@@ -23,13 +23,13 @@ export function SubtasksSection({ task, onAutoCompleteChange }: SubtasksSectionP
   const deleteSubtask = useDeleteSubtask();
 
   const subtasks = task.subtasks || [];
-  const completedCount = subtasks.filter(s => s.completed).length;
+  const completedCount = subtasks.filter((s) => s.completed).length;
   const totalCount = subtasks.length;
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const handleAddSubtask = async () => {
     if (!newSubtaskTitle.trim()) return;
-    
+
     setIsAdding(true);
     try {
       await addSubtask.mutateAsync({ taskId: task.id, title: newSubtaskTitle.trim() });
@@ -72,7 +72,7 @@ export function SubtasksSection({ task, onAutoCompleteChange }: SubtasksSectionP
       {/* Progress bar */}
       {totalCount > 0 && (
         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-          <div 
+          <div
             className="h-full bg-primary transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
@@ -85,8 +85,8 @@ export function SubtasksSection({ task, onAutoCompleteChange }: SubtasksSectionP
           <div
             key={subtask.id}
             className={cn(
-              "flex items-center gap-2 p-2 rounded-md group hover:bg-muted/50 transition-colors",
-              subtask.completed && "opacity-60"
+              'flex items-center gap-2 p-2 rounded-md group hover:bg-muted/50 transition-colors',
+              subtask.completed && 'opacity-60'
             )}
           >
             <Checkbox
@@ -94,10 +94,12 @@ export function SubtasksSection({ task, onAutoCompleteChange }: SubtasksSectionP
               onCheckedChange={() => handleToggleSubtask(subtask)}
               className="flex-shrink-0"
             />
-            <span className={cn(
-              "flex-1 text-sm",
-              subtask.completed && "line-through text-muted-foreground"
-            )}>
+            <span
+              className={cn(
+                'flex-1 text-sm',
+                subtask.completed && 'line-through text-muted-foreground'
+              )}
+            >
               {subtask.title}
             </span>
             <Button
@@ -123,9 +125,10 @@ export function SubtasksSection({ task, onAutoCompleteChange }: SubtasksSectionP
           disabled={isAdding}
         />
         <Button
-          size="sm"
+          size="icon"
           onClick={handleAddSubtask}
           disabled={!newSubtaskTitle.trim() || isAdding}
+          className="h-9 w-9 shrink-0"
         >
           <Plus className="h-4 w-4" />
         </Button>

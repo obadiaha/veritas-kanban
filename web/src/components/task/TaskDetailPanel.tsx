@@ -112,83 +112,87 @@ export function TaskDetailPanel({
           </SheetTitle>
         </SheetHeader>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="flex-1 flex flex-col overflow-hidden mt-4"
-        >
-          <div className="flex items-center gap-2">
-            <TabsList
-              className={`grid flex-1 ${isCodeTask ? (taskSettings.enableAttachments ? 'grid-cols-7' : 'grid-cols-6') : taskSettings.enableAttachments ? 'grid-cols-3' : 'grid-cols-2'}`}
-            >
-              <TabsTrigger value="details">Details</TabsTrigger>
-              {taskSettings.enableAttachments && (
-                <TabsTrigger value="attachments" className="flex items-center gap-1">
-                  <Paperclip className="h-3 w-3" />
-                  Attachments
-                </TabsTrigger>
-              )}
-              {isCodeTask && (
-                <>
-                  <TabsTrigger value="git" className="flex items-center gap-1">
-                    <GitBranch className="h-3 w-3" />
-                    Git
-                  </TabsTrigger>
-                  <TabsTrigger value="agent" className="flex items-center gap-1">
-                    <Bot className="h-3 w-3" />
-                    Agent
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="changes"
-                    disabled={!hasWorktree}
-                    className="flex items-center gap-1"
-                  >
-                    <FileDiff className="h-3 w-3" />
-                    Changes
-                  </TabsTrigger>
-                  <TabsTrigger value="review" className="flex items-center gap-1">
-                    <ClipboardCheck className="h-3 w-3" />
-                    Review
-                  </TabsTrigger>
-                </>
-              )}
-              <TabsTrigger value="metrics" className="flex items-center gap-1">
-                <BarChart3 className="h-3 w-3" />
-                Metrics
-              </TabsTrigger>
-            </TabsList>
+        {/* Action buttons above tabs */}
+        <div className="grid grid-cols-2 gap-2 mt-4 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setTaskChatOpen(true)}
+            className="flex items-center justify-center gap-1 w-full"
+          >
+            <MessageSquare className="h-3 w-3" />
+            Chat
+          </Button>
+          {!readOnly ? (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setTaskChatOpen(true)}
-              className="flex items-center gap-1"
+              onClick={() => setApplyTemplateOpen(true)}
+              className="flex items-center justify-center gap-1 w-full"
             >
-              <MessageSquare className="h-3 w-3" />
-              Chat
+              <FileCode className="h-3 w-3" />
+              Template
             </Button>
-            {!readOnly && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setApplyTemplateOpen(true)}
-                className="flex items-center gap-1"
-              >
-                <FileCode className="h-3 w-3" />
-                Template
-              </Button>
+          ) : (
+            <div />
+          )}
+          {!readOnly && isCodeTask && localTask.git?.repo && agentSettings.enablePreview && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPreviewOpen(true)}
+              className="flex items-center justify-center gap-1 w-full col-span-2"
+            >
+              <Monitor className="h-3 w-3" />
+              Preview
+            </Button>
+          )}
+        </div>
+
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex-1 flex flex-col overflow-hidden mt-3"
+        >
+          <TabsList
+            className={`grid w-full flex-shrink-0 ${isCodeTask ? (taskSettings.enableAttachments ? 'grid-cols-7' : 'grid-cols-6') : taskSettings.enableAttachments ? 'grid-cols-3' : 'grid-cols-2'}`}
+          >
+            <TabsTrigger value="details">Details</TabsTrigger>
+            {taskSettings.enableAttachments && (
+              <TabsTrigger value="attachments" className="flex items-center gap-1">
+                <Paperclip className="h-3 w-3" />
+                Attachments
+              </TabsTrigger>
             )}
-            {!readOnly && isCodeTask && localTask.git?.repo && agentSettings.enablePreview && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPreviewOpen(true)}
-                className="flex items-center gap-1"
-              >
-                <Monitor className="h-3 w-3" />
-                Preview
-              </Button>
+            {isCodeTask && (
+              <>
+                <TabsTrigger value="git" className="flex items-center gap-1">
+                  <GitBranch className="h-3 w-3" />
+                  Git
+                </TabsTrigger>
+                <TabsTrigger value="agent" className="flex items-center gap-1">
+                  <Bot className="h-3 w-3" />
+                  Agent
+                </TabsTrigger>
+                <TabsTrigger
+                  value="changes"
+                  disabled={!hasWorktree}
+                  className="flex items-center gap-1"
+                >
+                  <FileDiff className="h-3 w-3" />
+                  Changes
+                </TabsTrigger>
+                <TabsTrigger value="review" className="flex items-center gap-1">
+                  <ClipboardCheck className="h-3 w-3" />
+                  Review
+                </TabsTrigger>
+              </>
             )}
-          </div>
+            <TabsTrigger value="metrics" className="flex items-center gap-1">
+              <BarChart3 className="h-3 w-3" />
+              Metrics
+            </TabsTrigger>
+          </TabsList>
 
           <div className="flex-1 overflow-y-auto mt-4">
             {/* Details Tab */}

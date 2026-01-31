@@ -76,9 +76,12 @@ export function AgentPanel({ task }: AgentPanelProps) {
   const sendMessage = useSendMessage();
 
   const [selectedAgent, setSelectedAgent] = useState<AgentType | undefined>();
+  const [selectedModel, setSelectedModel] = useState<string | undefined>();
   const [message, setMessage] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
   const [viewingAttemptId, setViewingAttemptId] = useState<string | null>(null);
+
+  const models = ['sonnet', 'opus', 'haiku'];
 
   const outputRef = useRef<HTMLDivElement>(null);
 
@@ -222,6 +225,21 @@ export function AgentPanel({ task }: AgentPanelProps) {
                             <span className="text-xs text-muted-foreground">(default)</span>
                           )}
                         </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedModel || routingResult?.model || 'sonnet'}
+                  onValueChange={setSelectedModel}
+                >
+                  <SelectTrigger className="w-[100px] h-8">
+                    <SelectValue placeholder="Model..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {models.map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
                       </SelectItem>
                     ))}
                   </SelectContent>

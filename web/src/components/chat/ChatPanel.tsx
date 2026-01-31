@@ -3,31 +3,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  MessageSquare,
-  Send,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Loader2,
-  Bot,
-  User,
-} from 'lucide-react';
+import { MessageSquare, Send, ChevronDown, ChevronRight, Loader2, Bot, User } from 'lucide-react';
 import {
   useChatSession,
   useSendChatMessage,
   useChatStream,
   useChatSessions,
 } from '@/hooks/useChat';
-import { useConfig } from '@/hooks/useConfig';
 import { useTask } from '@/hooks/useTasks';
 import type { ChatMessage } from '@veritas-kanban/shared';
 
@@ -40,12 +22,7 @@ interface ChatPanelProps {
 export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
   const [message, setMessage] = useState('');
   const [mode, setMode] = useState<'ask' | 'build'>('ask');
-  const [selectedAgent, setSelectedAgent] = useState<string>('claude-code');
-  const [selectedModel, setSelectedModel] = useState<string>('sonnet');
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
-
-  const { data: config } = useConfig();
-  const enabledAgents = config?.agents?.filter((a: { enabled: boolean }) => a.enabled) || [];
   const { data: task } = useTask(taskId || '');
   const { data: sessions = [] } = useChatSessions();
   const { data: session } = useChatSession(currentSessionId);
@@ -87,13 +64,11 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
         sessionId: currentSessionId,
         taskId,
         message: message.trim(),
-        agent: selectedAgent,
-        model: selectedModel,
         mode,
       },
       {
-        onSuccess: (newSession) => {
-          setCurrentSessionId(newSession.id);
+        onSuccess: (response) => {
+          setCurrentSessionId(response.sessionId);
           setMessage('');
           setShouldAutoScroll(true);
         },
@@ -108,14 +83,14 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
     }
   };
 
-  // Load most recent session on mount if exists
+  // Load session on mount — task-scoped sessions use a deterministic ID
   useEffect(() => {
-    if (!currentSessionId && filteredSessions.length > 0) {
+    if (taskId && !currentSessionId) {
+      setCurrentSessionId(`task_${taskId}`);
+    } else if (!taskId && !currentSessionId && filteredSessions.length > 0) {
       setCurrentSessionId(filteredSessions[0].id);
     }
-  }, [filteredSessions, currentSessionId]);
-
-  const models = ['sonnet', 'opus', 'haiku'];
+  }, [filteredSessions, currentSessionId, taskId]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -124,47 +99,11 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
         side="right"
       >
         {/* Header */}
-        <SheetHeader className="border-b border-border px-4 py-3 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-2">
-              <Bot className="h-5 w-5" />
-              Agent Chat
-            </SheetTitle>
-            <div className="flex items-center gap-2">
-              <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                <SelectTrigger className="w-28 h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {enabledAgents.map((a: { type: string; name: string }) => (
-                    <SelectItem key={a.type} value={a.type}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="w-24 h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((model) => (
-                    <SelectItem key={model} value={model}>
-                      {model}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => onOpenChange(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+        <SheetHeader className="border-b border-border px-4 py-3 pr-10 flex-shrink-0">
+          <SheetTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            Agent Chat
+          </SheetTitle>
           {taskId && task && (
             <div className="text-xs text-muted-foreground flex items-center gap-2 pt-2 border-t border-border/50 mt-2">
               <MessageSquare className="h-3 w-3" />
@@ -241,20 +180,9 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
             >
               Build
             </Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="text-muted-foreground cursor-help">ⓘ</span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-xs">
-                    <strong>Ask:</strong> Read-only queries and questions
-                    <br />
-                    <strong>Build:</strong> Make changes, create files, execute commands
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <span className="text-muted-foreground ml-1">
+              {mode === 'ask' ? '· Read-only queries' : '· Changes, files, commands'}
+            </span>
           </div>
         </div>
       </SheetContent>

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { chatApi } from '@/lib/api/chat';
+import { chatEventTarget } from '@/hooks/useTaskSync';
 import type { ChatMessage, ChatSendInput } from '@veritas-kanban/shared';
 
 /**
@@ -34,11 +35,12 @@ export function useSendChatMessage() {
 
   return useMutation({
     mutationFn: (input: ChatSendInput) => chatApi.sendMessage(input),
-    onSuccess: (session) => {
-      // Update the session cache
-      queryClient.setQueryData(['chat', 'sessions', session.id], session);
-      // Invalidate sessions list
+    onSuccess: (response) => {
+      // Invalidate sessions list and the specific session to refetch
       queryClient.invalidateQueries({ queryKey: ['chat', 'sessions'] });
+      if (response.sessionId) {
+        queryClient.invalidateQueries({ queryKey: ['chat', 'sessions', response.sessionId] });
+      }
     },
   });
 }
@@ -59,22 +61,53 @@ export function useDeleteChatSession() {
 
 /**
  * Listen for streaming chat messages via WebSocket
- * This is a placeholder for when WebSocket streaming is implemented
  */
 export function useChatStream(sessionId: string | undefined) {
   const [streamingMessage, setStreamingMessage] = useState<Partial<ChatMessage> | null>(null);
+  const [, setStreamingText] = useState('');
   const queryClient = useQueryClient();
 
+  // Listen for chat events from the shared WebSocket (via useTaskSync)
   useEffect(() => {
     if (!sessionId) return;
 
-    // TODO: Connect to WebSocket and listen for chat:message:chunk events
-    // For now, this is a placeholder. When backend WebSocket streaming is ready:
-    // 1. Subscribe to chat:message:chunk events for this sessionId
-    // 2. Accumulate chunks in streamingMessage state
-    // 3. On chat:message:complete, clear streaming + invalidate session query
+    const handler = (e: Event) => {
+      const msg = (e as CustomEvent).detail;
+      const msgSessionId = msg.sessionId as string;
+      if (msgSessionId !== sessionId) return;
+
+      if (msg.type === 'chat:delta') {
+        const text = msg.text as string;
+        setStreamingText((prev) => {
+          const newText = prev + text;
+          setStreamingMessage({
+            id: 'streaming',
+            role: 'assistant',
+            content: newText,
+            timestamp: new Date().toISOString(),
+          });
+          return newText;
+        });
+      }
+
+      if (msg.type === 'chat:message') {
+        setStreamingMessage(null);
+        setStreamingText('');
+        queryClient.invalidateQueries({ queryKey: ['chat', 'sessions', sessionId] });
+      }
+
+      if (msg.type === 'chat:error') {
+        setStreamingMessage(null);
+        setStreamingText('');
+        queryClient.invalidateQueries({ queryKey: ['chat', 'sessions', sessionId] });
+      }
+    };
+
+    chatEventTarget.addEventListener('chat', handler);
     return () => {
+      chatEventTarget.removeEventListener('chat', handler);
       setStreamingMessage(null);
+      setStreamingText('');
     };
   }, [sessionId, queryClient]);
 

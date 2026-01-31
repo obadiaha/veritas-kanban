@@ -2,6 +2,10 @@ import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket, type WebSocketMessage, type ConnectionState } from './useWebSocket';
 
+// Global event target for chat WebSocket events
+// Chat hooks subscribe to this instead of opening their own WebSocket
+export const chatEventTarget = new EventTarget();
+
 /**
  * Connects to the Veritas Kanban WebSocket server and listens for
  * task:changed events. When received, invalidates the React Query
@@ -20,6 +24,15 @@ export function useTaskSync(): {
 
   const handleMessage = useCallback(
     (message: WebSocketMessage) => {
+      // Forward chat events to the chat event target
+      if (
+        message.type === 'chat:delta' ||
+        message.type === 'chat:message' ||
+        message.type === 'chat:error'
+      ) {
+        chatEventTarget.dispatchEvent(new CustomEvent('chat', { detail: message }));
+      }
+
       if (message.type === 'task:changed') {
         // Invalidate task queries to trigger a refetch
         queryClient.invalidateQueries({ queryKey: ['tasks'] });

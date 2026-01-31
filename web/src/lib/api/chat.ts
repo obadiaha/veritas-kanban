@@ -25,16 +25,26 @@ export async function getSession(sessionId: string): Promise<ChatSession> {
 }
 
 /**
+ * Chat send response from the API
+ * (Not a full ChatSession — agent response streams via WebSocket)
+ */
+export interface ChatSendResponse {
+  sessionId: string;
+  messageId: string;
+  message: string;
+}
+
+/**
  * Send a chat message
  */
-export async function sendMessage(input: ChatSendInput): Promise<ChatSession> {
+export async function sendMessage(input: ChatSendInput): Promise<ChatSendResponse> {
   const response = await fetch(`${API_BASE}/chat/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(input),
   });
-  return handleResponse<ChatSession>(response);
+  return handleResponse<ChatSendResponse>(response);
 }
 
 /**

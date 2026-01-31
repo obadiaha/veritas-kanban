@@ -7,12 +7,17 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { getChatService } from '../services/chat-service.js';
+import { sendGatewayChat, loadGatewayToken } from '../services/gateway-chat-client.js';
+import { broadcastChatMessage } from '../services/broadcast-service.js';
 import type { ChatSendInput } from '@veritas-kanban/shared';
 import { asyncHandler } from '../middleware/async-handler.js';
 import { NotFoundError, ValidationError } from '../middleware/error-handler.js';
 import { createLogger } from '../lib/logger.js';
 
 const log = createLogger('chat');
+
+// Load gateway token on startup
+loadGatewayToken().catch(() => {});
 
 const router: RouterType = Router();
 const chatService = getChatService();
@@ -80,15 +85,68 @@ router.post(
 
     log.info({ sessionId, messageId: userMessage.id, taskId: session.taskId }, 'Chat message sent');
 
-    // Return immediately - agent response will stream via WebSocket
+    // Return immediately - agent response will arrive async
     res.status(200).json({
       sessionId,
       messageId: userMessage.id,
-      message: 'Message sent — agent response will stream via WebSocket',
+      message: 'Message sent — agent response incoming',
     });
 
-    // TODO: Trigger agent response (will be handled by WebSocket integration)
-    // The WebSocket server will listen for 'chat:message' events and stream the response
+    // Trigger async AI response via Clawdbot Gateway
+    const gatewaySessionKey = `kanban-chat-${sessionId}`;
+
+    sendGatewayChat(input.message, gatewaySessionKey, {
+      onDelta: (text) => {
+        // Broadcast streaming chunk to kanban WebSocket clients
+        broadcastChatMessage(sessionId, {
+          type: 'chat:delta',
+          sessionId,
+          text,
+        });
+      },
+      onFinal: async (response) => {
+        try {
+          // Save the assistant response to the session
+          const assistantMessage = await chatService.addMessage(sessionId, {
+            role: 'assistant',
+            content: response.text,
+            agent: session.agent,
+          });
+
+          log.info({ sessionId, messageId: assistantMessage.id }, 'Assistant response saved');
+
+          // Broadcast final message to kanban WebSocket clients
+          broadcastChatMessage(sessionId, {
+            type: 'chat:message',
+            sessionId,
+            message: assistantMessage,
+          });
+        } catch (err: any) {
+          log.error({ err: err.message, sessionId }, 'Failed to save assistant response');
+        }
+      },
+      onError: async (error) => {
+        log.error({ error, sessionId }, 'Gateway chat error');
+
+        // Save error as system message
+        try {
+          await chatService.addMessage(sessionId, {
+            role: 'system',
+            content: `Error: ${error}`,
+          });
+
+          broadcastChatMessage(sessionId, {
+            type: 'chat:error',
+            sessionId,
+            error,
+          });
+        } catch (err: any) {
+          log.error({ err: err.message }, 'Failed to save error message');
+        }
+      },
+    }).catch((err) => {
+      log.error({ err: err.message, sessionId }, 'Gateway chat failed');
+    });
   })
 );
 
