@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDuration, parseDuration } from '@/hooks/useTimeTracking';
-import { useTasks } from '@/hooks/useTasks';
 import { api } from '@/lib/api';
 import { Play, Square, Plus, Trash2, Clock, Loader2, Timer } from 'lucide-react';
 import type { Task, TimeEntry, TimeTracking } from '@veritas-kanban/shared';
@@ -32,9 +31,9 @@ function RunningTimer({ startTime }: { startTime: string }) {
 
   useEffect(() => {
     const start = new Date(startTime).getTime();
-    const update = () => setElapsed(Math.floor((Date.now() - start) / 1000));
-    update();
-    const id = setInterval(update, 1000);
+    const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [startTime]);
 
@@ -45,32 +44,34 @@ function RunningTimer({ startTime }: { startTime: string }) {
   );
 }
 
-// ─── Helper: update task in React Query cache ───────────────────────────────
-
-function patchCache(queryClient: ReturnType<typeof useQueryClient>, task: Task) {
-  queryClient.setQueryData<Task[]>(['tasks'], (old) =>
-    old ? old.map((t) => (t.id === task.id ? task : t)) : old
-  );
-  queryClient.setQueryData(['tasks', task.id], task);
-}
-
 // ─── Main Component ─────────────────────────────────────────────────────────
+//
+// Architecture: fully self-contained local state.
+//
+// The component owns a `timeTracking` state variable that is:
+//   1. Initialized from the task prop on mount / task change
+//   2. Updated ONLY from direct API responses (start, stop, add, delete)
+//
+// There is NO cache sync. The React Query ['tasks'] cache is patched after
+// each mutation (so other components like the board stay current), but this
+// component never reads back from it. This eliminates all race conditions
+// with debounced saves, background refetches, and invalidation storms.
+//
+// Trade-off: external timer changes (another browser tab, direct API call)
+// won't appear until the panel is closed and reopened. Acceptable.
 
 export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
   const queryClient = useQueryClient();
 
-  // ── Local state: the single source of truth for this component ──
-  // Initialized from prop, then updated directly from API responses.
+  // ── Local state ──
   const [timeTracking, setTimeTracking] = useState<TimeTracking | undefined>(task.timeTracking);
   const [busy, setBusy] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [durationInput, setDurationInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
 
-  // Track the task ID so we can reset state when switching tasks
+  // Reset when a different task is opened
   const taskIdRef = useRef(task.id);
-
-  // Reset local state when a different task is opened
   useEffect(() => {
     if (task.id !== taskIdRef.current) {
       taskIdRef.current = task.id;
@@ -78,30 +79,19 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     }
   }, [task.id, task.timeTracking]);
 
-  // Sync from the query cache when it updates externally (WebSocket events,
-  // background refetches, other components' mutations).
-  // Skip while a local mutation is in flight to prevent stale data flicker.
-  const { data: allTasks } = useTasks();
-  const cachedTask = allTasks?.find((t) => t.id === task.id);
-
-  // Use a JSON fingerprint to detect meaningful changes without
-  // firing on every React Query structural-sharing pass.
-  const cachedFingerprint = cachedTask?.timeTracking
-    ? `${cachedTask.timeTracking.isRunning}-${cachedTask.timeTracking.totalSeconds}-${cachedTask.timeTracking.entries?.length ?? 0}-${cachedTask.timeTracking.activeEntryId ?? ''}`
-    : '';
-
-  useEffect(() => {
-    if (!busy && cachedTask?.timeTracking) {
-      setTimeTracking(cachedTask.timeTracking);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cachedFingerprint, busy]);
-
-  // ── Derived state ──
+  // ── Derived values ──
   const isRunning = timeTracking?.isRunning ?? false;
   const totalSeconds = timeTracking?.totalSeconds ?? 0;
   const entries = timeTracking?.entries ?? [];
   const activeEntry = entries.find((e) => e.id === timeTracking?.activeEntryId);
+
+  // ── Cache helper: patch React Query so the board/other components stay current ──
+  const patchCache = (updated: Task) => {
+    queryClient.setQueryData<Task[]>(['tasks'], (old) =>
+      old ? old.map((t) => (t.id === updated.id ? updated : t)) : old
+    );
+    queryClient.setQueryData(['tasks', updated.id], updated);
+  };
 
   // ── Handlers ──
 
@@ -109,28 +99,21 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     if (busy) return;
     setBusy(true);
     try {
-      let result: Task;
-      if (isRunning) {
-        result = await api.time.stop(task.id);
-      } else {
-        result = await api.time.start(task.id);
-      }
-      // Update local state directly from the API response — instant UI update
+      const result = isRunning ? await api.time.stop(task.id) : await api.time.start(task.id);
       setTimeTracking(result.timeTracking);
-      // Also update the query cache so other components see the change
-      patchCache(queryClient, result);
+      patchCache(result);
     } catch (err) {
-      console.warn('[TimeTracking] start/stop failed, syncing from server:', err);
-      // Force a full refresh so UI converges with server state
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // API rejected — fetch fresh state so UI converges
+      try {
+        const fresh = await api.tasks.get(task.id);
+        setTimeTracking(fresh.timeTracking);
+        patchCache(fresh);
+      } catch {
+        // network down — leave UI as-is
+      }
+      console.warn('[TimeTracking] start/stop failed:', err);
     } finally {
       setBusy(false);
-      // Background refresh to catch any side effects (e.g., auto-stopped timer
-      // on another task). Small delay to avoid racing with the cache patch.
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-        queryClient.invalidateQueries({ queryKey: ['time', 'summary'] });
-      }, 100);
     }
   };
 
@@ -141,7 +124,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     try {
       const result = await api.time.addEntry(task.id, seconds, descriptionInput || undefined);
       setTimeTracking(result.timeTracking);
-      patchCache(queryClient, result);
+      patchCache(result);
       setDurationInput('');
       setDescriptionInput('');
       setAddDialogOpen(false);
@@ -149,10 +132,6 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
       console.warn('[TimeTracking] add entry failed:', err);
     } finally {
       setBusy(false);
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-        queryClient.invalidateQueries({ queryKey: ['time', 'summary'] });
-      }, 100);
     }
   };
 
@@ -162,29 +141,23 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     try {
       const result = await api.time.deleteEntry(task.id, entryId);
       setTimeTracking(result.timeTracking);
-      patchCache(queryClient, result);
+      patchCache(result);
     } catch (err) {
       console.warn('[TimeTracking] delete entry failed:', err);
     } finally {
       setBusy(false);
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-        queryClient.invalidateQueries({ queryKey: ['time', 'summary'] });
-      }, 100);
     }
   };
 
   // ── Formatters ──
 
-  const formatEntryTime = (entry: TimeEntry) => {
-    const date = new Date(entry.startTime);
-    return date.toLocaleDateString('en-US', {
+  const formatEntryTime = (entry: TimeEntry) =>
+    new Date(entry.startTime).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
-  };
 
   // ── Render ──
 
@@ -204,7 +177,6 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isRunning ? (
-              /* Timer is running on THIS task — show Stop */
               <Button variant="destructive" size="sm" onClick={handleStartStop} disabled={busy}>
                 {busy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -216,7 +188,6 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
                 )}
               </Button>
             ) : (
-              /* Timer not running on this task — show Start */
               <Button variant="default" size="sm" onClick={handleStartStop} disabled={busy}>
                 {busy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

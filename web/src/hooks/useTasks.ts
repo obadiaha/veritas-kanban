@@ -115,10 +115,12 @@ export function useUpdateTask() {
       const cachedTask = queryClient.getQueryData<Task>(['tasks', serverTask.id]);
       queryClient.setQueryData(['tasks', serverTask.id], mergeWithCachedTimeTracking(cachedTask));
     },
-    // Always refetch to sync with server
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    },
+    // NOTE: No onSettled invalidation here. The onSuccess handler already
+    // patches the cache with the server response (preserving timer state).
+    // An aggressive invalidateQueries would trigger a background refetch
+    // whose response could overwrite timer state that was patched between
+    // the mutation start and the refetch completing. The WebSocket
+    // task:changed events and polling handle eventual consistency.
   });
 }
 
