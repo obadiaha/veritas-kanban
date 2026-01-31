@@ -47,7 +47,7 @@ export function KanbanBoard() {
     if (typeof window !== 'undefined') {
       return searchParamsToFilters(new URLSearchParams(window.location.search));
     }
-    return { search: '', project: null, type: null };
+    return { search: '', project: null, type: null, agent: null };
   });
 
   const { selectedTaskId, setTasks, setOnOpenTask, setOnMoveTask } = useKeyboard();
