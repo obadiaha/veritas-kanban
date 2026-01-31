@@ -19,6 +19,10 @@ interface KeyboardContextValue {
   closeHelpDialog: () => void;
   isHelpOpen: boolean;
 
+  // Chat panel
+  openChatPanel: () => void;
+  setOpenChatPanel: (fn: () => void) => void;
+
   // Task selection
   selectedTaskId: string | null;
   setSelectedTaskId: (id: string | null) => void;
@@ -48,6 +52,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
   // Use refs for callbacks to avoid re-render loops
   const openCreateDialogRef = useRef<(() => void) | null>(null);
+  const openChatPanelRef = useRef<(() => void) | null>(null);
   const onOpenTaskRef = useRef<((task: Task) => void) | null>(null);
   const onMoveTaskRef = useRef<((taskId: string, status: TaskStatus) => void) | null>(null);
 
@@ -57,6 +62,14 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
   const setOpenCreateDialog = useCallback((fn: () => void) => {
     openCreateDialogRef.current = fn;
+  }, []);
+
+  const openChatPanel = useCallback(() => {
+    openChatPanelRef.current?.();
+  }, []);
+
+  const setOpenChatPanel = useCallback((fn: () => void) => {
+    openChatPanelRef.current = fn;
   }, []);
 
   const openHelpDialog = useCallback(() => {
@@ -104,6 +117,13 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
       const taskList = getTaskList();
       const currentIndex = selectedTaskId ? taskList.findIndex((t) => t.id === selectedTaskId) : -1;
+
+      // Cmd+Shift+C (or Ctrl+Shift+C on Windows/Linux) - Toggle chat panel
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        openChatPanel();
+        return;
+      }
 
       switch (e.key) {
         case 'c':
@@ -174,12 +194,14 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [getTaskList, selectedTaskId, isHelpOpen, openCreateDialog]);
+  }, [getTaskList, selectedTaskId, isHelpOpen, openCreateDialog, openChatPanel]);
 
   const value = useMemo<KeyboardContextValue>(
     () => ({
       openCreateDialog,
       setOpenCreateDialog,
+      openChatPanel,
+      setOpenChatPanel,
       openHelpDialog,
       closeHelpDialog,
       isHelpOpen,
@@ -193,6 +215,8 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
     [
       openCreateDialog,
       setOpenCreateDialog,
+      openChatPanel,
+      setOpenChatPanel,
       openHelpDialog,
       closeHelpDialog,
       isHelpOpen,

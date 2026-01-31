@@ -10,6 +10,7 @@ import { agentApi, worktreeApi, previewApi } from './agent';
 import { diffApi, conflictsApi, githubApi } from './diff';
 import { templatesApi, taskTypesApi, sprintsApi, activityApi, attachmentsApi } from './entities';
 import { timeApi, statusHistoryApi } from './time';
+import { chatApi } from './chat';
 
 // Assemble the full API object (matches original structure exactly)
 export const api = {
@@ -29,6 +30,7 @@ export const api = {
   preview: previewApi,
   time: timeApi,
   statusHistory: statusHistoryApi,
+  chat: chatApi,
 };
 
 // Re-export managed list helper

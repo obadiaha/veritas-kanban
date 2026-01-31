@@ -14,6 +14,7 @@ import { DiffViewer } from './DiffViewer';
 import { ReviewPanel } from './ReviewPanel';
 import { PreviewPanel } from './PreviewPanel';
 import { AttachmentsSection } from './AttachmentsSection';
+import { ChatPanel } from '@/components/chat/ChatPanel';
 import { ApplyTemplateDialog } from './ApplyTemplateDialog';
 import { TaskMetricsPanel } from './TaskMetricsPanel';
 import FeatureErrorBoundary from '@/components/shared/FeatureErrorBoundary';
@@ -27,6 +28,7 @@ import {
   Paperclip,
   Archive,
   BarChart3,
+  MessageSquare,
 } from 'lucide-react';
 import type { Task, ReviewComment, ReviewState } from '@veritas-kanban/shared';
 
@@ -53,6 +55,7 @@ export function TaskDetailPanel({
   const [activeTab, setActiveTab] = useState('details');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
+  const [taskChatOpen, setTaskChatOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -154,6 +157,15 @@ export function TaskDetailPanel({
                 Metrics
               </TabsTrigger>
             </TabsList>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTaskChatOpen(true)}
+              className="flex items-center gap-1"
+            >
+              <MessageSquare className="h-3 w-3" />
+              Chat
+            </Button>
             {!readOnly && (
               <Button
                 variant="outline"
@@ -281,6 +293,11 @@ export function TaskDetailPanel({
           open={applyTemplateOpen}
           onOpenChange={setApplyTemplateOpen}
         />
+      )}
+
+      {/* Task-Scoped Chat Panel */}
+      {localTask && (
+        <ChatPanel open={taskChatOpen} onOpenChange={setTaskChatOpen} taskId={localTask.id} />
       )}
     </Sheet>
   );
