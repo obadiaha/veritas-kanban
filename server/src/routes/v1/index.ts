@@ -27,6 +27,7 @@ import attachmentRoutes from '../attachments.js';
 
 // Feature routes
 import { configRoutes } from '../config.js';
+import { chatRoutes } from '../chat.js';
 import { agentRoutes } from '../agents.js';
 import { agentRoutingRoutes } from '../agent-routing.js';
 import { diffRoutes } from '../diff.js';
@@ -86,6 +87,7 @@ v1Router.use(
 
 // ── Feature routes ───────────────────────────────────────────
 v1Router.use('/config', configRoutes);
+v1Router.use('/chat', chatRoutes); // Chat interface - must be before agent routes
 v1Router.use('/agents', agentRoutingRoutes); // Must be before agentRoutes (/:taskId would match "route"/"routing")
 v1Router.use('/agents', agentRoutes);
 v1Router.use('/diff', diffRoutes);
