@@ -125,6 +125,9 @@ export interface Task {
   created: string;
   updated: string;
 
+  // Agent assignment — "auto" uses routing engine, or a specific agent slug
+  agent?: AgentType | 'auto';
+
   // Code task specific
   git?: TaskGit;
 
@@ -196,6 +199,7 @@ export interface CreateTaskInput {
   priority?: TaskPriority;
   project?: string;
   sprint?: string;
+  agent?: AgentType | 'auto'; // Pre-assign an agent (or "auto" for routing engine)
   subtasks?: Subtask[]; // Can be provided when creating from a template
   blockedBy?: string[]; // Can be provided when creating from a blueprint
 }
@@ -208,6 +212,7 @@ export interface UpdateTaskInput {
   priority?: TaskPriority;
   project?: string;
   sprint?: string;
+  agent?: AgentType | 'auto';
   git?: Partial<TaskGit>;
   attempt?: TaskAttempt;
   reviewComments?: ReviewComment[];
@@ -247,6 +252,7 @@ export interface TaskSummary {
   type: TaskType;
   project?: string;
   sprint?: string;
+  agent?: AgentType | 'auto';
   created: string;
   updated: string;
   subtasks?: Subtask[];

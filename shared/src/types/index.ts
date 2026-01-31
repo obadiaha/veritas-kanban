@@ -6,3 +6,4 @@ export * from './telemetry.types.js';
 export * from './template.types.js';
 export * from './websocket.types.js';
 export * from './managed-list.types.js';
+export * from './chat.types.js';

@@ -1,9 +1,10 @@
-import { Plus, Settings, Keyboard, Activity, Archive } from 'lucide-react';
+import { Plus, Settings, Keyboard, Activity, Archive, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateTaskDialog } from '@/components/task/CreateTaskDialog';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ActivitySidebar } from './ActivitySidebar';
 import { ArchiveSidebar } from './ArchiveSidebar';
+import { ChatPanel } from '@/components/chat/ChatPanel';
 import { UserMenu } from './UserMenu';
 import { AgentStatusIndicator } from '@/components/shared/AgentStatusIndicator';
 import { WebSocketIndicator } from '@/components/shared/WebSocketIndicator';
@@ -16,18 +17,20 @@ export function Header() {
   const [settingsTab, setSettingsTab] = useState<string | undefined>();
   const [activityOpen, setActivityOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
-  const { setOpenCreateDialog, openHelpDialog } = useKeyboard();
+  const [chatOpen, setChatOpen] = useState(false);
+  const { setOpenCreateDialog, setOpenChatPanel, openHelpDialog } = useKeyboard();
 
   const openSecuritySettings = useCallback(() => {
     setSettingsTab('security');
     setSettingsOpen(true);
   }, []);
 
-  // Register the create dialog opener with keyboard context (ref, no useEffect needed)
+  // Register the create dialog and chat panel openers with keyboard context (refs, no useEffect needed)
   setOpenCreateDialog(() => setCreateOpen(true));
+  setOpenChatPanel(() => setChatOpen(true));
 
   return (
-    <header className="border-b border-border bg-card" role="banner">
+    <header className="sticky top-0 z-50 border-b border-border bg-card" role="banner">
       <nav aria-label="Main navigation" className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
@@ -78,6 +81,15 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => setChatOpen(true)}
+              aria-label="Agent Chat"
+              title="Agent Chat (⌘⇧C)"
+            >
+              <MessageSquare className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setSettingsOpen(true)}
               aria-label="Settings"
               title="Settings"
@@ -100,6 +112,7 @@ export function Header() {
       />
       <ActivitySidebar open={activityOpen} onOpenChange={setActivityOpen} />
       <ArchiveSidebar open={archiveOpen} onOpenChange={setArchiveOpen} />
+      <ChatPanel open={chatOpen} onOpenChange={setChatOpen} />
     </header>
   );
 }

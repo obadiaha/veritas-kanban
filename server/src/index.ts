@@ -526,6 +526,8 @@ setHealthWss(wss);
 
 // Track subscriptions: taskId -> Set of WebSocket clients
 const agentSubscriptions = new Map<string, Set<WebSocket>>();
+// Track chat subscriptions: sessionId -> Set of WebSocket clients
+const chatSubscriptions = new Map<string, Set<WebSocket>>();
 
 // ---- Heartbeat: server pings every WS_HEARTBEAT_INTERVAL_MS ----
 const heartbeatInterval = setInterval(() => {
@@ -598,10 +600,46 @@ wss.on('connection', (ws: HeartbeatWebSocket, req) => {
   );
 
   let subscribedTaskId: string | null = null;
+  let subscribedChatSession: string | null = null;
 
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
+
+      // Handle subscription to chat session
+      if (message.type === 'chat:subscribe' && message.sessionId) {
+        // Unsubscribe from previous chat session
+        if (subscribedChatSession) {
+          const subs = chatSubscriptions.get(subscribedChatSession);
+          if (subs) {
+            subs.delete(ws);
+            if (subs.size === 0) {
+              chatSubscriptions.delete(subscribedChatSession);
+            }
+          }
+        }
+
+        // Subscribe to new chat session
+        const sessionId: string = message.sessionId;
+        subscribedChatSession = sessionId;
+        if (!chatSubscriptions.has(sessionId)) {
+          chatSubscriptions.set(sessionId, new Set());
+        }
+        chatSubscriptions.get(sessionId)!.add(ws);
+
+        // Send confirmation
+        ws.send(
+          JSON.stringify({
+            type: 'chat:subscribed',
+            sessionId,
+          })
+        );
+
+        log.debug(
+          { sessionId, clients: chatSubscriptions.get(sessionId)!.size },
+          'Chat subscription added'
+        );
+      }
 
       // Handle subscription to agent output
       if (message.type === 'subscribe' && message.taskId) {
@@ -706,7 +744,7 @@ wss.on('connection', (ws: HeartbeatWebSocket, req) => {
       ws.heartbeatTimer = undefined;
     }
 
-    // Clean up subscriptions
+    // Clean up agent subscriptions
     if (subscribedTaskId) {
       const subs = agentSubscriptions.get(subscribedTaskId);
       if (subs) {
@@ -716,11 +754,22 @@ wss.on('connection', (ws: HeartbeatWebSocket, req) => {
         }
       }
     }
+
+    // Clean up chat subscriptions
+    if (subscribedChatSession) {
+      const subs = chatSubscriptions.get(subscribedChatSession);
+      if (subs) {
+        subs.delete(ws);
+        if (subs.size === 0) {
+          chatSubscriptions.delete(subscribedChatSession);
+        }
+      }
+    }
   });
 });
 
 // Export for use in other modules
-export { wss };
+export { wss, chatSubscriptions };
 
 // Graceful shutdown handler
 async function gracefulShutdown(signal: string) {

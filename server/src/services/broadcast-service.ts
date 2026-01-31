@@ -11,7 +11,13 @@ export function initBroadcast(wss: WebSocketServer): void {
   wssRef = wss;
 }
 
-export type TaskChangeType = 'created' | 'updated' | 'deleted' | 'archived' | 'restored' | 'reordered';
+export type TaskChangeType =
+  | 'created'
+  | 'updated'
+  | 'deleted'
+  | 'archived'
+  | 'restored'
+  | 'reordered';
 
 export interface TaskChangeEvent {
   type: 'task:changed';
@@ -42,7 +48,31 @@ export function broadcastTaskChange(changeType: TaskChangeType, taskId?: string)
   const payload = JSON.stringify(message);
 
   wssRef.clients.forEach((client: WebSocket) => {
-    if (client.readyState === 1) { // WebSocket.OPEN = 1
+    if (client.readyState === 1) {
+      // WebSocket.OPEN = 1
+      client.send(payload);
+    }
+  });
+}
+
+export interface ChatBroadcastEvent {
+  type: 'chat:delta' | 'chat:message' | 'chat:error';
+  sessionId: string;
+  text?: string;
+  message?: unknown;
+  error?: string;
+}
+
+/**
+ * Broadcast a chat message/event to all connected WebSocket clients.
+ */
+export function broadcastChatMessage(sessionId: string, event: ChatBroadcastEvent): void {
+  if (!wssRef) return;
+
+  const payload = JSON.stringify(event);
+
+  wssRef.clients.forEach((client: WebSocket) => {
+    if (client.readyState === 1) {
       client.send(payload);
     }
   });
@@ -63,7 +93,8 @@ export function broadcastTelemetryEvent(event: AnyTelemetryEvent): void {
   const payload = JSON.stringify(message);
 
   wssRef.clients.forEach((client: WebSocket) => {
-    if (client.readyState === 1) { // WebSocket.OPEN = 1
+    if (client.readyState === 1) {
+      // WebSocket.OPEN = 1
       client.send(payload);
     }
   });

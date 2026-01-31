@@ -116,7 +116,7 @@ vi.mock('@/components/board/FilterBar', () => ({
   FilterBar: () => null,
   filterTasks: (tasks: Task[]) => tasks,
   filtersToSearchParams: () => new URLSearchParams(),
-  searchParamsToFilters: () => ({ search: '', project: null, type: null }),
+  searchParamsToFilters: () => ({ search: '', project: null, type: null, agent: null }),
 }));
 
 vi.mock('@/components/board/BulkActionsBar', () => ({

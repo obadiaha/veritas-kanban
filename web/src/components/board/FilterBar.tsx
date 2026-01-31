@@ -12,11 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import type { Task, TaskType } from '@veritas-kanban/shared';
 import { useTaskTypes, getTypeIcon } from '@/hooks/useTaskTypes';
 import { useProjects } from '@/hooks/useProjects';
+import { useConfig } from '@/hooks/useConfig';
 
 export interface FilterState {
   search: string;
   project: string | null;
   type: TaskType | null;
+  agent: string | null;
 }
 
 interface FilterBarProps {
@@ -28,12 +30,16 @@ interface FilterBarProps {
 export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
   const { data: taskTypes = [], isLoading: typesLoading } = useTaskTypes();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const { data: config } = useConfig();
+  const agents = config?.agents || [];
 
   // Count active filters
-  const activeFilterCount = [filters.search, filters.project, filters.type].filter(Boolean).length;
+  const activeFilterCount = [filters.search, filters.project, filters.type, filters.agent].filter(
+    Boolean
+  ).length;
 
   const clearAllFilters = () => {
-    onFiltersChange({ search: '', project: null, type: null });
+    onFiltersChange({ search: '', project: null, type: null, agent: null });
   };
 
   const updateSearch = (value: string) => {
@@ -118,6 +124,28 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
         </SelectContent>
       </Select>
 
+      {/* Agent filter */}
+      <Select
+        value={filters.agent || 'all'}
+        onValueChange={(value) =>
+          onFiltersChange({ ...filters, agent: value === 'all' ? null : value })
+        }
+      >
+        <SelectTrigger className="w-[160px]" aria-label="Filter by agent">
+          <SelectValue placeholder="All Agents" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Agents</SelectItem>
+          <SelectItem value="auto">Auto (routing)</SelectItem>
+          <SelectItem value="unassigned">Unassigned</SelectItem>
+          {agents.map((a) => (
+            <SelectItem key={a.type} value={a.type}>
+              {a.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       {/* Active filter indicator & clear */}
       {activeFilterCount > 0 && (
         <div className="flex items-center gap-2">
@@ -146,6 +174,7 @@ export function filtersToSearchParams(filters: FilterState): URLSearchParams {
   if (filters.search) params.set('q', filters.search);
   if (filters.project) params.set('project', filters.project);
   if (filters.type) params.set('type', filters.type);
+  if (filters.agent) params.set('agent', filters.agent);
   return params;
 }
 
@@ -154,6 +183,7 @@ export function searchParamsToFilters(params: URLSearchParams): FilterState {
     search: params.get('q') || '',
     project: params.get('project') || null,
     type: (params.get('type') as TaskType) || null,
+    agent: params.get('agent') || null,
   };
 }
 
@@ -177,6 +207,17 @@ export function filterTasks(tasks: Task[], filters: FilterState): Task[] {
     // Type filter
     if (filters.type && task.type !== filters.type) {
       return false;
+    }
+
+    // Agent filter
+    if (filters.agent) {
+      if (filters.agent === 'unassigned') {
+        if (task.agent) return false;
+      } else if (filters.agent === 'auto') {
+        if (task.agent !== 'auto') return false;
+      } else {
+        if (task.agent !== filters.agent) return false;
+      }
     }
 
     return true;

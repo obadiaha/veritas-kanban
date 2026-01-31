@@ -20,6 +20,7 @@ const shortcuts: { category: string; items: Shortcut[] }[] = [
     category: 'Actions',
     items: [
       { keys: ['c'], description: 'Create new task' },
+      { keys: ['⌘⇧C'], description: 'Open agent chat' },
       { keys: ['1'], description: 'Move to To Do' },
       { keys: ['2'], description: 'Move to In Progress' },
       { keys: ['3'], description: 'Move to Review' },

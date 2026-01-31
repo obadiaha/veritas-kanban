@@ -4,8 +4,8 @@ import type { AgentType, TaskPriority } from './task.types.js';
 import type { TelemetryConfig } from './telemetry.types.js';
 
 export interface DevServerConfig {
-  command: string;      // e.g., "pnpm dev" or "npm run dev"
-  port?: number;        // Expected port (auto-detected if not specified)
+  command: string; // e.g., "pnpm dev" or "npm run dev"
+  port?: number; // Expected port (auto-detected if not specified)
   readyPattern?: string; // Regex pattern to detect when server is ready
 }
 
@@ -24,10 +24,106 @@ export interface AgentConfig {
   enabled: boolean;
 }
 
+// ============ Agent Routing Types ============
+
+/** Criteria for matching a task to a routing rule */
+export interface RoutingMatchCriteria {
+  type?: string | string[]; // Task type(s) — e.g. "code", "bug", "docs"
+  priority?: TaskPriority | TaskPriority[]; // Task priority(ies)
+  project?: string | string[]; // Project slug(s)
+  /** Min subtask count to consider "complex" */
+  minSubtasks?: number;
+}
+
+/** A single routing rule: match criteria → agent selection */
+export interface RoutingRule {
+  id: string; // Unique rule ID for CRUD
+  name: string; // Human-readable name
+  match: RoutingMatchCriteria; // Conditions to match
+  agent: AgentType; // Primary agent to use
+  model?: string; // Optional model override (e.g. "opus", "sonnet")
+  fallback?: AgentType; // Fallback agent if primary fails
+  enabled: boolean; // Can disable without deleting
+}
+
+/** Top-level routing configuration */
+export interface AgentRoutingConfig {
+  enabled: boolean; // Master toggle for routing engine
+  rules: RoutingRule[]; // Ordered list — first match wins
+  defaultAgent: AgentType; // Fallback when no rules match
+  defaultModel?: string; // Default model for the default agent
+  fallbackOnFailure: boolean; // Auto-retry with fallback on failure
+  maxRetries: number; // Max retries before giving up (0-3)
+}
+
+/** Result from the routing engine */
+export interface RoutingResult {
+  agent: AgentType;
+  model?: string;
+  fallback?: AgentType;
+  rule?: string; // ID of matched rule (undefined = default)
+  reason: string; // Human-readable explanation
+}
+
+/** Default routing config */
+export const DEFAULT_ROUTING_CONFIG: AgentRoutingConfig = {
+  enabled: true,
+  rules: [
+    {
+      id: 'code-high',
+      name: 'High-priority code → Claude Code (Opus)',
+      match: { type: 'code', priority: 'high' },
+      agent: 'claude-code',
+      model: 'opus',
+      fallback: 'amp',
+      enabled: true,
+    },
+    {
+      id: 'code-default',
+      name: 'Code tasks → Claude Code (Sonnet)',
+      match: { type: 'code' },
+      agent: 'claude-code',
+      model: 'sonnet',
+      fallback: 'copilot',
+      enabled: true,
+    },
+    {
+      id: 'bug-high',
+      name: 'High-priority bugs → Claude Code (Opus)',
+      match: { type: 'bug', priority: 'high' },
+      agent: 'claude-code',
+      model: 'opus',
+      fallback: 'amp',
+      enabled: true,
+    },
+    {
+      id: 'docs',
+      name: 'Documentation → Claude Code (Haiku)',
+      match: { type: 'docs' },
+      agent: 'claude-code',
+      model: 'haiku',
+      enabled: true,
+    },
+    {
+      id: 'review',
+      name: 'Code review → Claude Code (Opus)',
+      match: { type: 'review' },
+      agent: 'claude-code',
+      model: 'opus',
+      enabled: true,
+    },
+  ],
+  defaultAgent: 'claude-code',
+  defaultModel: 'sonnet',
+  fallbackOnFailure: true,
+  maxRetries: 1,
+};
+
 export interface AppConfig {
   repos: RepoConfig[];
   agents: AgentConfig[];
   defaultAgent: AgentType;
+  agentRouting?: AgentRoutingConfig;
   telemetry?: TelemetryConfig;
   features?: FeatureSettings;
 }
@@ -52,16 +148,16 @@ export interface TaskBehaviorSettings {
   enableSubtaskAutoComplete: boolean;
   enableDependencies: boolean;
   enableAttachments: boolean;
-  attachmentMaxFileSize: number;    // bytes
+  attachmentMaxFileSize: number; // bytes
   attachmentMaxPerTask: number;
-  attachmentMaxTotalSize: number;   // bytes
+  attachmentMaxTotalSize: number; // bytes
   enableComments: boolean;
   defaultPriority: TaskPriority;
 }
 
 /** Agent & git settings */
 export interface AgentBehaviorSettings {
-  timeoutMinutes: number;           // 5-480
+  timeoutMinutes: number; // 5-480
   autoCommitOnComplete: boolean;
   autoCleanupWorktrees: boolean;
   enablePreview: boolean;
@@ -70,7 +166,7 @@ export interface AgentBehaviorSettings {
 /** Telemetry & activity settings */
 export interface TelemetryFeatureSettings {
   enabled: boolean;
-  retentionDays: number;            // 7-365
+  retentionDays: number; // 7-365
   enableTraces: boolean;
   enableActivityTracking: boolean;
 }
@@ -81,8 +177,8 @@ export interface NotificationSettings {
   onTaskComplete: boolean;
   onAgentFailure: boolean;
   onReviewNeeded: boolean;
-  channel: string;                  // Teams channel ID
-  webhookUrl?: string;              // Optional: Teams webhook URL for immediate delivery
+  channel: string; // Teams channel ID
+  webhookUrl?: string; // Optional: Teams webhook URL for immediate delivery
 }
 
 /** Archive settings */
@@ -94,9 +190,9 @@ export interface ArchiveSettings {
 /** Budget tracking settings */
 export interface BudgetSettings {
   enabled: boolean;
-  monthlyTokenLimit: number;      // Monthly token budget (0 = no limit)
-  monthlyCostLimit: number;       // Monthly cost budget in dollars (0 = no limit)
-  warningThreshold: number;       // Percentage threshold for warning (0-100, default 80)
+  monthlyTokenLimit: number; // Monthly token budget (0 = no limit)
+  monthlyCostLimit: number; // Monthly cost budget in dollars (0 = no limit)
+  warningThreshold: number; // Percentage threshold for warning (0-100, default 80)
 }
 
 /** All feature settings combined */
@@ -127,9 +223,9 @@ export const DEFAULT_FEATURE_SETTINGS: FeatureSettings = {
     enableSubtaskAutoComplete: true,
     enableDependencies: true,
     enableAttachments: true,
-    attachmentMaxFileSize: 10 * 1024 * 1024,    // 10MB
+    attachmentMaxFileSize: 10 * 1024 * 1024, // 10MB
     attachmentMaxPerTask: 20,
-    attachmentMaxTotalSize: 50 * 1024 * 1024,   // 50MB
+    attachmentMaxTotalSize: 50 * 1024 * 1024, // 50MB
     enableComments: true,
     defaultPriority: 'medium',
   },
@@ -158,8 +254,8 @@ export const DEFAULT_FEATURE_SETTINGS: FeatureSettings = {
   },
   budget: {
     enabled: true,
-    monthlyTokenLimit: 0,         // 0 = no limit
-    monthlyCostLimit: 0,          // 0 = no limit (dollars)
-    warningThreshold: 80,         // Warn at 80% of budget
+    monthlyTokenLimit: 0, // 0 = no limit
+    monthlyCostLimit: 0, // 0 = no limit (dollars)
+    warningThreshold: 80, // Warn at 80% of budget
   },
 };
