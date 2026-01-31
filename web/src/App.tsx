@@ -12,6 +12,7 @@ import { AuthGuard } from './components/auth';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
 import { SkipToContent } from './components/shared/SkipToContent';
 import { LiveAnnouncerProvider } from './components/shared/LiveAnnouncer';
+import { FloatingChat } from './components/chat/FloatingChat';
 
 // Main app content (only rendered when authenticated)
 function AppContent() {
@@ -38,6 +39,7 @@ function AppContent() {
                 </main>
                 <Toaster />
                 <KeyboardShortcutsDialog />
+                <FloatingChat />
               </div>
             </TaskConfigProvider>
           </BulkActionsProvider>
