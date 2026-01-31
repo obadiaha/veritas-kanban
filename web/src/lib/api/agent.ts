@@ -1,7 +1,7 @@
 /**
  * Agent, worktree, and preview API endpoints.
  */
-import type { AgentType } from '@veritas-kanban/shared';
+import type { AgentType, AgentRoutingConfig, RoutingResult } from '@veritas-kanban/shared';
 import { API_BASE, handleResponse } from './helpers';
 
 export const worktreeApi = {
@@ -99,6 +99,52 @@ export const agentApi = {
       throw new Error('Failed to fetch log');
     }
     return response.text();
+  },
+};
+
+export const routingApi = {
+  /** Get current routing configuration */
+  getConfig: async (): Promise<AgentRoutingConfig> => {
+    const response = await fetch(`${API_BASE}/agents/routing`);
+    return handleResponse<AgentRoutingConfig>(response);
+  },
+
+  /** Update routing configuration */
+  updateConfig: async (config: AgentRoutingConfig): Promise<AgentRoutingConfig> => {
+    const response = await fetch(`${API_BASE}/agents/routing`, {
+      credentials: 'include',
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    return handleResponse<AgentRoutingConfig>(response);
+  },
+
+  /** Resolve the best agent for a task */
+  resolveForTask: async (taskId: string): Promise<RoutingResult> => {
+    const response = await fetch(`${API_BASE}/agents/route`, {
+      credentials: 'include',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ taskId }),
+    });
+    return handleResponse<RoutingResult>(response);
+  },
+
+  /** Resolve the best agent for metadata (ad-hoc, e.g. from create dialog) */
+  resolveForMetadata: async (metadata: {
+    type?: string;
+    priority?: string;
+    project?: string;
+    subtaskCount?: number;
+  }): Promise<RoutingResult> => {
+    const response = await fetch(`${API_BASE}/agents/route`, {
+      credentials: 'include',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(metadata),
+    });
+    return handleResponse<RoutingResult>(response);
   },
 };
 

@@ -16,6 +16,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { ConfigService } from './config-service.js';
 import { TaskService } from './task-service.js';
+import { getAgentRoutingService } from './agent-routing-service.js';
 import { getBreaker } from './circuit-registry.js';
 import type { Task, AgentType, TaskAttempt, AttemptStatus } from '@veritas-kanban/shared';
 import { createLogger } from '../lib/logger.js';
@@ -95,9 +96,22 @@ export class ClawdbotAgentService {
       throw new Error('An agent is already running for this task');
     }
 
-    // Get agent config
+    // Get agent config — use routing engine when agent is "auto" or not specified
     const config = await this.configService.getConfig();
-    const agent = agentType || config.defaultAgent;
+    let agent: AgentType;
+    let routingReason: string | undefined;
+
+    if (!agentType || agentType === 'auto') {
+      const routing = getAgentRoutingService();
+      const result = await routing.resolveAgent(task);
+      agent = result.agent;
+      routingReason = result.reason;
+      log.info(
+        `[ClawdbotAgent] Routing resolved agent for task ${taskId}: ${agent} (${routingReason})`
+      );
+    } else {
+      agent = agentType;
+    }
 
     // Create attempt
     const attemptId = `attempt_${nanoid(8)}`;

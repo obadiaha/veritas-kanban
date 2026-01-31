@@ -28,6 +28,7 @@ import attachmentRoutes from '../attachments.js';
 // Feature routes
 import { configRoutes } from '../config.js';
 import { agentRoutes } from '../agents.js';
+import { agentRoutingRoutes } from '../agent-routing.js';
 import { diffRoutes } from '../diff.js';
 import { automationRoutes } from '../automation.js';
 import { summaryRoutes } from '../summary.js';
@@ -85,6 +86,7 @@ v1Router.use(
 
 // ── Feature routes ───────────────────────────────────────────
 v1Router.use('/config', configRoutes);
+v1Router.use('/agents', agentRoutingRoutes); // Must be before agentRoutes (/:taskId would match "route"/"routing")
 v1Router.use('/agents', agentRoutes);
 v1Router.use('/diff', diffRoutes);
 v1Router.use('/automation', automationRoutes);
