@@ -52,7 +52,18 @@ router.post(
     // Get or create session
     if (input.sessionId) {
       session = await chatService.getSession(input.sessionId);
-      if (!session) {
+      if (!session && input.taskId) {
+        // Session was deleted — recreate for task-scoped chats
+        log.info(
+          { sessionId: input.sessionId, taskId: input.taskId },
+          'Recreating deleted task chat session'
+        );
+        session = await chatService.createSession({
+          taskId: input.taskId,
+          agent: input.agent || 'veritas',
+          mode: input.mode || 'ask',
+        });
+      } else if (!session) {
         throw new NotFoundError(`Session ${input.sessionId} not found`);
       }
       sessionId = input.sessionId;

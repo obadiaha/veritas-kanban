@@ -53,7 +53,10 @@ export function useDeleteChatSession() {
 
   return useMutation({
     mutationFn: (sessionId: string) => chatApi.deleteSession(sessionId),
-    onSuccess: () => {
+    onSuccess: (_data, sessionId) => {
+      // Remove the specific session from cache entirely — invalidate alone
+      // keeps stale data when the refetch 404s (file deleted)
+      queryClient.removeQueries({ queryKey: ['chat', 'sessions', sessionId] });
       queryClient.invalidateQueries({ queryKey: ['chat', 'sessions'] });
     },
   });

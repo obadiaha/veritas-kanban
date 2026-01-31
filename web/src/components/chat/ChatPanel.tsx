@@ -23,6 +23,7 @@ import {
   Bot,
   User,
   Trash2,
+  Download,
 } from 'lucide-react';
 import {
   useChatSession,
@@ -53,6 +54,7 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   // Auto-scroll to bottom when new messages arrive
@@ -93,6 +95,8 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
           setCurrentSessionId(response.sessionId);
           setMessage('');
           setShouldAutoScroll(true);
+          // Re-focus the input so user can keep typing
+          requestAnimationFrame(() => inputRef.current?.focus());
         },
       }
     );
@@ -120,57 +124,83 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
         className="w-[500px] sm:max-w-[500px] overflow-hidden flex flex-col p-0"
         side="right"
       >
-        {/* Header */}
+        {/* Header action buttons — positioned next to Sheet's built-in X */}
+        {currentSessionId && session?.messages && session.messages.length > 0 && (
+          <button
+            onClick={() => {
+              if (!session?.messages?.length) return;
+              const title = taskId && task ? task.title : 'Board Chat';
+              const date = new Date().toLocaleString();
+              const lines = [`# Chat Export — ${title}`, `*Exported: ${date}*`, ''];
+              for (const msg of session.messages) {
+                const role =
+                  msg.role === 'user'
+                    ? '👤 User'
+                    : msg.role === 'assistant'
+                      ? '🤖 Assistant'
+                      : '⚙️ System';
+                const time = new Date(msg.timestamp).toLocaleString();
+                lines.push('---', '', `### ${role}`, `*${time}*`, '', msg.content, '');
+              }
+              const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `chat-${taskId || 'board'}-${new Date().toISOString().slice(0, 10)}.md`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="absolute right-20 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          >
+            <Download className="h-4 w-4" />
+            <span className="sr-only">Export chat</span>
+          </button>
+        )}
+        {currentSessionId && session?.messages && session.messages.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="absolute right-12 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Clear chat</span>
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear chat history?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all messages in this chat. This action cannot be
+                  undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    if (currentSessionId) {
+                      deleteChatSession(currentSessionId, {
+                        onSuccess: () => {
+                          setCurrentSessionId(undefined);
+                          if (taskId) {
+                            setTimeout(() => setCurrentSessionId(`task_${taskId}`), 100);
+                          }
+                        },
+                      });
+                    }
+                  }}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Clear History
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
         <SheetHeader className="border-b border-border px-4 py-3 pr-10 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-2">
-              <Bot className="h-5 w-5" />
-              {taskId ? 'Task Chat' : 'Board Chat'}
-            </SheetTitle>
-            {currentSessionId && session?.messages && session.messages.length > 0 && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Clear chat history?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete all messages in this chat. This action cannot be
-                      undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        if (currentSessionId) {
-                          deleteChatSession(currentSessionId, {
-                            onSuccess: () => {
-                              setCurrentSessionId(undefined);
-                              // Re-set for task-scoped chats (creates fresh on next send)
-                              if (taskId) {
-                                setTimeout(() => setCurrentSessionId(`task_${taskId}`), 100);
-                              }
-                            },
-                          });
-                        }
-                      }}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Clear History
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
+          <SheetTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            {taskId ? 'Task Chat' : 'Board Chat'}
+          </SheetTitle>
           {taskId && task && (
             <div className="text-xs text-muted-foreground flex items-center gap-2 pt-2 border-t border-border/50 mt-2">
               <MessageSquare className="h-3 w-3" />
@@ -196,7 +226,7 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
                 isStreaming
               />
             )}
-            {session?.messages.length === 0 && !streamingMessage && (
+            {(!session || session.messages.length === 0) && !streamingMessage && (
               <div className="text-center text-muted-foreground py-8">
                 <Bot className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">
@@ -212,12 +242,14 @@ export function ChatPanel({ open, onOpenChange, taskId }: ChatPanelProps) {
         <div className="border-t border-border p-4 flex-shrink-0 space-y-3">
           <div className="flex items-center gap-2">
             <Input
+              ref={inputRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Type a message..."
               disabled={isPending}
               className="flex-1"
+              autoFocus
             />
             <Button onClick={handleSend} disabled={!message.trim() || isPending} size="icon">
               {isPending ? (

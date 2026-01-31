@@ -296,13 +296,19 @@ export class ChatService {
     const session = await this.getSession(sessionId);
 
     if (!session) {
-      throw new Error(`Session ${sessionId} not found`);
+      // Already gone — treat as success
+      log.info({ sessionId }, 'Chat session already deleted or never existed');
+      return;
     }
 
     const filePath = this.getSessionPath(sessionId, session.taskId);
 
     await withFileLock(filePath, async () => {
-      await fs.unlink(filePath);
+      try {
+        await fs.unlink(filePath);
+      } catch (err: any) {
+        if (err.code !== 'ENOENT') throw err;
+      }
     });
 
     log.info({ sessionId }, 'Deleted chat session');
