@@ -15,6 +15,7 @@ import type {
 import { getTelemetryService, type TelemetryService } from './telemetry-service.js';
 import { withFileLock } from './file-lock.js';
 import { createLogger } from '../lib/logger.js';
+import { ConflictError, NotFoundError } from '../middleware/error-handler.js';
 
 const log = createLogger('task-cache');
 
@@ -701,12 +702,12 @@ export class TaskService {
   async startTimer(taskId: string): Promise<{ task: Task; stoppedTaskId?: string }> {
     const task = await this.getTask(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     // Check if timer is already running on THIS task
     if (task.timeTracking?.isRunning) {
-      throw new Error('Timer is already running for this task');
+      throw new ConflictError('Timer is already running for this task');
     }
 
     // Global exclusivity: stop any other running timer first
@@ -746,11 +747,11 @@ export class TaskService {
   async stopTimer(taskId: string): Promise<Task> {
     const task = await this.getTask(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     if (!task.timeTracking?.isRunning || !task.timeTracking.activeEntryId) {
-      throw new Error('No timer is running for this task');
+      throw new ConflictError('No timer is running for this task');
     }
 
     const now = new Date();
@@ -785,7 +786,7 @@ export class TaskService {
   async addTimeEntry(taskId: string, duration: number, description?: string): Promise<Task> {
     const task = await this.getTask(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     const entryId = `time_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -819,7 +820,7 @@ export class TaskService {
   async deleteTimeEntry(taskId: string, entryId: string): Promise<Task> {
     const task = await this.getTask(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     const entries = (task.timeTracking?.entries || []).filter((e) => e.id !== entryId);
