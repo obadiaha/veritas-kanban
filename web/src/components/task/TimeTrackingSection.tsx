@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ import {
   formatDuration,
   parseDuration,
 } from '@/hooks/useTimeTracking';
+import { useTasks } from '@/hooks/useTasks';
 import { Play, Square, Plus, Trash2, Clock, Loader2, Timer } from 'lucide-react';
 import type { Task, TimeEntry } from '@veritas-kanban/shared';
 import { cn } from '@/lib/utils';
@@ -57,8 +58,6 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [durationInput, setDurationInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
-  // Local optimistic state — toggles immediately on click, syncs with server data
-  const [optimisticRunning, setOptimisticRunning] = useState<boolean | null>(null);
 
   const queryClient = useQueryClient();
   const startTimer = useStartTimer();
@@ -66,35 +65,46 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
   const addTimeEntry = useAddTimeEntry();
   const deleteTimeEntry = useDeleteTimeEntry();
 
-  const serverRunning = task.timeTracking?.isRunning || false;
-  // Use optimistic state if set, otherwise fall back to server state
-  const isRunning = optimisticRunning !== null ? optimisticRunning : serverRunning;
-  const totalSeconds = task.timeTracking?.totalSeconds || 0;
-  const entries = task.timeTracking?.entries || [];
-  const activeEntry = entries.find((e) => e.id === task.timeTracking?.activeEntryId);
+  // Ref to prevent double-clicks — blocks new clicks until the current
+  // mutation fully resolves (success or error). React state updates can lag
+  // behind DOM re-renders, so disabled={isPending} alone isn't enough.
+  const mutatingRef = useRef(false);
 
-  // Sync optimistic state back when server catches up
-  useEffect(() => {
-    if (optimisticRunning !== null && serverRunning === optimisticRunning) {
-      setOptimisticRunning(null);
-    }
-  }, [serverRunning, optimisticRunning]);
+  // Subscribe directly to the tasks query cache so timer state updates
+  // bypass the useDebouncedSave → localTask prop pipeline (which can lag
+  // behind due to effect timing). patchTaskInList updates ['tasks'] cache
+  // immediately on mutation success, so this gives us real-time timer state.
+  const { data: allTasks } = useTasks();
+  const timerTask = allTasks?.find((t) => t.id === task.id) || task;
+
+  const isRunning = timerTask.timeTracking?.isRunning || false;
+  const totalSeconds = timerTask.timeTracking?.totalSeconds || 0;
+  const entries = timerTask.timeTracking?.entries || [];
+  const activeEntry = entries.find((e) => e.id === timerTask.timeTracking?.activeEntryId);
+
+  // Global exclusivity: find if ANY other task has a running timer
+  const otherRunningTask = allTasks?.find((t) => t.id !== task.id && t.timeTracking?.isRunning);
 
   const handleStartStop = useCallback(async () => {
-    // Toggle immediately for responsive UI
-    const newState = !isRunning;
-    setOptimisticRunning(newState);
+    // Prevent double-clicks via ref (synchronous guard)
+    if (mutatingRef.current) return;
+    mutatingRef.current = true;
+
     try {
-      if (!newState) {
+      if (isRunning) {
         await stopTimer.mutateAsync(task.id);
       } else {
         await startTimer.mutateAsync(task.id);
       }
-    } catch {
-      // API rejected — clear optimistic state and force-refresh from server
-      // so the UI reflects the real timer state (not stale cache)
-      setOptimisticRunning(null);
+    } catch (err) {
+      // Server state differs from what we expected — force-refresh from
+      // server so the UI shows the real timer state.
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // Log for debugging but don't show error to user — the invalidation
+      // will sync the UI to the correct state automatically.
+      console.warn('[TimeTracking] mutation failed, syncing from server:', err);
+    } finally {
+      mutatingRef.current = false;
     }
   }, [isRunning, task.id, startTimer, stopTimer, queryClient]);
 
@@ -127,6 +137,8 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
     });
   };
 
+  const isBusy = startTimer.isPending || stopTimer.isPending;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -143,26 +155,34 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
         {/* Timer controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button
-              variant={isRunning ? 'destructive' : 'default'}
-              size="sm"
-              onClick={handleStartStop}
-              disabled={startTimer.isPending || stopTimer.isPending}
-            >
-              {startTimer.isPending || stopTimer.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isRunning ? (
-                <>
-                  <Square className="h-4 w-4 mr-2" />
-                  Stop
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4 mr-2" />
-                  Start
-                </>
-              )}
-            </Button>
+            {/* Only show Start/Stop when this task's timer is running OR no other timer is active */}
+            {isRunning ? (
+              <Button variant="destructive" size="sm" onClick={handleStartStop} disabled={isBusy}>
+                {isBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Square className="h-4 w-4 mr-2" />
+                    Stop
+                  </>
+                )}
+              </Button>
+            ) : !otherRunningTask ? (
+              <Button variant="default" size="sm" onClick={handleStartStop} disabled={isBusy}>
+                {isBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Start
+                  </>
+                )}
+              </Button>
+            ) : (
+              <span className="text-xs text-muted-foreground italic">
+                Timer active on another task
+              </span>
+            )}
 
             {isRunning && activeEntry && (
               <div className="flex items-center gap-2">
@@ -243,14 +263,14 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
                       key={entry.id}
                       className={cn(
                         'flex items-center justify-between p-2 rounded text-sm',
-                        entry.id === task.timeTracking?.activeEntryId
+                        entry.id === timerTask.timeTracking?.activeEntryId
                           ? 'bg-green-500/10 border border-green-500/20'
                           : 'bg-muted/50'
                       )}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          {entry.id === task.timeTracking?.activeEntryId ? (
+                          {entry.id === timerTask.timeTracking?.activeEntryId ? (
                             <Timer className="h-3 w-3 text-green-500 animate-pulse flex-shrink-0" />
                           ) : (
                             <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
@@ -272,7 +292,7 @@ export function TimeTrackingSection({ task }: TimeTrackingSectionProps) {
                             : formatEntryTime(entry)}
                         </div>
                       </div>
-                      {entry.id !== task.timeTracking?.activeEntryId && (
+                      {entry.id !== timerTask.timeTracking?.activeEntryId && (
                         <Button
                           variant="ghost"
                           size="sm"

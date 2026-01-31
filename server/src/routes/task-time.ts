@@ -1,6 +1,7 @@
 import { Router, type Router as RouterType } from 'express';
 import { z } from 'zod';
 import { getTaskService } from '../services/task-service.js';
+import { broadcastTaskChange } from '../services/broadcast-service.js';
 import { asyncHandler } from '../middleware/async-handler.js';
 import { ValidationError } from '../middleware/error-handler.js';
 
@@ -26,7 +27,15 @@ router.get(
 router.post(
   '/:id/time/start',
   asyncHandler(async (req, res) => {
-    const task = await taskService.startTimer(req.params.id as string);
+    const { task, stoppedTaskId } = await taskService.startTimer(req.params.id as string);
+
+    // Broadcast WS event for the auto-stopped task (if any) so other clients refresh
+    if (stoppedTaskId) {
+      broadcastTaskChange('updated', stoppedTaskId);
+    }
+    // Broadcast WS event for the started task
+    broadcastTaskChange('updated', task.id);
+
     res.json(task);
   })
 );
@@ -36,6 +45,7 @@ router.post(
   '/:id/time/stop',
   asyncHandler(async (req, res) => {
     const task = await taskService.stopTimer(req.params.id as string);
+    broadcastTaskChange('updated', task.id);
     res.json(task);
   })
 );
@@ -55,6 +65,7 @@ router.post(
       throw error;
     }
     const task = await taskService.addTimeEntry(req.params.id as string, duration, description);
+    broadcastTaskChange('updated', task.id);
     res.json(task);
   })
 );
@@ -67,6 +78,7 @@ router.delete(
       req.params.id as string,
       req.params.entryId as string
     );
+    broadcastTaskChange('updated', task.id);
     res.json(task);
   })
 );

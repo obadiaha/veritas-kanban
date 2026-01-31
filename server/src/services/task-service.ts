@@ -421,54 +421,68 @@ export class TaskService {
   }
 
   async updateTask(id: string, input: UpdateTaskInput): Promise<Task | null> {
+    // Initial read to check existence and compute the lock filepath.
+    // NOTE: this data may be stale by the time we acquire the lock —
+    // the actual merge happens inside the lock with a fresh cache read.
     const task = await this.getTask(id);
     if (!task) return null;
-
-    // Track if status changed for telemetry
-    const previousStatus = task.status;
-    const statusChanged = input.status !== undefined && input.status !== previousStatus;
 
     // Handle git field separately to merge properly
     const { git: gitUpdate, blockedReason: blockedReasonUpdate, ...restInput } = input;
 
-    const updatedTask: Task = {
-      ...task,
-      ...restInput,
-      git: gitUpdate ? ({ ...task.git, ...gitUpdate } as Task['git']) : task.git,
-      // Handle blockedReason: null means clear, undefined means keep existing
-      blockedReason:
-        blockedReasonUpdate === null ? undefined : (blockedReasonUpdate ?? task.blockedReason),
-      updated: new Date().toISOString(),
-    };
-
-    // Remove old file if title changed (filename changes)
+    // Compute filenames for locking. We use the tentative updated task
+    // to determine the new filename (title may have changed).
     const oldFilename = this.taskToFilename(task);
-    const newFilename = this.taskToFilename(updatedTask);
+    const tentativeTask: Task = { ...task, ...restInput };
+    const newFilename = this.taskToFilename(tentativeTask);
     const filepath = path.join(this.tasksDir, newFilename);
-    const content = this.taskToMarkdown(updatedTask);
+
+    let updatedTask!: Task;
 
     await withFileLock(filepath, async () => {
+      // Re-read from cache inside the lock to get the latest state.
+      // This prevents concurrent writes (e.g., debounced field save vs.
+      // timer start) from overwriting each other's changes.
+      const freshTask = this.cacheGet(id) ?? task;
+
+      const previousStatus = freshTask.status;
+      const statusChanged = input.status !== undefined && input.status !== previousStatus;
+
+      updatedTask = {
+        ...freshTask,
+        ...restInput,
+        git: gitUpdate ? ({ ...freshTask.git, ...gitUpdate } as Task['git']) : freshTask.git,
+        // Handle blockedReason: null means clear, undefined means keep existing
+        blockedReason:
+          blockedReasonUpdate === null
+            ? undefined
+            : (blockedReasonUpdate ?? freshTask.blockedReason),
+        updated: new Date().toISOString(),
+      };
+
+      const content = this.taskToMarkdown(updatedTask);
       this.markWrite();
+
       if (oldFilename !== newFilename) {
         // Intentionally silent: old file may already be gone after rename
         await fs.unlink(path.join(this.tasksDir, oldFilename)).catch(() => {});
       }
       await fs.writeFile(filepath, content, 'utf-8');
+
+      // Write-through: update cache immediately (inside lock for consistency)
+      this.cache.set(updatedTask.id, updatedTask);
+
+      // Emit telemetry event if status changed
+      if (statusChanged) {
+        await this.telemetry.emit<TaskTelemetryEvent>({
+          type: 'task.status_changed',
+          taskId: updatedTask.id,
+          project: updatedTask.project,
+          status: updatedTask.status,
+          previousStatus,
+        });
+      }
     });
-
-    // Write-through: update cache immediately
-    this.cache.set(updatedTask.id, updatedTask);
-
-    // Emit telemetry event if status changed
-    if (statusChanged) {
-      await this.telemetry.emit<TaskTelemetryEvent>({
-        type: 'task.status_changed',
-        taskId: updatedTask.id,
-        project: updatedTask.project,
-        status: updatedTask.status,
-        previousStatus,
-      });
-    }
 
     return updatedTask;
   }
@@ -666,17 +680,45 @@ export class TaskService {
   // ============ Time Tracking Methods ============
 
   /**
-   * Start a timer for a task
+   * Find the task that currently has a running timer (if any).
    */
-  async startTimer(taskId: string): Promise<Task> {
+  async getRunningTimerTask(): Promise<Task | null> {
+    await this.initCache();
+    for (const task of this.cache.values()) {
+      if (task.timeTracking?.isRunning) {
+        return task;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Start a timer for a task.
+   * Enforces global exclusivity: only one timer may run at a time.
+   * If another task has a running timer, it is auto-stopped first.
+   * Returns { task, stoppedTaskId? } so the caller can broadcast both.
+   */
+  async startTimer(taskId: string): Promise<{ task: Task; stoppedTaskId?: string }> {
     const task = await this.getTask(taskId);
     if (!task) {
       throw new Error('Task not found');
     }
 
-    // Check if timer is already running
+    // Check if timer is already running on THIS task
     if (task.timeTracking?.isRunning) {
       throw new Error('Timer is already running for this task');
+    }
+
+    // Global exclusivity: stop any other running timer first
+    let stoppedTaskId: string | undefined;
+    const runningTask = await this.getRunningTimerTask();
+    if (runningTask && runningTask.id !== taskId) {
+      await this.stopTimer(runningTask.id);
+      stoppedTaskId = runningTask.id;
+      log.info(
+        { stoppedTaskId, startedTaskId: taskId },
+        'Auto-stopped timer for global exclusivity'
+      );
     }
 
     const entryId = `time_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -694,7 +736,8 @@ export class TaskService {
       activeEntryId: entryId,
     };
 
-    return this.updateTask(taskId, { timeTracking }) as Promise<Task>;
+    const updated = (await this.updateTask(taskId, { timeTracking })) as Task;
+    return { task: updated, stoppedTaskId };
   }
 
   /**
