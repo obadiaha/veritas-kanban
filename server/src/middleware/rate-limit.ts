@@ -94,12 +94,13 @@ export const apiRateLimit = rateLimit({
 /**
  * Very strict rate limiter for auth operations: 10 req / 15 min per IP.
  * Applied to: login, token refresh, password setup endpoints.
- * Localhost is NOT exempt — protects against runaway scripts.
+ * Localhost requests are exempt — this is a local dev tool.
  */
 export const authRateLimit = rateLimit({
   limit: 10,
   windowMs: 15 * 60_000, // 15 minutes
   message: 'Too many authentication attempts. Please try again later.',
+  skip: isLocalhost,
 });
 
 /**

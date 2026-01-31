@@ -71,16 +71,9 @@ Update `CORS_ORIGINS` in `.env` if you change the web port.
 
 The auth rate limiter defaults to **10–15 requests per 15 minutes**. Normal UI usage (page loads, tab refreshes, WebSocket reconnections) can exhaust this quickly.
 
-**Fix 1: Ensure localhost is exempt from auth rate limiting**
+**Fix 1: Update to the latest version**
 
-Check `server/src/middleware/rate-limit.ts` — the `authRateLimit` should have a `skip` function that exempts localhost:
-
-```typescript
-skip: (req) => {
-  const ip = req.ip || req.connection.remoteAddress || '';
-  return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
-};
-```
+This was fixed — `authRateLimit` now exempts localhost requests automatically (same as `apiRateLimit`). Pull the latest and restart.
 
 > **Note:** If you're behind an SSH tunnel or reverse proxy, `req.ip` may not resolve to `127.0.0.1`. See [SSH Tunnel / Proxy Issues](#ssh-tunnel--proxy-requests-not-recognized-as-localhost) below.
 
