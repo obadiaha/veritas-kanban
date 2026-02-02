@@ -55,7 +55,11 @@ export async function computeRunMetrics(
         agentAcc.errors++;
       } else if (event.type === 'run.completed') {
         const runEvent = event as RunTelemetryEvent;
-        if (runEvent.success) {
+        // Support both formats: `success: true` (canonical) and `status: "success"` (legacy)
+        const isSuccess =
+          runEvent.success === true ||
+          (runEvent as unknown as Record<string, unknown>).status === 'success';
+        if (isSuccess) {
           acc.successes++;
           agentAcc.successes++;
         } else {
@@ -221,7 +225,10 @@ export async function computeFailedRuns(
           if (project && event.project !== project) continue;
 
           // Only include failed runs
-          if (event.type === 'run.error' || (event.type === 'run.completed' && !event.success)) {
+          const isSuccess =
+            event.success === true ||
+            (event as unknown as Record<string, unknown>).status === 'success';
+          if (event.type === 'run.error' || (event.type === 'run.completed' && !isSuccess)) {
             failedRuns.push({
               timestamp: event.timestamp,
               taskId: event.taskId,

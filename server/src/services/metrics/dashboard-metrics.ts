@@ -109,7 +109,10 @@ export async function computeAllMetrics(
               runAcc.errors++;
               agentAcc.errors++;
             } else {
-              if (runEvent.success) {
+              const isSuccess =
+                runEvent.success === true ||
+                (runEvent as unknown as Record<string, unknown>).status === 'success';
+              if (isSuccess) {
                 runAcc.successes++;
                 agentAcc.successes++;
               } else {
@@ -302,7 +305,10 @@ export async function computeAllMetrics(
           if (event.type === 'run.completed') {
             const runEvent = event as RunTelemetryEvent;
             prevRuns++;
-            if (runEvent.success) prevSuccesses++;
+            const wasSuccess =
+              runEvent.success === true ||
+              (runEvent as unknown as Record<string, unknown>).status === 'success';
+            if (wasSuccess) prevSuccesses++;
             if (runEvent.durationMs && runEvent.durationMs > 0) {
               prevDurationSum += runEvent.durationMs;
               prevDurationCount++;
@@ -441,7 +447,10 @@ export async function computeTrends(
           if (event.type === 'run.completed') {
             const runEvent = event as RunTelemetryEvent;
             dayAcc.runs++;
-            if (runEvent.success) {
+            const isSuccess =
+              runEvent.success === true ||
+              (runEvent as unknown as Record<string, unknown>).status === 'success';
+            if (isSuccess) {
               dayAcc.successes++;
             } else {
               dayAcc.failures++;
@@ -570,7 +579,10 @@ export async function computeAgentComparison(
               acc.errors++;
             } else {
               acc.runs++;
-              if (runEvent.success) {
+              const isSuccess =
+                runEvent.success === true ||
+                (runEvent as unknown as Record<string, unknown>).status === 'success';
+              if (isSuccess) {
                 acc.successes++;
               } else {
                 acc.failures++;
