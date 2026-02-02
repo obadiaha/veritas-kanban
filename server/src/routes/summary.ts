@@ -2,6 +2,7 @@ import { Router, type Router as RouterType } from 'express';
 import { getTaskService } from '../services/task-service.js';
 import { getSummaryService } from '../services/summary-service.js';
 import { activityService } from '../services/activity-service.js';
+import { getMetricsService } from '../services/metrics/index.js';
 import { asyncHandler } from '../middleware/async-handler.js';
 
 const router: RouterType = Router();
@@ -66,6 +67,42 @@ router.get(
     const activities = await activityService.getActivities(500);
 
     const standupData = summaryService.getStandupData(tasks, activities, targetDate);
+
+    // Enhance with cost metrics (24h period for the target date)
+    const metricsService = getMetricsService();
+    const costMetrics = await metricsService.getCostMetrics('24h');
+    const modelBreakdown = await metricsService.getModelCostBreakdown('24h');
+    const accuracyMetrics = await metricsService.getAccuracyMetrics();
+
+    // Find most/least expensive completed tasks
+    const completedTaskIds = standupData.completed.map((t) => t.id);
+    let mostExpensive: { id: string; title: string; cost: number } | undefined;
+    let leastExpensive: { id: string; title: string; cost: number } | undefined;
+
+    for (const task of tasks) {
+      if (completedTaskIds.includes(task.id) && task.costAccuracy) {
+        const cost = task.costAccuracy.actualCost;
+        if (!mostExpensive || cost > mostExpensive.cost) {
+          mostExpensive = { id: task.id, title: task.title, cost };
+        }
+        if (!leastExpensive || cost < leastExpensive.cost) {
+          leastExpensive = { id: task.id, title: task.title, cost };
+        }
+      }
+    }
+
+    // Add cost metrics to stats
+    standupData.stats.totalTokens = costMetrics.totalTokens;
+    standupData.stats.totalCost = costMetrics.totalCost;
+    standupData.stats.modelBreakdown = modelBreakdown.slice(0, 5).map((m) => ({
+      model: m.model,
+      cost: m.totalCost,
+      tokens: m.totalTokens,
+    }));
+    standupData.stats.mostExpensiveTask = mostExpensive;
+    standupData.stats.leastExpensiveTask = leastExpensive;
+    standupData.stats.predictionAccuracy =
+      accuracyMetrics.totalPredictions > 0 ? accuracyMetrics.averageAccuracy : undefined;
 
     switch (format) {
       case 'markdown':

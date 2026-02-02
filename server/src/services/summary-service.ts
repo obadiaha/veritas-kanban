@@ -568,6 +568,12 @@ export interface StandupStats {
   totalTimeTracked: string;
   agentsActive: string[];
   commentsAdded: number;
+  totalTokens?: number;
+  totalCost?: number;
+  modelBreakdown?: Array<{ model: string; cost: number; tokens: number }>;
+  mostExpensiveTask?: { id: string; title: string; cost: number };
+  leastExpensiveTask?: { id: string; title: string; cost: number };
+  predictionAccuracy?: number;
 }
 
 export interface StandupData {
