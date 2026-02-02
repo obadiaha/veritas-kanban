@@ -63,9 +63,9 @@ export function DashboardFilterBar({
   const isCustomActive = period === 'custom';
 
   return (
-    <div className="space-y-3 border-b pb-4">
-      {/* Preset Pills Row */}
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="flex items-center gap-3 border-b pb-4 w-full">
+      {/* Left: Preset Pills */}
+      <div className="flex items-center gap-1.5 shrink-0">
         {PERIOD_PRESETS.map((preset) => (
           <Button
             key={preset.value}
@@ -82,14 +82,14 @@ export function DashboardFilterBar({
         ))}
       </div>
 
-      {/* Controls Row */}
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Right: Project + Custom Range + Export */}
+      <div className="flex items-center gap-3 ml-auto shrink-0">
         {/* Project Selector */}
         <Select
           value={project || 'all'}
           onValueChange={(v) => onProjectChange(v === 'all' ? undefined : v)}
         >
-          <SelectTrigger className="w-[180px] h-8 text-xs">
+          <SelectTrigger className="w-[160px] h-8 text-xs">
             <SelectValue placeholder="All Projects" />
           </SelectTrigger>
           <SelectContent>
@@ -104,7 +104,7 @@ export function DashboardFilterBar({
 
         {/* Custom Date Range */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Custom:</span>
+          <span className="text-xs text-muted-foreground whitespace-nowrap">Custom:</span>
           <input
             type="date"
             value={customFrom}
@@ -140,12 +140,10 @@ export function DashboardFilterBar({
         </div>
 
         {/* Export Button */}
-        <div className="ml-auto">
-          <Button variant="outline" size="sm" className="h-8 px-3 text-xs" onClick={onExportClick}>
-            <Download className="h-3 w-3 mr-1.5" />
-            Export
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" className="h-8 px-3 text-xs" onClick={onExportClick}>
+          <Download className="h-3 w-3 mr-1.5" />
+          Export
+        </Button>
       </div>
     </div>
   );
