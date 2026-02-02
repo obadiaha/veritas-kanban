@@ -14,8 +14,11 @@ interface TokensDrillDownProps {
 function getPeriodLabel(period: MetricsPeriod): string {
   const labels: Record<MetricsPeriod, string> = {
     today: 'today',
+    '24h': 'last 24 hours',
+    '3d': 'last 3 days',
     wtd: 'this week',
     mtd: 'this month',
+    ytd: 'this year',
     '7d': 'last 7 days',
     '30d': 'last 30 days',
     '3m': 'last 3 months',

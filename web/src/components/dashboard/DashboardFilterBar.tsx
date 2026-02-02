@@ -25,14 +25,13 @@ type PresetPeriod = Exclude<MetricsPeriod, 'custom'>;
 
 const PERIOD_PRESETS: { value: PresetPeriod; label: string }[] = [
   { value: 'today', label: 'Today' },
+  { value: '24h', label: '1 Day' },
+  { value: '3d', label: '3 Days' },
+  { value: '7d', label: '1 Week' },
+  { value: '30d', label: '1 Month' },
   { value: 'wtd', label: 'WTD' },
   { value: 'mtd', label: 'MTD' },
-  { value: '7d', label: '7d' },
-  { value: '30d', label: '30d' },
-  { value: '3m', label: '3m' },
-  { value: '6m', label: '6m' },
-  { value: '12m', label: '12m' },
-  { value: 'all', label: 'All' },
+  { value: 'ytd', label: 'YTD' },
 ];
 
 export function DashboardFilterBar({

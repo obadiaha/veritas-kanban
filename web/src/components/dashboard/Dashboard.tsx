@@ -365,9 +365,7 @@ export function Dashboard() {
 
       {/* Agent Operations Row */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-2">
-          Agent Operations ({period})
-        </h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-2">Agent Operations</h3>
         {isLoading ? (
           <div className="grid grid-cols-3 gap-4">
             {[...Array(3)].map((_, i) => (

@@ -29,6 +29,12 @@ export function getPeriodStart(period: MetricsPeriod, customFrom?: string): stri
       // Start of current day (00:00:00)
       now.setHours(0, 0, 0, 0);
       break;
+    case '24h':
+      now.setDate(now.getDate() - 1);
+      break;
+    case '3d':
+      now.setDate(now.getDate() - 3);
+      break;
     case 'wtd': {
       // Start of current week (Monday 00:00:00)
       now.setHours(0, 0, 0, 0);
@@ -40,6 +46,11 @@ export function getPeriodStart(period: MetricsPeriod, customFrom?: string): stri
     case 'mtd':
       // Start of current month (1st day 00:00:00)
       now.setDate(1);
+      now.setHours(0, 0, 0, 0);
+      break;
+    case 'ytd':
+      // Start of current year (Jan 1 00:00:00)
+      now.setMonth(0, 1);
       now.setHours(0, 0, 0, 0);
       break;
     case '7d':
@@ -94,6 +105,12 @@ export function getPreviousPeriodRange(
       // Previous day
       periodMs = 24 * 60 * 60 * 1000;
       break;
+    case '24h':
+      periodMs = 24 * 60 * 60 * 1000;
+      break;
+    case '3d':
+      periodMs = 3 * 24 * 60 * 60 * 1000;
+      break;
     case 'wtd':
       // Previous week
       periodMs = 7 * 24 * 60 * 60 * 1000;
@@ -101,6 +118,10 @@ export function getPreviousPeriodRange(
     case 'mtd':
       // Previous month (approximate - use 30 days)
       periodMs = 30 * 24 * 60 * 60 * 1000;
+      break;
+    case 'ytd':
+      // Previous year (approximate)
+      periodMs = 365 * 24 * 60 * 60 * 1000;
       break;
     case '7d':
       periodMs = 7 * 24 * 60 * 60 * 1000;

@@ -3,13 +3,16 @@ import { apiFetch } from '@/lib/api/helpers';
 
 export type MetricsPeriod =
   | 'today'
-  | 'wtd'
-  | 'mtd'
+  | '24h'
+  | '3d'
   | '7d'
   | '30d'
   | '3m'
   | '6m'
   | '12m'
+  | 'wtd'
+  | 'mtd'
+  | 'ytd'
   | 'all'
   | 'custom';
 
