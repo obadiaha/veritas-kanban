@@ -374,6 +374,7 @@ export async function computeTrends(
       inputTokens: number;
       outputTokens: number;
       durations: number[];
+      costEstimate: number;
     }
   >();
 
@@ -410,6 +411,7 @@ export async function computeTrends(
       inputTokens: 0,
       outputTokens: 0,
       durations: [],
+      costEstimate: 0,
     });
   }
 
@@ -440,6 +442,7 @@ export async function computeTrends(
               inputTokens: 0,
               outputTokens: 0,
               durations: [],
+              costEstimate: 0,
             });
           }
           const dayAcc = dailyData.get(dateStr)!;
@@ -468,6 +471,11 @@ export async function computeTrends(
             dayAcc.totalTokens += totalTokens;
             dayAcc.inputTokens += tokenEvent.inputTokens;
             dayAcc.outputTokens += tokenEvent.outputTokens;
+            // Accumulate reported cost for daily cost estimates
+            const eventCost = (tokenEvent as unknown as Record<string, unknown>).cost;
+            if (typeof eventCost === 'number' && eventCost > 0) {
+              dayAcc.costEstimate = (dayAcc.costEstimate || 0) + eventCost;
+            }
           }
         } catch {
           // Intentionally silent: skip malformed NDJSON line
@@ -502,6 +510,7 @@ export async function computeTrends(
       totalTokens: data.totalTokens,
       inputTokens: data.inputTokens,
       outputTokens: data.outputTokens,
+      costEstimate: Math.round(data.costEstimate * 100) / 100,
       avgDurationMs,
     });
   }
@@ -618,9 +627,12 @@ export async function computeAgentComparison(
             acc.totalTokens += totalTokens;
             acc.inputTokens += tokenEvent.inputTokens;
             acc.outputTokens += tokenEvent.outputTokens;
-            // Cost estimate: $0.01/1K input, $0.03/1K output
+            // Prefer reported cost; fall back to estimation ($0.01/1K in, $0.03/1K out)
+            const eventCost = (tokenEvent as unknown as Record<string, unknown>).cost;
             acc.costEstimate +=
-              (tokenEvent.inputTokens / 1000) * 0.01 + (tokenEvent.outputTokens / 1000) * 0.03;
+              typeof eventCost === 'number' && eventCost > 0
+                ? eventCost
+                : (tokenEvent.inputTokens / 1000) * 0.01 + (tokenEvent.outputTokens / 1000) * 0.03;
           }
         } catch {
           // Intentionally silent: skip malformed NDJSON line

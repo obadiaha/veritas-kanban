@@ -137,6 +137,7 @@ export async function computeBudgetMetrics(
   let totalTokens = 0;
   let inputTokens = 0;
   let outputTokens = 0;
+  let reportedCost = 0; // Sum of event.cost when available (preferred over estimation)
 
   // Stream through files for current month only
   for (const filePath of files) {
@@ -161,6 +162,10 @@ export async function computeBudgetMetrics(
           totalTokens += eventTotal;
           inputTokens += tokenEvent.inputTokens;
           outputTokens += tokenEvent.outputTokens;
+          // Use the reported cost if available (preferred over estimated)
+          if (typeof (tokenEvent as unknown as Record<string, unknown>).cost === 'number') {
+            reportedCost += (tokenEvent as unknown as Record<string, unknown>).cost as number;
+          }
         } catch {
           // Intentionally silent: skip malformed NDJSON line
           continue;
@@ -173,9 +178,10 @@ export async function computeBudgetMetrics(
     }
   }
 
-  // Cost estimation (simplified pricing model)
-  // Input: $0.01 per 1K tokens, Output: $0.03 per 1K tokens
-  const estimatedCost = (inputTokens / 1000) * 0.01 + (outputTokens / 1000) * 0.03;
+  // Cost: prefer reported cost from events; fall back to estimation
+  // Fallback rates: Input $0.01/1K, Output $0.03/1K (rough average across models)
+  const fallbackCost = (inputTokens / 1000) * 0.01 + (outputTokens / 1000) * 0.03;
+  const estimatedCost = reportedCost > 0 ? reportedCost : fallbackCost;
 
   // Burn rate calculations
   const tokensPerDay = daysElapsed > 0 ? totalTokens / daysElapsed : 0;

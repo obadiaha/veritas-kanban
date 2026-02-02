@@ -169,6 +169,7 @@ export interface DailyTrendPoint {
   totalTokens: number;
   inputTokens: number;
   outputTokens: number;
+  costEstimate: number;
   avgDurationMs: number;
 }
 
