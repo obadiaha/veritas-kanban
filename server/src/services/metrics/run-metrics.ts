@@ -21,9 +21,11 @@ const log = createLogger('run-metrics');
 export async function computeRunMetrics(
   telemetryDir: string,
   period: MetricsPeriod,
-  project?: string
+  project?: string,
+  from?: string,
+  to?: string
 ): Promise<RunMetrics> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   const accumulator: RunAccumulator = {
@@ -65,7 +67,8 @@ export async function computeRunMetrics(
           agentAcc.durations.push(runEvent.durationMs);
         }
       }
-    }
+    },
+    to
   );
 
   const runs = accumulator.successes + accumulator.failures + accumulator.errors;
@@ -114,9 +117,11 @@ export async function computeRunMetrics(
 export async function computeDurationMetrics(
   telemetryDir: string,
   period: MetricsPeriod,
-  project?: string
+  project?: string,
+  from?: string,
+  to?: string
 ): Promise<DurationMetrics> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   const accumulator = {
@@ -124,19 +129,27 @@ export async function computeDurationMetrics(
     byAgent: new Map<string, number[]>(),
   };
 
-  await streamEvents(files, ['run.completed'], since, project, accumulator, (event, acc) => {
-    const runEvent = event as RunTelemetryEvent;
-    if (runEvent.durationMs !== undefined && runEvent.durationMs > 0) {
-      const agent = runEvent.agent || 'veritas';
+  await streamEvents(
+    files,
+    ['run.completed'],
+    since,
+    project,
+    accumulator,
+    (event, acc) => {
+      const runEvent = event as RunTelemetryEvent;
+      if (runEvent.durationMs !== undefined && runEvent.durationMs > 0) {
+        const agent = runEvent.agent || 'veritas';
 
-      acc.durations.push(runEvent.durationMs);
+        acc.durations.push(runEvent.durationMs);
 
-      if (!acc.byAgent.has(agent)) {
-        acc.byAgent.set(agent, []);
+        if (!acc.byAgent.has(agent)) {
+          acc.byAgent.set(agent, []);
+        }
+        acc.byAgent.get(agent)!.push(runEvent.durationMs);
       }
-      acc.byAgent.get(agent)!.push(runEvent.durationMs);
-    }
-  });
+    },
+    to
+  );
 
   // Sort for percentile calculations
   accumulator.durations.sort((a, b) => a - b);
@@ -182,9 +195,11 @@ export async function computeFailedRuns(
   telemetryDir: string,
   period: MetricsPeriod,
   project?: string,
-  limit = 50
+  limit = 50,
+  from?: string,
+  to?: string
 ): Promise<FailedRunDetails[]> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   const failedRuns: FailedRunDetails[] = [];
@@ -201,7 +216,8 @@ export async function computeFailedRuns(
 
           // Filter by type and time
           if (event.type !== 'run.completed' && event.type !== 'run.error') continue;
-          if (event.timestamp < since) continue;
+          if (since && event.timestamp < since) continue;
+          if (to && event.timestamp > to) continue;
           if (project && event.project !== project) continue;
 
           // Only include failed runs

@@ -42,8 +42,8 @@ router.get(
   validate({ query: MetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { period, project } = req.validated.query!;
-    const result = await metrics.getRunMetrics(period, project);
+    const { period, project, from, to } = req.validated.query!;
+    const result = await metrics.getRunMetrics(period, project, from, to);
     res.json(result);
   })
 );
@@ -57,8 +57,8 @@ router.get(
   validate({ query: MetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { period, project } = req.validated.query!;
-    const result = await metrics.getTokenMetrics(period, project);
+    const { period, project, from, to } = req.validated.query!;
+    const result = await metrics.getTokenMetrics(period, project, from, to);
     res.json(result);
   })
 );
@@ -72,8 +72,8 @@ router.get(
   validate({ query: MetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { period, project } = req.validated.query!;
-    const result = await metrics.getDurationMetrics(period, project);
+    const { period, project, from, to } = req.validated.query!;
+    const result = await metrics.getDurationMetrics(period, project, from, to);
     res.json(result);
   })
 );
@@ -87,8 +87,8 @@ router.get(
   validate({ query: MetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { period, project } = req.validated.query!;
-    const result = await metrics.getAllMetrics(period, project);
+    const { period, project, from, to } = req.validated.query!;
+    const result = await metrics.getAllMetrics(period, project, from, to);
     res.json(result);
   })
 );
@@ -102,9 +102,9 @@ router.get(
   validate({ query: MetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { period, project } = req.validated.query!;
+    const { period, project, from, to } = req.validated.query!;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 50;
-    const result = await metrics.getFailedRuns(period, project, limit);
+    const result = await metrics.getFailedRuns(period, project, limit, from, to);
     res.json(result);
   })
 );
@@ -115,17 +115,12 @@ router.get(
  */
 router.get(
   '/trends',
-  asyncHandler(async (req, res) => {
+  validate({ query: MetricsQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const period = (req.query.period as '7d' | '30d') || '7d';
-    const project = req.query.project as string | undefined;
+    const { period, project, from, to } = req.validated.query!;
 
-    // Validate period
-    if (period !== '7d' && period !== '30d') {
-      throw new ValidationError('Period must be 7d or 30d');
-    }
-
-    const result = await metrics.getTrends(period, project);
+    const result = await metrics.getTrends(period, project, from, to);
     res.json(result);
   })
 );

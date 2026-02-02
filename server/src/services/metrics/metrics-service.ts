@@ -38,21 +38,38 @@ export class MetricsService {
     return computeTaskMetrics(this.taskService, project);
   }
 
-  async getRunMetrics(period: MetricsPeriod, project?: string): Promise<RunMetrics> {
-    return computeRunMetrics(this.telemetryDir, period, project);
+  async getRunMetrics(
+    period: MetricsPeriod,
+    project?: string,
+    from?: string,
+    to?: string
+  ): Promise<RunMetrics> {
+    return computeRunMetrics(this.telemetryDir, period, project, from, to);
   }
 
-  async getTokenMetrics(period: MetricsPeriod, project?: string): Promise<TokenMetrics> {
-    return computeTokenMetrics(this.telemetryDir, period, project);
+  async getTokenMetrics(
+    period: MetricsPeriod,
+    project?: string,
+    from?: string,
+    to?: string
+  ): Promise<TokenMetrics> {
+    return computeTokenMetrics(this.telemetryDir, period, project, from, to);
   }
 
-  async getDurationMetrics(period: MetricsPeriod, project?: string): Promise<DurationMetrics> {
-    return computeDurationMetrics(this.telemetryDir, period, project);
+  async getDurationMetrics(
+    period: MetricsPeriod,
+    project?: string,
+    from?: string,
+    to?: string
+  ): Promise<DurationMetrics> {
+    return computeDurationMetrics(this.telemetryDir, period, project, from, to);
   }
 
   async getAllMetrics(
-    period: MetricsPeriod = '24h',
-    project?: string
+    period: MetricsPeriod = '7d',
+    project?: string,
+    from?: string,
+    to?: string
   ): Promise<{
     tasks: TaskMetrics;
     runs: RunMetrics;
@@ -60,11 +77,16 @@ export class MetricsService {
     duration: DurationMetrics;
     trends: TrendComparison;
   }> {
-    return computeAllMetrics(this.taskService, this.telemetryDir, period, project);
+    return computeAllMetrics(this.taskService, this.telemetryDir, period, project, from, to);
   }
 
-  async getTrends(period: '7d' | '30d', project?: string): Promise<TrendsData> {
-    return computeTrends(this.telemetryDir, period, project);
+  async getTrends(
+    period: MetricsPeriod,
+    project?: string,
+    from?: string,
+    to?: string
+  ): Promise<TrendsData> {
+    return computeTrends(this.telemetryDir, period, project, from, to);
   }
 
   async getBudgetMetrics(
@@ -97,7 +119,9 @@ export class MetricsService {
   async getFailedRuns(
     period: MetricsPeriod,
     project?: string,
-    limit = 50
+    limit = 50,
+    from?: string,
+    to?: string
   ): Promise<FailedRunDetails[]> {
     return computeFailedRuns(this.telemetryDir, period, project, limit);
   }

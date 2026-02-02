@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -19,16 +18,12 @@ import { useVelocity, getTrendColor, getTrendLabel, type VelocityTrend } from '@
 import { formatDuration } from '@/hooks/useMetrics';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface TrendsChartsProps {
   project?: string;
+  period: TrendsPeriod;
+  from?: string;
+  to?: string;
 }
 
 // Chart colors that work with dark/light themes
@@ -423,9 +418,8 @@ function ChartCard({
   );
 }
 
-export function TrendsCharts({ project }: TrendsChartsProps) {
-  const [period, setPeriod] = useState<TrendsPeriod>('7d');
-  const { data, isLoading, error } = useTrends(period, project);
+export function TrendsCharts({ project, period, from, to }: TrendsChartsProps) {
+  const { data, isLoading, error } = useTrends(period, project, from, to);
   const { data: velocityData, isLoading: velocityLoading } = useVelocity(project, 10);
 
   if (error) {
@@ -438,18 +432,9 @@ export function TrendsCharts({ project }: TrendsChartsProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header with period toggle */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">Historical Trends</h3>
-        <Select value={period} onValueChange={(v) => setPeriod(v as TrendsPeriod)}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="text-xs text-muted-foreground">{period.toUpperCase()}</div>
       </div>
 
       {/* Sprint Velocity Chart - Full width */}

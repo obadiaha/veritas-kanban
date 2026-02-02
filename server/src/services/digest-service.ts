@@ -100,8 +100,8 @@ export class DigestService {
 
     // Get metrics from metrics service
     const [metricsData, failedRuns, events] = await Promise.all([
-      this.metrics.getAllMetrics('24h'),
-      this.metrics.getFailedRuns('24h', undefined, 10),
+      this.metrics.getAllMetrics('today'),
+      this.metrics.getFailedRuns('today', undefined, 10),
       this.telemetry.getEvents({ since, limit: 1000 }),
     ]);
 

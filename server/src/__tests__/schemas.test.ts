@@ -200,9 +200,16 @@ describe('Common Schemas', () => {
 
   describe('MetricsPeriodSchema', () => {
     it('should accept valid periods', () => {
-      expect(MetricsPeriodSchema.parse('24h')).toBe('24h');
+      expect(MetricsPeriodSchema.parse('today')).toBe('today');
+      expect(MetricsPeriodSchema.parse('wtd')).toBe('wtd');
+      expect(MetricsPeriodSchema.parse('mtd')).toBe('mtd');
       expect(MetricsPeriodSchema.parse('7d')).toBe('7d');
       expect(MetricsPeriodSchema.parse('30d')).toBe('30d');
+      expect(MetricsPeriodSchema.parse('3m')).toBe('3m');
+      expect(MetricsPeriodSchema.parse('6m')).toBe('6m');
+      expect(MetricsPeriodSchema.parse('12m')).toBe('12m');
+      expect(MetricsPeriodSchema.parse('all')).toBe('all');
+      expect(MetricsPeriodSchema.parse('custom')).toBe('custom');
     });
 
     it('should reject invalid periods', () => {
@@ -325,7 +332,7 @@ describe('Feature Settings Schema', () => {
 describe('Metrics Schemas', () => {
   it('should validate metrics query with defaults', () => {
     const result = MetricsQuerySchema.parse({});
-    expect(result.period).toBe('24h');
+    expect(result.period).toBe('7d');
   });
 
   it('should validate metrics query with project', () => {

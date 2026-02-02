@@ -11,7 +11,17 @@ import type {
 
 // ── Period & Core Types ─────────────────────────────────────────────
 
-export type MetricsPeriod = '24h' | '7d' | '30d';
+export type MetricsPeriod =
+  | 'today'
+  | 'wtd'
+  | 'mtd'
+  | '7d'
+  | '30d'
+  | '3m'
+  | '6m'
+  | '12m'
+  | 'all'
+  | 'custom';
 
 export interface TaskMetrics {
   byStatus: Record<TaskStatus, number>;
@@ -160,7 +170,7 @@ export interface DailyTrendPoint {
 }
 
 export interface TrendsData {
-  period: '7d' | '30d';
+  period: MetricsPeriod;
   daily: DailyTrendPoint[];
 }
 

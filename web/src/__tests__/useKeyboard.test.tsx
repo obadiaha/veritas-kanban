@@ -175,7 +175,7 @@ describe('KeyboardProvider', () => {
     expect(onOpenTask).toHaveBeenCalledWith(expect.objectContaining({ id: 'enter-test' }));
   });
 
-  it('moves task to column with number keys 1-4', () => {
+  it('moves task to column with number keys 1-5', () => {
     const tasks = [createMockTask({ id: 'move-test', title: 'Move Task', status: 'todo' })];
     const onMoveTask = vi.fn();
 
@@ -183,9 +183,12 @@ describe('KeyboardProvider', () => {
 
     fireEvent.keyDown(window, { key: 'j' });
     fireEvent.keyDown(window, { key: '2' });
-    expect(onMoveTask).toHaveBeenCalledWith('move-test', 'in-progress');
+    expect(onMoveTask).toHaveBeenCalledWith('move-test', 'planning');
 
     fireEvent.keyDown(window, { key: '4' });
+    expect(onMoveTask).toHaveBeenCalledWith('move-test', 'blocked');
+
+    fireEvent.keyDown(window, { key: '5' });
     expect(onMoveTask).toHaveBeenCalledWith('move-test', 'done');
   });
 

@@ -14,9 +14,11 @@ const log = createLogger('token-metrics');
 export async function computeTokenMetrics(
   telemetryDir: string,
   period: MetricsPeriod,
-  project?: string
+  project?: string,
+  from?: string,
+  to?: string
 ): Promise<TokenMetrics> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   const accumulator: TokenAccumulator = {
@@ -28,35 +30,44 @@ export async function computeTokenMetrics(
     byAgent: new Map(),
   };
 
-  await streamEvents(files, ['run.tokens'], since, project, accumulator, (event, acc) => {
-    const tokenEvent = event as TokenTelemetryEvent;
-    const agent = tokenEvent.agent || 'veritas';
-    // Calculate totalTokens if not provided
-    const totalTokens = tokenEvent.totalTokens ?? tokenEvent.inputTokens + tokenEvent.outputTokens;
-    const cacheTokens = tokenEvent.cacheTokens ?? 0;
+  await streamEvents(
+    files,
+    ['run.tokens'],
+    since,
+    project,
+    accumulator,
+    (event, acc) => {
+      const tokenEvent = event as TokenTelemetryEvent;
+      const agent = tokenEvent.agent || 'veritas';
+      // Calculate totalTokens if not provided
+      const totalTokens =
+        tokenEvent.totalTokens ?? tokenEvent.inputTokens + tokenEvent.outputTokens;
+      const cacheTokens = tokenEvent.cacheTokens ?? 0;
 
-    acc.totalTokens += totalTokens;
-    acc.inputTokens += tokenEvent.inputTokens;
-    acc.outputTokens += tokenEvent.outputTokens;
-    acc.cacheTokens += cacheTokens;
-    acc.tokensPerRun.push(totalTokens);
+      acc.totalTokens += totalTokens;
+      acc.inputTokens += tokenEvent.inputTokens;
+      acc.outputTokens += tokenEvent.outputTokens;
+      acc.cacheTokens += cacheTokens;
+      acc.tokensPerRun.push(totalTokens);
 
-    if (!acc.byAgent.has(agent)) {
-      acc.byAgent.set(agent, {
-        totalTokens: 0,
-        inputTokens: 0,
-        outputTokens: 0,
-        cacheTokens: 0,
-        runs: 0,
-      });
-    }
-    const agentAcc = acc.byAgent.get(agent)!;
-    agentAcc.totalTokens += totalTokens;
-    agentAcc.inputTokens += tokenEvent.inputTokens;
-    agentAcc.outputTokens += tokenEvent.outputTokens;
-    agentAcc.cacheTokens += cacheTokens;
-    agentAcc.runs++;
-  });
+      if (!acc.byAgent.has(agent)) {
+        acc.byAgent.set(agent, {
+          totalTokens: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheTokens: 0,
+          runs: 0,
+        });
+      }
+      const agentAcc = acc.byAgent.get(agent)!;
+      agentAcc.totalTokens += totalTokens;
+      agentAcc.inputTokens += tokenEvent.inputTokens;
+      agentAcc.outputTokens += tokenEvent.outputTokens;
+      agentAcc.cacheTokens += cacheTokens;
+      agentAcc.runs++;
+    },
+    to
+  );
 
   // Sort for percentile calculations
   accumulator.tokensPerRun.sort((a, b) => a - b);

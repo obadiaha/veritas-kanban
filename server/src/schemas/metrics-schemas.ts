@@ -5,8 +5,10 @@ import { MetricsPeriodSchema } from './common.js';
  * GET /api/metrics/* query params
  */
 export const MetricsQuerySchema = z.object({
-  period: MetricsPeriodSchema.default('24h'),
+  period: MetricsPeriodSchema.default('7d'),
   project: z.string().optional(),
+  from: z.string().optional(), // ISO date string for custom period start
+  to: z.string().optional(), // ISO date string for custom period end
 });
 
 /**

@@ -8,10 +8,28 @@ interface ErrorsDrillDownProps {
   period: MetricsPeriod;
   project?: string;
   onTaskClick?: (taskId: string) => void;
+  from?: string;
+  to?: string;
 }
 
-export function ErrorsDrillDown({ period, project, onTaskClick }: ErrorsDrillDownProps) {
-  const { data: failedRuns, isLoading } = useFailedRuns(period, project);
+function getPeriodLabel(period: MetricsPeriod): string {
+  const labels: Record<MetricsPeriod, string> = {
+    today: 'today',
+    wtd: 'this week',
+    mtd: 'this month',
+    '7d': 'last 7 days',
+    '30d': 'last 30 days',
+    '3m': 'last 3 months',
+    '6m': 'last 6 months',
+    '12m': 'last 12 months',
+    all: 'all time',
+    custom: 'custom period',
+  };
+  return labels[period];
+}
+
+export function ErrorsDrillDown({ period, project, onTaskClick, from, to }: ErrorsDrillDownProps) {
+  const { data: failedRuns, isLoading } = useFailedRuns(period, project, 50, from, to);
 
   if (isLoading) {
     return (
@@ -38,8 +56,7 @@ export function ErrorsDrillDown({ period, project, onTaskClick }: ErrorsDrillDow
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <AlertTriangle className="h-4 w-4 text-red-500" />
         <span>
-          {failedRuns.length} failed run(s) in the{' '}
-          {period === '24h' ? 'last 24 hours' : 'last 7 days'}
+          {failedRuns.length} failed run(s) in the {getPeriodLabel(period)}
         </span>
       </div>
 

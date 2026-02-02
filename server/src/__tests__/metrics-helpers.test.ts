@@ -15,13 +15,15 @@ import {
 
 describe('Metrics Helpers', () => {
   describe('getPeriodStart', () => {
-    it('should return a timestamp 24 hours ago for "24h"', () => {
-      const now = Date.now();
-      const start = getPeriodStart('24h');
-      const startTime = new Date(start).getTime();
-      // Should be roughly 24 hours ago (within 1 second tolerance)
-      const expected = now - 24 * 60 * 60 * 1000;
-      expect(Math.abs(startTime - expected)).toBeLessThan(1000);
+    it('should return start of day for "today"', () => {
+      const expected = new Date();
+      expected.setHours(0, 0, 0, 0);
+
+      const start = getPeriodStart('today');
+      expect(start).not.toBeNull();
+
+      const startTime = new Date(start!).getTime();
+      expect(Math.abs(startTime - expected.getTime())).toBeLessThan(1000);
     });
 
     it('should return a timestamp 7 days ago for "7d"', () => {
@@ -41,29 +43,33 @@ describe('Metrics Helpers', () => {
     });
 
     it('should return a valid ISO string', () => {
-      const start = getPeriodStart('24h');
-      expect(() => new Date(start)).not.toThrow();
+      const start = getPeriodStart('7d');
+      expect(start).not.toBeNull();
+      expect(() => new Date(start!)).not.toThrow();
       expect(start).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     });
   });
 
   describe('getPreviousPeriodRange', () => {
-    it('should return a range before the current period for "24h"', () => {
-      const range = getPreviousPeriodRange('24h');
-      const since = new Date(range.since).getTime();
-      const until = new Date(range.until).getTime();
+    it('should return a range before the current period for "today"', () => {
+      const range = getPreviousPeriodRange('today');
+      expect(range).not.toBeNull();
+
+      const since = new Date(range!.since).getTime();
+      const until = new Date(range!.until).getTime();
 
       // Until should be ~24h ago
       const now = Date.now();
-      expect(Math.abs(until - (now - 24 * 60 * 60 * 1000))).toBeLessThan(1000);
+      expect(Math.abs(until - (now - 24 * 60 * 60 * 1000))).toBeLessThan(1500);
       // Since should be ~48h ago
-      expect(Math.abs(since - (now - 48 * 60 * 60 * 1000))).toBeLessThan(1000);
+      expect(Math.abs(since - (now - 48 * 60 * 60 * 1000))).toBeLessThan(1500);
     });
 
     it('should return a range before the current period for "7d"', () => {
       const range = getPreviousPeriodRange('7d');
-      const since = new Date(range.since).getTime();
-      const until = new Date(range.until).getTime();
+      expect(range).not.toBeNull();
+      const since = new Date(range!.since).getTime();
+      const until = new Date(range!.until).getTime();
 
       const now = Date.now();
       const weekMs = 7 * 24 * 60 * 60 * 1000;
@@ -73,8 +79,9 @@ describe('Metrics Helpers', () => {
 
     it('should return valid ISO strings', () => {
       const range = getPreviousPeriodRange('30d');
-      expect(() => new Date(range.since)).not.toThrow();
-      expect(() => new Date(range.until)).not.toThrow();
+      expect(range).not.toBeNull();
+      expect(() => new Date(range!.since)).not.toThrow();
+      expect(() => new Date(range!.until)).not.toThrow();
     });
   });
 

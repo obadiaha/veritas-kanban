@@ -45,8 +45,10 @@ const log = createLogger('dashboard-metrics');
 export async function computeAllMetrics(
   taskService: TaskService,
   telemetryDir: string,
-  period: MetricsPeriod = '24h',
-  project?: string
+  period: MetricsPeriod = '7d',
+  project?: string,
+  from?: string,
+  to?: string
 ): Promise<{
   tasks: TaskMetrics;
   runs: RunMetrics;
@@ -54,7 +56,7 @@ export async function computeAllMetrics(
   duration: DurationMetrics;
   trends: TrendComparison;
 }> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   // Combined accumulator for single-pass processing
@@ -87,7 +89,8 @@ export async function computeAllMetrics(
           const event = JSON.parse(line) as AnyTelemetryEvent;
 
           // Early timestamp filter
-          if (event.timestamp < since) continue;
+          if (since && event.timestamp < since) continue;
+          if (to && event.timestamp > to) continue;
           if (project && event.project !== project) continue;
 
           const eventType = event.type;
@@ -258,7 +261,23 @@ export async function computeAllMetrics(
   };
 
   // Calculate trends by comparing with previous period
-  const previousRange = getPreviousPeriodRange(period);
+  const previousRange = getPreviousPeriodRange(period, from, to);
+
+  // If trends can't be calculated for this period (e.g., 'all' or missing custom dates), use flat trends
+  if (!previousRange) {
+    const trends: TrendComparison = {
+      runsTrend: 'flat',
+      runsChange: 0,
+      successRateTrend: 'flat',
+      successRateChange: 0,
+      tokensTrend: 'flat',
+      tokensChange: 0,
+      durationTrend: 'flat',
+      durationChange: 0,
+    };
+    return { tasks, runs, tokens, duration, trends };
+  }
+
   const previousFiles = await getEventFiles(telemetryDir, previousRange.since);
 
   // Quick accumulator for previous period (runs, tokens, duration only)
@@ -329,10 +348,12 @@ export async function computeAllMetrics(
  */
 export async function computeTrends(
   telemetryDir: string,
-  period: '7d' | '30d',
-  project?: string
+  period: MetricsPeriod,
+  project?: string,
+  from?: string,
+  to?: string
 ): Promise<TrendsData> {
-  const since = getPeriodStart(period);
+  const since = getPeriodStart(period, from);
   const files = await getEventFiles(telemetryDir, since);
 
   // Accumulator per day
@@ -351,8 +372,27 @@ export async function computeTrends(
   >();
 
   // Initialize all days in the period
-  const startDate = new Date(since);
-  const endDate = new Date();
+  if (period === 'custom' && (!from || !to)) {
+    throw new Error('Custom trends require from/to');
+  }
+
+  let startDate: Date;
+  if (since) {
+    startDate = new Date(since);
+  } else {
+    // 'all' period: infer start from earliest telemetry file date
+    const dates = files
+      .map((f) => {
+        const match = f.match(/events-(\d{4}-\d{2}-\d{2})\.ndjson(\.gz)?$/);
+        return match?.[1];
+      })
+      .filter((d): d is string => Boolean(d))
+      .sort();
+
+    startDate = dates.length > 0 ? new Date(dates[0] + 'T00:00:00.000Z') : new Date();
+  }
+
+  const endDate = to ? new Date(to) : new Date();
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().slice(0, 10);
     dailyData.set(dateStr, {
@@ -379,7 +419,8 @@ export async function computeTrends(
           const event = JSON.parse(line) as AnyTelemetryEvent;
 
           // Early timestamp filter
-          if (event.timestamp < since) continue;
+          if (since && event.timestamp < since) continue;
+          if (to && event.timestamp > to) continue;
           if (project && event.project !== project) continue;
 
           const dateStr = event.timestamp.slice(0, 10);
@@ -499,7 +540,7 @@ export async function computeAgentComparison(
         try {
           const event = JSON.parse(line) as AnyTelemetryEvent;
 
-          if (event.timestamp < since) continue;
+          if (since && event.timestamp < since) continue;
           if (project && event.project !== project) continue;
 
           const eventType = event.type;

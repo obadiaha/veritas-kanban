@@ -178,6 +178,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         case '2':
         case '3':
         case '4':
+        case '5':
           e.preventDefault();
           if (selectedTaskId && onMoveTaskRef.current) {
             const newStatus = STATUS_MAP[e.key];

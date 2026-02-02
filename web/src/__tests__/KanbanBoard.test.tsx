@@ -23,7 +23,13 @@ let mockUseTasks: () => { data: Task[] | undefined; isLoading: boolean; error: E
 vi.mock('@/hooks/useTasks', () => ({
   useTasks: () => mockUseTasks(),
   useTasksByStatus: (tasks: Task[]) => {
-    const result: Record<string, Task[]> = { todo: [], 'in-progress': [], blocked: [], done: [] };
+    const result: Record<string, Task[]> = {
+      todo: [],
+      planning: [],
+      'in-progress': [],
+      blocked: [],
+      done: [],
+    };
     for (const t of tasks) {
       if (result[t.status]) result[t.status].push(t);
     }
@@ -92,10 +98,10 @@ vi.mock('@/contexts/TaskConfigContext', () => ({
 
 // Mock KanbanColumn to simplify — just renders task titles
 vi.mock('@/components/board/KanbanColumn', () => ({
-  KanbanColumn: ({ id, title, tasks }: { id: string; title: string; tasks: Task[] }) => (
+  KanbanColumn: ({ id, title, tasks }: { id: string; title: string; tasks?: Task[] }) => (
     <div data-testid={`column-${id}`}>
       <h2>{title}</h2>
-      {tasks.map((t: Task) => (
+      {(tasks ?? []).map((t: Task) => (
         <div key={t.id} data-testid={`task-${t.id}`}>
           {t.title}
         </div>
