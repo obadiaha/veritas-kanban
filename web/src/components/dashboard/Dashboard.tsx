@@ -7,7 +7,6 @@ import {
   type MetricsPeriod,
   type TrendDirection,
 } from '@/hooks/useMetrics';
-import { useTasks } from '@/hooks/useTasks';
 import { useProjects } from '@/hooks/useProjects';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -192,14 +191,10 @@ export function Dashboard() {
     error,
     dataUpdatedAt,
   } = useMetrics(period, project, customFrom, customTo);
-  const { data: tasks } = useTasks();
   const { data: projectsList = [] } = useProjects();
 
-  // Get unique project IDs from tasks, then map to project configs for labels
-  const projectIds = tasks
-    ? [...new Set(tasks.filter((t) => t.project).map((t) => t.project!))]
-    : [];
-  const projects = projectsList.filter((p) => projectIds.includes(p.id));
+  // Show all configured projects in the filter dropdown
+  const projects = projectsList;
 
   if (error) {
     return <div className="p-4 text-center text-destructive">Failed to load metrics</div>;
