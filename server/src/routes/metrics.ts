@@ -180,4 +180,47 @@ router.get(
   })
 );
 
+/**
+ * GET /api/metrics/cost
+ * Get cost metrics using per-model pricing
+ */
+router.get(
+  '/cost',
+  validate({ query: MetricsQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
+    const metrics = getMetricsService();
+    const { period, project } = req.validated.query!;
+    const result = await metrics.getCostMetrics(period, project);
+    res.json(result);
+  })
+);
+
+/**
+ * GET /api/metrics/cost/by-model
+ * Get cost breakdown by model
+ */
+router.get(
+  '/cost/by-model',
+  validate({ query: MetricsQuerySchema }),
+  asyncHandler(async (req: ValidatedRequest<unknown, MetricsQuery>, res) => {
+    const metrics = getMetricsService();
+    const { period, project } = req.validated.query!;
+    const result = await metrics.getModelCostBreakdown(period, project);
+    res.json(result);
+  })
+);
+
+/**
+ * GET /api/metrics/accuracy
+ * Get global prediction accuracy metrics
+ */
+router.get(
+  '/accuracy',
+  asyncHandler(async (_req, res) => {
+    const metrics = getMetricsService();
+    const result = await metrics.getAccuracyMetrics();
+    res.json(result);
+  })
+);
+
 export default router;

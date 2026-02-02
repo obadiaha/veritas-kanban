@@ -126,6 +126,30 @@ export interface TaskGitHub {
   repo: string;
 }
 
+/** Cost estimate for a task */
+export interface CostEstimate {
+  estimatedTokens: number;
+  estimatedCost: number;
+  estimatedModel: string;
+  estimatedDuration?: number;
+  confidence: 'low' | 'medium' | 'high';
+  reasoning?: string;
+  estimatedAt: string;
+  estimatedBy: string;
+}
+
+/** Cost accuracy after task completion */
+export interface CostAccuracy {
+  estimatedCost: number;
+  actualCost: number;
+  estimatedTokens: number;
+  actualTokens: number;
+  accuracy: number; // 0-1 scale
+  costDelta: number;
+  tokenDelta: number;
+  computedAt: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -194,6 +218,10 @@ export interface Task {
 
   // Position within column (for drag-and-drop ordering)
   position?: number;
+
+  // Cost estimation and tracking
+  costEstimate?: CostEstimate;
+  costAccuracy?: CostAccuracy;
 }
 
 export interface ReviewComment {
@@ -256,6 +284,8 @@ export interface UpdateTaskInput {
   comments?: Comment[];
   attachments?: Attachment[];
   position?: number;
+  costEstimate?: CostEstimate;
+  costAccuracy?: CostAccuracy;
 }
 
 export interface TaskFilters {

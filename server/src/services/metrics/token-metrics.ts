@@ -2,6 +2,7 @@
  * Token-related metrics: token usage and budget tracking.
  */
 import type { TokenTelemetryEvent, AnyTelemetryEvent } from '@veritas-kanban/shared';
+import { calculateCost } from '@veritas-kanban/shared';
 import { getPeriodStart, percentile } from './helpers.js';
 import { getEventFiles, streamEvents, createLineReader } from './telemetry-reader.js';
 import type { MetricsPeriod, TokenMetrics, TokenAccumulator, BudgetMetrics } from './types.js';
@@ -122,10 +123,11 @@ export async function computeBudgetMetrics(
   const since = periodStart.toISOString();
   const files = await getEventFiles(telemetryDir, since);
 
-  // Token accumulator
+  // Token and cost accumulators
   let totalTokens = 0;
   let inputTokens = 0;
   let outputTokens = 0;
+  let totalCost = 0;
 
   // Stream through files for current month only
   for (const filePath of files) {
@@ -150,6 +152,26 @@ export async function computeBudgetMetrics(
           totalTokens += eventTotal;
           inputTokens += tokenEvent.inputTokens;
           outputTokens += tokenEvent.outputTokens;
+
+          // Calculate cost using model pricing if available
+          if (tokenEvent.model) {
+            const cost = calculateCost(
+              tokenEvent.model,
+              tokenEvent.inputTokens,
+              tokenEvent.outputTokens,
+              tokenEvent.cacheTokens
+            );
+            totalCost += cost;
+          } else {
+            // Fallback to default pricing when model is not specified
+            const cost = calculateCost(
+              'unknown',
+              tokenEvent.inputTokens,
+              tokenEvent.outputTokens,
+              tokenEvent.cacheTokens
+            );
+            totalCost += cost;
+          }
         } catch {
           // Intentionally silent: skip malformed NDJSON line
           continue;
@@ -162,9 +184,8 @@ export async function computeBudgetMetrics(
     }
   }
 
-  // Cost estimation (simplified pricing model)
-  // Input: $0.01 per 1K tokens, Output: $0.03 per 1K tokens
-  const estimatedCost = (inputTokens / 1000) * 0.01 + (outputTokens / 1000) * 0.03;
+  // Use calculated costs
+  const estimatedCost = totalCost;
 
   // Burn rate calculations
   const tokensPerDay = daysElapsed > 0 ? totalTokens / daysElapsed : 0;

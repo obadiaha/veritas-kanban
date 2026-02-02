@@ -9,6 +9,14 @@ import { computeTaskMetrics, computeVelocityMetrics } from './task-metrics.js';
 import { computeRunMetrics, computeDurationMetrics, computeFailedRuns } from './run-metrics.js';
 import { computeTokenMetrics, computeBudgetMetrics } from './token-metrics.js';
 import { computeAllMetrics, computeTrends, computeAgentComparison } from './dashboard-metrics.js';
+import {
+  computeCostMetrics,
+  computeModelCostBreakdown,
+  computeAccuracyMetrics,
+  type CostMetrics,
+  type ModelCostBreakdown,
+  type AccuracyMetrics,
+} from './cost-metrics.js';
 import type {
   MetricsPeriod,
   TaskMetrics,
@@ -100,6 +108,21 @@ export class MetricsService {
     limit = 50
   ): Promise<FailedRunDetails[]> {
     return computeFailedRuns(this.telemetryDir, period, project, limit);
+  }
+
+  async getCostMetrics(period: MetricsPeriod, project?: string): Promise<CostMetrics> {
+    return computeCostMetrics(this.telemetryDir, period, project);
+  }
+
+  async getModelCostBreakdown(
+    period: MetricsPeriod,
+    project?: string
+  ): Promise<ModelCostBreakdown[]> {
+    return computeModelCostBreakdown(this.telemetryDir, period, project);
+  }
+
+  async getAccuracyMetrics(): Promise<AccuracyMetrics> {
+    return computeAccuracyMetrics();
   }
 }
 

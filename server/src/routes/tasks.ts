@@ -581,6 +581,19 @@ router.patch(
             /* intentionally silent — don't fail the API call */
           });
       }
+
+      // Auto-compute cost accuracy when task moves to done
+      if (input.status === 'done' && task.costEstimate && !task.costAccuracy) {
+        // Import the helper (dynamic to avoid circular deps)
+        import('./task-cost.js')
+          .then(async ({ computeCostAccuracy }) => {
+            const accuracy = await computeCostAccuracy(task.id, task.costEstimate!);
+            await taskService.updateTask(task.id, { costAccuracy: accuracy });
+          })
+          .catch(() => {
+            /* intentionally silent — don't fail the API call if cost computation fails */
+          });
+      }
     } else {
       await activityService.logActivity('task_updated', task.id, task.title, undefined, task.agent);
     }

@@ -30,3 +30,6 @@ export type {
   CurrentSprintProgress,
   VelocityMetrics,
 } from './types.js';
+
+// Cost and accuracy types
+export type { CostMetrics, ModelCostBreakdown, AccuracyMetrics } from './cost-metrics.js';

@@ -24,6 +24,7 @@ import { taskRoutes } from '../tasks.js';
 import { taskCommentRoutes } from '../task-comments.js';
 import { taskSubtaskRoutes } from '../task-subtasks.js';
 import { taskVerificationRoutes } from '../task-verification.js';
+import { taskCostRoutes } from '../task-cost.js';
 import attachmentRoutes from '../attachments.js';
 
 // Feature routes
@@ -51,6 +52,7 @@ import { agentStatusRoutes } from '../agent-status.js';
 import { statusHistoryRoutes } from '../status-history.js';
 import digestRoutes from '../digest.js';
 import auditRoutes from '../audit.js';
+import modelsRoutes from '../models.js';
 
 const v1Router: IRouter = Router();
 
@@ -68,6 +70,7 @@ v1Router.use((req: Request, _res, next) => {
 // ── Task routes (order-sensitive) ────────────────────────────
 v1Router.use('/tasks', taskArchiveRoutes);
 v1Router.use('/tasks', taskTimeRoutes);
+v1Router.use('/tasks', taskCostRoutes);
 v1Router.use('/tasks', taskRoutes);
 v1Router.use('/tasks', taskCommentRoutes);
 v1Router.use('/tasks', taskSubtaskRoutes);
@@ -112,5 +115,6 @@ v1Router.use('/agent/status', agentStatusRoutes);
 v1Router.use('/status-history', statusHistoryRoutes);
 v1Router.use('/digest', digestRoutes);
 v1Router.use('/audit', auditRoutes);
+v1Router.use('/models', modelsRoutes);
 
 export { v1Router };
