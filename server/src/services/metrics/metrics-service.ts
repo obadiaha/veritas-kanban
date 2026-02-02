@@ -34,8 +34,8 @@ export class MetricsService {
     this.telemetryDir = telemetryDir || TELEMETRY_DIR;
   }
 
-  async getTaskMetrics(project?: string): Promise<TaskMetrics> {
-    return computeTaskMetrics(this.taskService, project);
+  async getTaskMetrics(project?: string, since?: string | null): Promise<TaskMetrics> {
+    return computeTaskMetrics(this.taskService, project, since);
   }
 
   async getRunMetrics(

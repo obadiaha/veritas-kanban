@@ -27,8 +27,10 @@ router.get(
   validate({ query: TaskMetricsQuerySchema }),
   asyncHandler(async (req: ValidatedRequest<unknown, TaskMetricsQuery>, res) => {
     const metrics = getMetricsService();
-    const { project } = req.validated.query!;
-    const result = await metrics.getTaskMetrics(project);
+    const { project, period, from, to } = req.validated.query!;
+    const { getPeriodStart } = await import('../services/metrics/helpers.js');
+    const since = getPeriodStart(period, from);
+    const result = await metrics.getTaskMetrics(project, since);
     res.json(result);
   })
 );

@@ -166,8 +166,8 @@ export async function computeAllMetrics(
     }
   }
 
-  // Get task metrics (separate query, always fast)
-  const tasks = await computeTaskMetrics(taskService, project);
+  // Get task metrics — filtered by period like everything else
+  const tasks = await computeTaskMetrics(taskService, project, since);
 
   // Build run metrics
   const totalRuns = runAcc.successes + runAcc.failures + runAcc.errors;

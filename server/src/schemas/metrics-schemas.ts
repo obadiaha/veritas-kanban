@@ -12,10 +12,13 @@ export const MetricsQuerySchema = z.object({
 });
 
 /**
- * GET /api/metrics/tasks - query params (project only, no period)
+ * GET /api/metrics/tasks - query params
  */
 export const TaskMetricsQuerySchema = z.object({
   project: z.string().optional(),
+  period: MetricsPeriodSchema.default('all'),
+  from: z.string().optional(),
+  to: z.string().optional(),
 });
 
 /**
