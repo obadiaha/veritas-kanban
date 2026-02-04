@@ -29,6 +29,9 @@ const createTaskSchema = z.object({
   project: z.string().optional(),
   sprint: z.string().optional(),
   agent: z.string().max(50).optional(), // "auto" | agent type slug
+  labels: z.array(z.string().max(50)).optional().default([]), // Task labels/tags
+  assignee: z.string().max(100).optional(), // Assigned agent
+  createdBy: z.string().max(100).optional(), // Agent or user who created
 });
 
 const gitSchema = z
@@ -126,6 +129,10 @@ const updateTaskSchema = z.object({
   plan: z.string().optional(),
   automation: automationSchema,
   position: z.number().optional(),
+  labels: z.array(z.string().max(50)).optional(), // Task labels/tags
+  assignee: z.string().max(100).optional(), // Assigned agent
+  createdBy: z.string().max(100).optional(), // Creating agent
+  lastUpdatedBy: z.string().max(100).optional(), // Last modifier
 });
 
 // === Core CRUD Routes ===

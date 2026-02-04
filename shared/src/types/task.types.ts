@@ -138,6 +138,14 @@ export interface Task {
   created: string;
   updated: string;
 
+  // Labels/tags for categorization
+  labels?: string[];
+
+  // Agent tracking
+  assignee?: string; // Currently assigned agent
+  createdBy?: string; // Agent or user who created the task
+  lastUpdatedBy?: string; // Last agent/user to update
+
   // Agent assignment — "auto" uses routing engine, or a specific agent slug
   agent?: AgentType | 'auto';
 
@@ -221,6 +229,9 @@ export interface CreateTaskInput {
   agent?: AgentType | 'auto'; // Pre-assign an agent (or "auto" for routing engine)
   subtasks?: Subtask[]; // Can be provided when creating from a template
   blockedBy?: string[]; // Can be provided when creating from a blueprint
+  labels?: string[]; // Task labels/tags
+  assignee?: string; // Assigned agent
+  createdBy?: string; // Creating agent
 }
 
 export interface UpdateTaskInput {

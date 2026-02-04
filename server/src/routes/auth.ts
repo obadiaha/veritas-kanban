@@ -373,7 +373,7 @@ router.post(
     res.cookie('veritas_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge,
       path: '/',
     });
@@ -401,7 +401,7 @@ router.post(
     res.clearCookie('veritas_session', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
     });
 

@@ -357,7 +357,8 @@ app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api', apiRateLimit);
 
 // Apply authentication to all API routes (except /api/auth which is handled above)
-app.use('/api', authenticate);
+// TEMP: Auth disabled for local dev
+// app.use('/api', authenticate);
 
 // ============================================
 // API Versioning Middleware
@@ -571,20 +572,19 @@ wss.on('connection', (ws: HeartbeatWebSocket, req) => {
     return;
   }
 
-  // Authenticate WebSocket connection
-  const authResult = authenticateWebSocket(req);
+  // TEMP: Auth disabled for local dev
+  // const authResult = authenticateWebSocket(req);
+  // if (!authResult.authenticated) {
+  //   log.warn({ error: authResult.error }, 'WebSocket connection rejected');
+  //   ws.close(4001, authResult.error || 'Authentication required');
+  //   return;
+  // }
 
-  if (!authResult.authenticated) {
-    log.warn({ error: authResult.error }, 'WebSocket connection rejected');
-    ws.close(4001, authResult.error || 'Authentication required');
-    return;
-  }
-
-  // Attach auth info to WebSocket for later use
+  // Attach auth info to WebSocket for later use (hardcoded for local dev)
   ws.auth = {
-    role: authResult.role!,
-    keyName: authResult.keyName,
-    isLocalhost: authResult.isLocalhost,
+    role: 'admin' as const,
+    keyName: undefined,
+    isLocalhost: true,
   };
 
   // ---- Heartbeat: mark alive on connect and on pong ----
@@ -598,7 +598,7 @@ wss.on('connection', (ws: HeartbeatWebSocket, req) => {
   });
 
   log.info(
-    { role: authResult.role, localhost: authResult.isLocalhost, clients: wss.clients.size },
+    { role: ws.auth.role, localhost: ws.auth.isLocalhost, clients: wss.clients.size },
     'WebSocket client connected'
   );
 

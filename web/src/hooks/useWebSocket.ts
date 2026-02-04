@@ -61,9 +61,13 @@ const KEEPALIVE_TIMEOUT_MS = 45_000;
 const DEFAULT_MAX_RECONNECT_ATTEMPTS = 20;
 
 function getDefaultWsUrl(): string {
+  // Allow override via env variable
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const isDev = ['3000', '5173'].includes(window.location.port);
-  return isDev ? `${protocol}//localhost:3001/ws` : `${protocol}//${window.location.host}/ws`;
+  const isDev = ['3000', '3002', '5173'].includes(window.location.port);
+  return isDev ? `${protocol}//localhost:3003/ws` : `${protocol}//${window.location.host}/ws`;
 }
 
 /**

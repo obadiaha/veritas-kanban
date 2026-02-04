@@ -396,6 +396,9 @@ export class TaskService {
       agent: input.agent, // Pre-assigned agent (or "auto" for routing)
       subtasks: input.subtasks, // Include subtasks from template
       blockedBy: input.blockedBy, // Include dependencies from blueprint
+      labels: input.labels || [], // Task labels/tags
+      assignee: input.assignee, // Assigned agent
+      createdBy: input.createdBy, // Creating agent
       created: now,
       updated: now,
     };
